@@ -1,0 +1,15 @@
+#pragma once
+
+#include "Common.h"
+
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+HINSTANCE g_hInst;
+LPCTSTR lpszClass = TEXT("ChessGame");
+HWND hWndMain;
+
+#define MAX_WIN_SIZE 720
+
+
+int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int);
+
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
