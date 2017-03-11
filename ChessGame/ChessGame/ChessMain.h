@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Common.h"
+#include "Player.h"
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = TEXT("ChessGame");
 HWND hWndMain;
 
-#define MAX_WIN_SIZE 720
+#define MAX_WIN_SIZE_X 735
+#define MAX_WIN_SIZE_Y 750
 
 
 int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int);
