@@ -3,9 +3,11 @@
 //FUNCTION
 RECT ClntRt;
 
+//#pragma comment(linker , "/entry:WinMainCRTStartup /subsystem:console")
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
+	
 	HWND hWnd;
 	MSG Message;
 	WNDCLASS WndClass;
@@ -38,38 +40,43 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
+
 	HDC hdc, hMemDC;
 	PAINTSTRUCT ps;
 	static HBITMAP bitmap;
-	static POINT MapPos;
-	static CImage ChessMap;
+	static POINT mapos, chesspos;
+	static CImage chessmap, chessimg;
 	static Player player;
 
 	switch (iMessage) {
 	case WM_CREATE:
 		hWndMain = hWnd;
-		ChessMap.Load("ChessMap.bmp");
+		chessmap.Load("chessmap.bmp");
 		return 0;
 	case WM_KEYDOWN:
 		switch (wParam) {
 		case VK_UP:
-			player.m_pos.y -= 90;
+			player.SetMove(UP);
+			player.MoveChess();
 			InvalidateRect(hWnd, &ClntRt, NULL);
-			return 0;
+			break;
 		case VK_DOWN:
-			player.m_pos.y += 90;
+			player.SetMove(DOWN);
+			player.MoveChess();
 			InvalidateRect(hWnd, &ClntRt, NULL);
-			return 0;
+			break;
 		case VK_LEFT:
-			player.m_pos.x -= 90;
+			player.SetMove(LEFT);
+			player.MoveChess();
 			InvalidateRect(hWnd, &ClntRt, NULL);
-			return 0;
+			break;
 		case VK_RIGHT:
-			player.m_pos.x += 90;
+			player.SetMove(RIGHT);
+			player.MoveChess();
 			InvalidateRect(hWnd, &ClntRt, NULL);
-			return 0;
+			break;
 		}
-		return 0;
+		break;
 	case WM_PAINT: {
 		hdc = BeginPaint(hWnd, &ps);
 		GetClientRect(hWndMain, &ClntRt); 
@@ -79,10 +86,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 		SelectObject(hMemDC, bitmap);
 
-		
-		ChessMap.BitBlt(hMemDC, 0, MapPos.y, ChessMap.GetWidth(), ChessMap.GetHeight() + MapPos.y, 0, 0, SRCCOPY);
-		
-		player.m_chess.TransparentBlt(hMemDC, player.m_pos.x, player.m_pos.y, player.m_chess.GetWidth(), player.m_chess.GetHeight(),
+		chessmap.BitBlt(hMemDC, 0, mapos.y, chessmap.GetWidth(), chessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
+
+		chesspos = player.GetPos();
+
+
+		player.m_chess.TransparentBlt(hMemDC, chesspos.x, chesspos.y, player.m_chess.GetWidth(), player.m_chess.GetHeight(),
 			0, 0, player.m_chess.GetWidth(), player.m_chess.GetHeight(), RGB(0, 0, 0));
 
 		
@@ -109,3 +118,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 	return(DefWindowProc(hWnd, iMessage, wParam, lParam));
 }
+
