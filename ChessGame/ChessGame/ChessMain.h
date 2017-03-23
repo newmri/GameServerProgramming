@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.h"
+#pragma comment(linker , "/entry:WinMainCRTStartup /subsystem:console")
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;
