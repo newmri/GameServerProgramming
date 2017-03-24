@@ -143,14 +143,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ChessMain.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Transmission.cpp" />
+    <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="CTransmission.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChessMain.h" />
     <ClInclude Include="Define.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Transmission.h" />
+    <ClInclude Include="CPlayer.h" />
+    <ClInclude Include="CTransmission.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
