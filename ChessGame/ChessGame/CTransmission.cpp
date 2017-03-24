@@ -33,7 +33,7 @@ bool CTransmission::Init(const HWND& a_hWnd)
 
 	// WSAAsyncSelect()
 	if (WSAAsyncSelect(m_sock, a_hWnd, WM_SOCKET, FD_CONNECT | FD_WRITE | FD_CLOSE) == SOCKET_ERROR) {
-	printf("[Error] Location : CTransmission::Init, Reason : (WSAAsyncSelect() has been failed: %d \n", WSAGetLastError());
+	printf("[Error] Location : CTransmission::Init, Reason : WSAAsyncSelect() has been failed: %d \n", WSAGetLastError());
 	return false;
 	}
 

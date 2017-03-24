@@ -1,0 +1,19 @@
+﻿  CIOCP.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  main.cpp
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__bind@12 referenced in function "public: bool __thiscall CIOCP::BindandListen(int)" (?BindandListen@CIOCP@@QAE_NH@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__closesocket@4 referenced in function "public: void __thiscall CIOCP::CloseSocket(struct stClientInfo *,bool)" (?CloseSocket@CIOCP@@QAEXPAUstClientInfo@@_N@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__htonl@4 referenced in function "public: bool __thiscall CIOCP::BindandListen(int)" (?BindandListen@CIOCP@@QAE_NH@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__htons@4 referenced in function "public: bool __thiscall CIOCP::BindandListen(int)" (?BindandListen@CIOCP@@QAE_NH@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__listen@8 referenced in function "public: bool __thiscall CIOCP::BindandListen(int)" (?BindandListen@CIOCP@@QAE_NH@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__setsockopt@20 referenced in function "public: void __thiscall CIOCP::CloseSocket(struct stClientInfo *,bool)" (?CloseSocket@CIOCP@@QAEXPAUstClientInfo@@_N@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__shutdown@8 referenced in function "public: void __thiscall CIOCP::CloseSocket(struct stClientInfo *,bool)" (?CloseSocket@CIOCP@@QAEXPAUstClientInfo@@_N@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__WSAStartup@8 referenced in function "public: bool __thiscall CIOCP::InitSocket(void)" (?InitSocket@CIOCP@@QAE_NXZ)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__WSACleanup@0 referenced in function "public: __thiscall CIOCP::~CIOCP(void)" (??1CIOCP@@QAE@XZ)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__WSAGetLastError@0 referenced in function "public: bool __thiscall CIOCP::BindRecv(struct stClientInfo *)" (?BindRecv@CIOCP@@QAE_NPAUstClientInfo@@@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__WSARecv@28 referenced in function "public: bool __thiscall CIOCP::BindRecv(struct stClientInfo *)" (?BindRecv@CIOCP@@QAE_NPAUstClientInfo@@@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol __imp__WSASocketW@24 referenced in function "public: bool __thiscall CIOCP::InitSocket(void)" (?InitSocket@CIOCP@@QAE_NXZ)
+CIOCP.obj : error LNK2019: unresolved external symbol "public: void __thiscall CIOCP::WorkerThread(void)" (?WorkerThread@CIOCP@@QAEXXZ) referenced in function "unsigned int __stdcall CallWorkerThread(void *)" (?CallWorkerThread@@YGIPAX@Z)
+CIOCP.obj : error LNK2019: unresolved external symbol "public: void __thiscall CIOCP::AccepterThread(void)" (?AccepterThread@CIOCP@@QAEXXZ) referenced in function "unsigned int __stdcall CallAccepterThread(void *)" (?CallAccepterThread@@YGIPAX@Z)
+S:\KPU\4-1\GameServer\Assignment\ChessGameServer\Debug\ChessGameServer.exe : fatal error LNK1120: 14 unresolved externals

@@ -18,7 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IOCP.cpp">
+    <ClCompile Include="CIOCP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClInclude Include="ClientInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IOCP.h">
+    <ClInclude Include="CIOCP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

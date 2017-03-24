@@ -12,6 +12,6 @@ using namespace std;
 #define MAX_CLIENT_NUM 50
 #define MAX_WORKER_THREAD 5
 
-enum enumOperation { OP_RECV, OP_SEND };
+enum enumOperation { eOP_RECV, eOP_SEND };
 // Distiction of data type
-enum { MOVE = 1 };
+enum { eMOVE = 1 };

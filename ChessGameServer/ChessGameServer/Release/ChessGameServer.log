@@ -1,0 +1,15 @@
+﻿CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSAGetLastError@0
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__setsockopt@20
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__htons@4
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__htonl@4
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSARecv@28
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSAStartup@8
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSASocketW@24
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__listen@8
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__shutdown@8
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__closesocket@4
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__bind@12
+CIOCP.obj : error LNK2001: unresolved external symbol "public: void __thiscall CIOCP::AccepterThread(void)" (?AccepterThread@CIOCP@@QAEXXZ)
+CIOCP.obj : error LNK2001: unresolved external symbol "public: void __thiscall CIOCP::WorkerThread(void)" (?WorkerThread@CIOCP@@QAEXXZ)
+CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSACleanup@0
+S:\KPU\4-1\GameServer\Assignment\ChessGameServer\Release\ChessGameServer.exe : fatal error LNK1120: 14 unresolved externals

@@ -139,13 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="IOCP.cpp" />
+    <ClCompile Include="CIOCP.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="Define.h" />
-    <ClInclude Include="IOCP.h" />
+    <ClInclude Include="CIOCP.h" />
     <ClInclude Include="OverLappedEx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
