@@ -14,7 +14,7 @@ public:
 
 	// -- Functions for Server -- //
 	bool BindandListen(int);
-	bool StartServer();
+	void StartServer();
 
 	// Create worker thread to wait in WaitingThread Queue
 	bool CreateWorkerThread();
@@ -67,4 +67,5 @@ private:
 	// return variables
 	bool m_bRetval;
 	bool m_bErr;
+	POINT m_pos;
 };
