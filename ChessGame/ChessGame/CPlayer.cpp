@@ -4,8 +4,6 @@ CPlayer::CPlayer()
 {
 	// Location variables
 	m_eLocation = eLOBBY;
-	m_pos.x = FIRST_X;
-	m_pos.y = FIRST_Y;
 
 	// Inputed key variable
 	m_usRidder = 0;
@@ -23,8 +21,6 @@ bool CPlayer::IsPlayerGameRoom()
 void CPlayer::SetPlayerLocation(const ELocation& location){ m_eLocation = location; }
 
 void CPlayer::SetMove(unsigned short ridder) { m_usRidder = ridder; }
-
-POINT CPlayer::GetPos() { return m_pos; }
 
 void CPlayer::MoveChess()
 {

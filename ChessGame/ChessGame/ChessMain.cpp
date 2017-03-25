@@ -43,7 +43,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 	return Message.wParam;
 }
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
 	HDC hdc, hMemDC;
@@ -54,34 +54,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	static CPlayer cPlayer;
 	static bool bInit = false;
 
-	// At the first time, can't recv WM_SOCKET message IDK why it does...
-	// So this code added.
-	if (!bInit) {
-		if (WSAGETSELECTERROR(lParam) != 0) {
-			switch (WSAGETSELECTEVENT(lParam)) {
-			case FD_CONNECT:
-				printf("ASfasf");
-				break;
-			case FD_WRITE:
-				printf("aa");
-				cPlayer.ProcessSocketMessage(hWnd, iMessage, wParam, lParam);
-				bInit = true;
-				break;
-			case FD_CLOSE:
-				cPlayer.Close(true);
-				break;
-			default:
-				break;
-			}
-		}
-	}
 
-	switch (iMessage) {
+	switch (uMsg) {
+	case WM_SOCKET: {
+		cPlayer.ProcessSocketMessage(hWnd, uMsg, wParam, lParam);
+		break;
+	}
 	case WM_CREATE: {
 		hWndMain = hWnd;
 		// Load the Login image.
 		cChessmap.Load("ChessLogin.bmp");
-		cChessGameMap.Load("cChessmap.bmp");
+		cChessGameMap.Load("Chessmap.bmp");
 		// Display various edits.
 		g_hStatic = CreateWindow(TEXT("Static"), TEXT("SIP:"), WS_CHILD | WS_VISIBLE, FIRST_X - 80, FIRST_Y - 45, 30, 30, hWnd, (HMENU)-1, g_hInst, NULL);
 		g_hIpEdit = CreateWindow(TEXT("Edit"), NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, FIRST_X - 50, FIRST_Y - 50, 120, 30, hWnd, (HMENU)eID_IP_EDIT, g_hInst, NULL);
@@ -93,7 +76,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		case eIDC_CONNECT: {
 			cPlayer.SetServerIP(g_hIpEdit);
 			cPlayer.Init(hWnd);
-			if (cPlayer.Connect()) {
+			if (cPlayer.Connect(hWnd)) {
 				cPlayer.SetPlayerLocation(eGAME_ROOM);
 				ShowWindow(g_hIpEdit, SW_HIDE);
 				ShowWindow(g_hConnectBtn, SW_HIDE);
@@ -107,11 +90,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 		}
-		break;
-	}
-	case WM_SOCKET: {
-		printf("%d", 6666);
-		cPlayer.ProcessSocketMessage(hWnd, iMessage, wParam, lParam);
 		break;
 	}
 	case WM_KEYDOWN: {
@@ -156,7 +134,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		// If player is in one of the game-rooms.
 		if (cPlayer.IsPlayerGameRoom()) {
 			cChessGameMap.BitBlt(hMemDC, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
+			
 			chesspos = cPlayer.GetPos();
+	
 			cPlayer.m_chess.TransparentBlt(hMemDC, chesspos.x, chesspos.y, cPlayer.m_chess.GetWidth(), cPlayer.m_chess.GetHeight(),
 				0, 0, cPlayer.m_chess.GetWidth(), cPlayer.m_chess.GetHeight(), RGB(0, 0, 0));	
 		}
@@ -188,7 +168,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
-	return(DefWindowProc(hWnd, iMessage, wParam, lParam));
+	return(DefWindowProc(hWnd, uMsg, wParam, lParam));
 }
 
 

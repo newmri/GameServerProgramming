@@ -18,11 +18,16 @@ public:
 	void SetServerIP(const HWND&);
 	bool Init(const HWND&);
 	void ProcessSocketMessage(const HWND&, const UINT&, const WPARAM&, const LPARAM&);
-	bool Connect();
+	bool Connect(const HWND&);
+	bool Recv(char*, int, int);
+	int Recvn(char*, int, int);
+	POINT GetPos();
 	void Close(bool);
 
 protected:
 	TCHAR m_tchServerIp[MAX_IP_LEN];
 	SOCKET m_sock;
 	SOCKADDR_IN m_saServerAddr;
+	char m_szBuf[MAX_BUF_SIZE];
+	POINT m_pos;
 };
