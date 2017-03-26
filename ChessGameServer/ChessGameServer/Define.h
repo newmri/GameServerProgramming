@@ -13,12 +13,19 @@ using namespace std;
 #define MAX_CLIENT_NUM 50
 #define MAX_WORKER_THREAD 5
 
-// MOVE
+// POS_LEN
+#define POS_LEN sizeof(POINT) + (sizeof(int) *2)
+
+// First pos
 #define CHESS_FIRST_X 357
 #define CHESS_FIRST_Y 360
 
+// Check the boundary
+enum { eTOP_END = -65, eBOTTOM_END = 700, eLEFT_END = -68, eRIGHT_END = 697 };
+
 enum enumOperation { eOP_RECV, eOP_SEND };
+
 // Distiction of data type
-enum { eMOVE = 1 };
+enum enumDataType{ eMOVE = 1 };
 
 enum enumLocation { eLOBBY, eGAME_ROOM, eLOGOUT };

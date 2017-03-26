@@ -8,7 +8,7 @@ struct stClientInfo {
 	enumLocation m_eLocation; // Client Location
 	stOverlappedEx m_stRecvOverlappedEx; // The variable to recv Overlapped I/O Working
 	stOverlappedEx m_stSendOverlappedEx; // The variable to send Overlapped I/O Working
-	
+	POINT m_pos;
 	// Initialize member's variables
 	stClientInfo()
 	{
@@ -17,5 +17,6 @@ struct stClientInfo {
 		ZeroMemory(&m_saClientAddr, sizeof(SOCKADDR_IN));
 		m_SocketClient = INVALID_SOCKET;
 		m_eLocation = eLOBBY;
+		m_pos.x = CHESS_FIRST_X, m_pos.y = CHESS_FIRST_Y;
 	}
 };

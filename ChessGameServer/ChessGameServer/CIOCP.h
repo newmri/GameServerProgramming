@@ -16,11 +16,12 @@ public:
 	bool BindandListen(int);
 	void StartServer();
 
+	// Assemble And Send Packet
+	void AssembleAndSendPacket(stClientInfo*, const enumDataType&);
+	// Disassemble Packet
+	void DisassemblePacket(stClientInfo*);
 	// Create worker thread to wait in WaitingThread Queue
 	bool CreateWorkerThread();
-
-	// Create accept thread
-	bool CreateAccepterThread();
 
 	// release will not use objects
 	stClientInfo* GetEmptyClientInfo();
@@ -43,6 +44,8 @@ public:
 	// Destroy constructed thread
 	void DestroyThread();
 
+	
+
 private:
 	// structure that have client's information 
 	stClientInfo* m_stpClientInfo;
@@ -62,10 +65,15 @@ private:
 	bool m_bAccepterRun;
 	// Socket Buffer
 	char m_szSocketBuf[MAX_BUF_SIZE];
-	// Message Buffer
-	char m_szMsgbuf[MAX_MSG_SIZE + sizeof(int)];
+	// FirstPos Buffer
+	char m_szFirstPosbuf[POS_LEN];
+
+	// Buffer Len
+	int m_nBufLen;
+	
 	// return variables
 	bool m_bRetval;
 	bool m_bErr;
+
 	POINT m_pos;
 };
