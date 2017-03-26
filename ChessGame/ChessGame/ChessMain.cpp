@@ -57,7 +57,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg) {
 	case WM_SOCKET: {
-		cPlayer.ProcessSocketMessage(hWnd, uMsg, wParam, lParam);
+		if(cPlayer.ProcessSocketMessage(hWnd, uMsg, wParam, lParam))
+			InvalidateRect(hWnd, &g_Clntrt, NULL);
 		break;
 	}
 	case WM_CREATE: {
@@ -96,23 +97,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch (wParam) {
 		case VK_UP:
 			cPlayer.SetMove(eUP);
-			cPlayer.MoveChess();
-			InvalidateRect(hWnd, &g_Clntrt, NULL);
+			cPlayer.SetPos();
 			break;
 		case VK_DOWN:
 			cPlayer.SetMove(eDOWN);
-			cPlayer.MoveChess();
-			InvalidateRect(hWnd, &g_Clntrt, NULL);
+			cPlayer.SetPos();
 			break;
 		case VK_LEFT:
 			cPlayer.SetMove(eLEFT);
-			cPlayer.MoveChess();
-			InvalidateRect(hWnd, &g_Clntrt, NULL);
+			cPlayer.SetPos();
 			break;
 		case VK_RIGHT:
 			cPlayer.SetMove(eRIGHT);
-			cPlayer.MoveChess();
-			InvalidateRect(hWnd, &g_Clntrt, NULL);
+			cPlayer.SetPos();
 			break;
 		default:
 			break;

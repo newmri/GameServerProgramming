@@ -17,10 +17,13 @@ public:
 	~CTransmission();
 	void SetServerIP(const HWND&);
 	bool Init(const HWND&);
-	void ProcessSocketMessage(const HWND&, const UINT&, const WPARAM&, const LPARAM&);
+	bool ProcessSocketMessage(const HWND&, const UINT&, const WPARAM&, const LPARAM&);
 	bool Connect(const HWND&);
 	bool Recv(char*, int, int);
 	int Recvn(char*, int, int);
+	void DisassemblePacket();
+	void AssembleAndSendPacket(enumDataType&);
+	bool Send(char*, int);
 	POINT GetPos();
 	void Close(bool);
 
@@ -29,5 +32,6 @@ protected:
 	SOCKET m_sock;
 	SOCKADDR_IN m_saServerAddr;
 	char m_szBuf[MAX_BUF_SIZE];
+	int m_nDataLen;
 	POINT m_pos;
 };

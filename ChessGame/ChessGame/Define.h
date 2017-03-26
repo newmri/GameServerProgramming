@@ -10,13 +10,15 @@
 
 #define MOVE_PIXEL 85
 
+// POS_LEN
+#define POS_LEN sizeof(POINT) + (sizeof(int) *2)
+
 enum { eUP = 0, eDOWN, eLEFT, eRIGHT };
 
-enum { eTOP_END = 20, eBOTTOM_END = 615, eLEFT_END = 17, eRIGHT_END = 612 };
-
-enum { eMOVE=1 };
-
 enum ELocation { eLOBBY = 10, eGAME_ROOM };
+
+// Distiction of data type
+enum enumDataType { eMOVE = 1 };
 
 
 enum { eID_IP_EDIT = 101 };

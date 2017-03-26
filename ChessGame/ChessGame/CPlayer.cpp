@@ -22,25 +22,33 @@ void CPlayer::SetPlayerLocation(const ELocation& location){ m_eLocation = locati
 
 void CPlayer::SetMove(unsigned short ridder) { m_usRidder = ridder; }
 
-void CPlayer::MoveChess()
+void CPlayer::SetPos()
 {
 	switch (m_usRidder) {
-	case eUP:
-		if (m_pos.y == eTOP_END) break;
+	case eUP: {
 		m_pos.y -= MOVE_PIXEL;
+		enumDataType eDataType = eMOVE;
+		AssembleAndSendPacket(eDataType);
 		break;
-	case eDOWN:
-		if (m_pos.y == eBOTTOM_END) break;
-		m_pos.y+= MOVE_PIXEL;
+	}
+	case eDOWN: {
+		m_pos.y += MOVE_PIXEL;
+		enumDataType eDataType = eMOVE;
+		AssembleAndSendPacket(eDataType);
 		break;
-	case eLEFT:
-		if (m_pos.x == eLEFT_END) break;
+	}
+	case eLEFT: {
 		m_pos.x -= MOVE_PIXEL;
+		enumDataType eDataType = eMOVE;
+		AssembleAndSendPacket(eDataType);
 		break;
-	case eRIGHT:
-		if (m_pos.x == eRIGHT_END) break;
+	}
+	case eRIGHT: {
 		m_pos.x += MOVE_PIXEL;
+		enumDataType eDataType = eMOVE;
+		AssembleAndSendPacket(eDataType);
 		break;
+	}
 	default:
 		break;
 	}

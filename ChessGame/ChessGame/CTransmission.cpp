@@ -42,19 +42,24 @@ bool CTransmission::Init(const HWND& a_hWnd)
 
 POINT CTransmission::GetPos(){ return m_pos; }
 
-void CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMessage, const WPARAM& a_wParam, const LPARAM& a_lParam)
+bool CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMessage, const WPARAM& a_wParam, const LPARAM& a_lParam)
 {
 	switch (WSAGETSELECTEVENT(a_lParam)){
 	case FD_READ:
 		Recv(m_szBuf,MAX_BUF_SIZE, 0);
-		if (m_szBuf[sizeof(int)] == eMOVE) {
+
+		switch(m_szBuf[sizeof(int)]) {
+		case eMOVE: {
+			// pos x
 			m_pos.x = atoi(&m_szBuf[sizeof(int) * 2]);
+			// pos y
 			m_pos.y = atoi(&m_szBuf[sizeof(int) * 3]);
+			return true;
 		}
-		break;
+		}
 	case FD_CLOSE:
 		Close(true);
-		return;
+		return true;
 	default:
 		break;
 	}
@@ -62,7 +67,7 @@ void CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMess
 	// WSAAsyncSelect()
 	if (WSAAsyncSelect(m_sock, a_hWnd, WM_SOCKET, FD_READ | FD_CLOSE) == SOCKET_ERROR) {
 		printf("[Error] Location : CTransmission::ProcessSocketMessage, Reason : (WSAAsyncSelect() has been failed: %d \n", WSAGetLastError());
-		return;
+		return false;
 	}
 
 
@@ -70,9 +75,9 @@ void CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMess
 
 bool CTransmission::Connect(const HWND& a_hWnd)
 {
-	int retval{};
-	retval = connect(m_sock, (SOCKADDR*)&m_saServerAddr, sizeof(m_saServerAddr));
-	if (retval == SOCKET_ERROR) {
+	int nRetval{};
+	nRetval = connect(m_sock, (SOCKADDR*)&m_saServerAddr, sizeof(m_saServerAddr));
+	if (nRetval == SOCKET_ERROR) {
 		printf("[Error] Location : CTransmission::Connect, Reason : connect() has been failed: %d \n", WSAGetLastError());
 		return false;
 	}
@@ -86,16 +91,16 @@ bool CTransmission::Connect(const HWND& a_hWnd)
 
 bool CTransmission::Recv(char* data, int len, int flags)
 {
-	int retval{};
+	int nRetval{};
 
-	// received data(flexible)
-	retval = Recvn(data, len, flags);
-	if (retval == SOCKET_ERROR){
+	// nReceived data(flexible)
+	nRetval = Recvn(data, len, flags);
+	if (nRetval == SOCKET_ERROR){
 		printf("[Error] Location : CTransmission::Recv, Reason : Recvn() has been failed \n");
 		return false;
 	}
 
-	else if (retval == 0) {
+	else if (nRetval == 0) {
 		printf("[Error] Location : CTransmission::Recv, Reason : disconnected \n");
 		return false;
 	}
@@ -105,22 +110,67 @@ bool CTransmission::Recv(char* data, int len, int flags)
 
 int CTransmission::Recvn(char* buf, int len, int flags)
 {
-	int received;
-	char* ptr = buf;
-	int left{};
+	int nReceived;
+	char* chptr = buf;
+	int nLeft{};
 
-	received = recv(m_sock, ptr, sizeof(int), flags);
-	left = *ptr;
-	ptr += received;
+	nReceived = recv(m_sock, chptr, sizeof(int), flags);
+	nLeft = *chptr;
+	chptr += nReceived;
 
-	while (left > 0){
-		received = recv(m_sock, ptr, left, flags);
-		if (received == SOCKET_ERROR) return SOCKET_ERROR;
-		else if (received == 0) break;
-		left -= received;
-		ptr += received;
+	while (nLeft > 0){
+		nReceived = recv(m_sock, chptr, nLeft, flags);
+		if (nReceived == SOCKET_ERROR) return SOCKET_ERROR;
+		else if (nReceived == 0) break;
+		nLeft -= nReceived;
+		chptr += nReceived;
 	}
-	return(len - left);
+	return(len - nLeft);
+}
+
+void CTransmission::DisassemblePacket()
+{
+
+}
+
+
+void CTransmission::AssembleAndSendPacket(enumDataType& a_eDataType)
+{
+	switch (a_eDataType) {
+	case eMOVE: {
+		int nCommand = eMOVE;
+		m_nDataLen = POS_LEN;
+		// len
+		memcpy(m_szBuf, &m_nDataLen, sizeof(m_nDataLen));
+		// command
+		memcpy(&m_szBuf[sizeof(m_nDataLen)], &nCommand, sizeof(int));
+		// pos x
+		itoa(m_pos.x, &m_szBuf[sizeof(m_nDataLen) + sizeof(nCommand)], 10);
+		// pos y
+		itoa(m_pos.y, &m_szBuf[sizeof(m_nDataLen) + sizeof(nCommand) + sizeof(int)], 10);
+		m_nDataLen += sizeof(int);
+		Send(m_szBuf, m_nDataLen);
+		break;
+	}
+	}
+}
+
+bool CTransmission::Send(char* data, int len)
+{
+	int nRetval{};
+	// sending data(flexible)
+	nRetval = send(m_sock, data, len, 0);
+	if (SOCKET_ERROR == nRetval) {
+		printf("[Error] Location : CTransmission::Send, Reason :  send() has been failed \n");
+		return false;
+	}
+
+	else if (nRetval == 0) {
+		printf("[Error] Location : CTransmission::Send, Reason : disconnected \n");
+		return false;
+	}
+
+	return true;
 }
 
 void CTransmission::Close(bool a_bForceClose)

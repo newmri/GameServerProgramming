@@ -11,7 +11,7 @@ public:
 	bool IsPlayerGameRoom();
 	void SetPlayerLocation(const ELocation&);
 	void SetMove(unsigned short);
-	void MoveChess();
+	void SetPos();
 
 private:
 	ELocation m_eLocation;
