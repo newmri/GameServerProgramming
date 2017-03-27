@@ -1,6 +1,8 @@
 #include "CIOCP.h"
 #include <process.h>
 
+CIOCP* CIOCP::m_pInstance = NULL;
+
 // to proccess WSARecv and WSASend 
 unsigned int  WINAPI CallWorkerThread(LPVOID a_p)
 {
@@ -9,6 +11,21 @@ unsigned int  WINAPI CallWorkerThread(LPVOID a_p)
 	return 0;
 }
 
+// SingleTon
+
+CIOCP* CIOCP::Instance()
+{
+	if (!m_pInstance) m_pInstance = new CIOCP;
+	return m_pInstance;
+}
+
+void CIOCP::DestroyInstance()
+{
+	if (m_pInstance) {
+		delete m_pInstance;
+		m_pInstance = NULL;
+	}
+}
 
 CIOCP::CIOCP()
 {

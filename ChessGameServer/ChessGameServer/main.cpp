@@ -2,9 +2,12 @@
 
 int main()
 {
-	CIOCP cIocp;
-	cIocp.InitSocket();
-	cIocp.BindandListen(9000);
-	cIocp.StartServer();
+	CIOCP* pIOCP = CIOCP::Instance();
+
+	pIOCP->InitSocket();
+	pIOCP->BindandListen(9000);
+	pIOCP->StartServer();
+
+	pIOCP->DestroyInstance();
 
 }

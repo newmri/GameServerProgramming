@@ -5,7 +5,6 @@
 class CIOCP
 {
 public:
-	CIOCP();
 	~CIOCP();
 
 	// -- Common Functions Server and Client  -- //
@@ -44,7 +43,16 @@ public:
 	// Destroy constructed thread
 	void DestroyThread();
 
-	
+// To contrcut only one IOCP
+public:
+	static CIOCP* Instance();
+	static void DestroyInstance();
+
+private:
+	CIOCP();
+
+private:
+	static CIOCP* m_pInstance;
 
 private:
 	// structure that have client's information 
