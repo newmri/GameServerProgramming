@@ -21,7 +21,6 @@ public:
 	bool Connect(const HWND&);
 	bool Recv(char*, int, int);
 	int Recvn(char*, int, int);
-	void DisassemblePacket();
 	void AssembleAndSendPacket(enumDataType&);
 	bool Send(char*, int);
 	POINT GetPos();

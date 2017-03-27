@@ -1,5 +1,21 @@
 #include "CPlayer.h"
 
+CPlayer* CPlayer::m_pInstance = NULL;
+
+CPlayer* CPlayer::Instance()
+{
+	if (!m_pInstance) m_pInstance = new CPlayer;
+	return m_pInstance;
+}
+
+void CPlayer::DestroyInstance()
+{
+	if (m_pInstance) {
+		delete m_pInstance;
+		m_pInstance = NULL;
+	}
+}
+
 CPlayer::CPlayer()
 {
 	// Location variables
@@ -52,5 +68,4 @@ void CPlayer::SetPos()
 	default:
 		break;
 	}
-
 }

@@ -51,13 +51,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	static HBITMAP hBitmap;
 	static POINT mapos, chesspos;
 	static CImage cChessmap, cChessGameMap, cChessImg;
-	static CPlayer cPlayer;
+	CPlayer* pPlayer = CPlayer::Instance();
 	static bool bInit = false;
 
 
 	switch (uMsg) {
 	case WM_SOCKET: {
-		if(cPlayer.ProcessSocketMessage(hWnd, uMsg, wParam, lParam))
+		if(pPlayer->ProcessSocketMessage(hWnd, uMsg, wParam, lParam))
 			InvalidateRect(hWnd, &g_Clntrt, NULL);
 		break;
 	}
@@ -75,10 +75,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND: {
 		switch (wParam) {
 		case eIDC_CONNECT: {
-			cPlayer.SetServerIP(g_hIpEdit);
-			cPlayer.Init(hWnd);
-			if (cPlayer.Connect(hWnd)) {
-				cPlayer.SetPlayerLocation(eGAME_ROOM);
+			pPlayer->SetServerIP(g_hIpEdit);
+			pPlayer->Init(hWnd);
+			if (pPlayer->Connect(hWnd)) {
+				pPlayer->SetPlayerLocation(eGAME_ROOM);
 				ShowWindow(g_hIpEdit, SW_HIDE);
 				ShowWindow(g_hConnectBtn, SW_HIDE);
 				ShowWindow(g_hStatic, SW_HIDE);
@@ -96,20 +96,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_UP:
-			cPlayer.SetMove(eUP);
-			cPlayer.SetPos();
+			pPlayer->SetMove(eUP);
+			pPlayer->SetPos();
 			break;
 		case VK_DOWN:
-			cPlayer.SetMove(eDOWN);
-			cPlayer.SetPos();
+			pPlayer->SetMove(eDOWN);
+			pPlayer->SetPos();
 			break;
 		case VK_LEFT:
-			cPlayer.SetMove(eLEFT);
-			cPlayer.SetPos();
+			pPlayer->SetMove(eLEFT);
+			pPlayer->SetPos();
 			break;
 		case VK_RIGHT:
-			cPlayer.SetMove(eRIGHT);
-			cPlayer.SetPos();
+			pPlayer->SetMove(eRIGHT);
+			pPlayer->SetPos();
 			break;
 		default:
 			break;
@@ -129,13 +129,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		// Draw the player's the image of character and cChessGameMap
 		// If player is in one of the game-rooms.
-		if (cPlayer.IsPlayerGameRoom()) {
+		if (pPlayer->IsPlayerGameRoom()) {
 			cChessGameMap.BitBlt(hMemDC, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
 			
-			chesspos = cPlayer.GetPos();
+			chesspos = pPlayer->GetPos();
 	
-			cPlayer.m_chess.TransparentBlt(hMemDC, chesspos.x, chesspos.y, cPlayer.m_chess.GetWidth(), cPlayer.m_chess.GetHeight(),
-				0, 0, cPlayer.m_chess.GetWidth(), cPlayer.m_chess.GetHeight(), RGB(0, 0, 0));	
+			pPlayer->m_chess.TransparentBlt(hMemDC, chesspos.x, chesspos.y, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(),
+				0, 0, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(), RGB(0, 0, 0));	
 		}
 		else 
 			cChessmap.BitBlt(hMemDC, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
@@ -158,6 +158,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_DESTROY: {
+		pPlayer->DestroyInstance();
 		PostQuitMessage(0);
 		return 0;
 	}

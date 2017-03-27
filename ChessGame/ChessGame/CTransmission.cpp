@@ -36,7 +36,6 @@ bool CTransmission::Init(const HWND& a_hWnd)
 		return false;
 	}
 
-
 	return true;
 }
 
@@ -69,8 +68,6 @@ bool CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMess
 		printf("[Error] Location : CTransmission::ProcessSocketMessage, Reason : (WSAAsyncSelect() has been failed: %d \n", WSAGetLastError());
 		return false;
 	}
-
-
 }
 
 bool CTransmission::Connect(const HWND& a_hWnd)
@@ -128,12 +125,6 @@ int CTransmission::Recvn(char* buf, int len, int flags)
 	return(len - nLeft);
 }
 
-void CTransmission::DisassemblePacket()
-{
-
-}
-
-
 void CTransmission::AssembleAndSendPacket(enumDataType& a_eDataType)
 {
 	switch (a_eDataType) {
@@ -169,7 +160,6 @@ bool CTransmission::Send(char* data, int len)
 		printf("[Error] Location : CTransmission::Send, Reason : disconnected \n");
 		return false;
 	}
-
 	return true;
 }
 
