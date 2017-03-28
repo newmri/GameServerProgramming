@@ -15,6 +15,12 @@ public:
 	bool BindandListen(int);
 	void StartServer();
 
+	// Set new client info
+	void SetNewClientInfo(stClientInfo*);
+	// Set first chess pos
+	void SetFirstChessPos();
+	// Search old client info
+	void SearchOldClientInfo(stClientInfo*);
 	// Assemble And Send Packet
 	void AssembleAndSendPacket(stClientInfo*, const enumDataType&);
 	// Disassemble Packet

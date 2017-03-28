@@ -34,7 +34,7 @@ bool CPlayer::IsPlayerGameRoom()
 	else return false;
 }
 
-void CPlayer::SetPlayerLocation(const ELocation& location){ m_eLocation = location; }
+void CPlayer::SetPlayerLocation(const enumLocation& location){ m_eLocation = location; }
 
 void CPlayer::SetMove(unsigned short ridder) { m_usRidder = ridder; }
 

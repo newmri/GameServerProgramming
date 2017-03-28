@@ -9,6 +9,9 @@ struct stClientInfo {
 	stOverlappedEx m_stRecvOverlappedEx; // The variable to recv Overlapped I/O Working
 	stOverlappedEx m_stSendOverlappedEx; // The variable to send Overlapped I/O Working
 	POINT m_pos;
+	POINT m_AnotherPos;
+	unsigned short m_usId;
+	unsigned short m_usAnotherId;
 	// Initialize member's variables
 	stClientInfo()
 	{
@@ -18,5 +21,24 @@ struct stClientInfo {
 		m_SocketClient = INVALID_SOCKET;
 		m_eLocation = eLOBBY;
 		m_pos.x = CHESS_FIRST_X, m_pos.y = CHESS_FIRST_Y;
+		m_usId = 0, m_usAnotherId = 0;
+		m_AnotherPos.x = 0, m_AnotherPos.y = 0;
 	}
 };
+
+#pragma pack(push, 1)
+struct stSimpleClientInfo
+{
+	enumLocation m_eLocation;
+	unsigned short m_usId;
+	POINT m_pos;
+
+	stSimpleClientInfo()
+	{
+		m_eLocation = eGAME_ROOM;
+		m_usId = 0;
+		m_pos.x = 0, m_pos.y = 0;
+	}
+
+};
+#pragma pack(pop)

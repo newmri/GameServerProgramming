@@ -55,6 +55,16 @@ bool CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMess
 			m_pos.y = atoi(&m_szBuf[sizeof(int) * 3]);
 			return true;
 		}
+		case eCLIENT_INFO: {
+			for (int i = 0; i < MAX_PLAYER; ++i) {
+				if (m_stPlayerInfo[i].m_usId == 0) {
+					memcpy(&m_stPlayerInfo[i], &m_szBuf[sizeof(int) * 2], sizeof(stPlayerInfo));
+					printf("%d", m_stPlayerInfo[i].m_pos.y);
+					break;
+				}
+
+			}
+		}
 		}
 	case FD_CLOSE:
 		Close(true);
@@ -143,6 +153,7 @@ void CTransmission::AssembleAndSendPacket(enumDataType& a_eDataType)
 		Send(m_szBuf, m_nDataLen);
 		break;
 	}
+
 	}
 }
 

@@ -2,7 +2,7 @@
 
 #include <WinSock2.h>
 
-#include "Define.h"
+#include "stPlayerInfo.h"
 
 #pragma comment(lib,"ws2_32")
 #pragma comment(lib, "user32.lib")
@@ -33,4 +33,5 @@ protected:
 	char m_szBuf[MAX_BUF_SIZE];
 	int m_nDataLen;
 	POINT m_pos;
+	stPlayerInfo m_stPlayerInfo[MAX_PLAYER];
 };

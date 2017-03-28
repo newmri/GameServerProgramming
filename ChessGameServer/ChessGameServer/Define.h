@@ -17,8 +17,10 @@ using namespace std;
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2)
 
 // First pos
-#define CHESS_FIRST_X 357
-#define CHESS_FIRST_Y 360
+#define CHESS_FIRST_X 17
+#define CHESS_FIRST_Y 20
+
+#define MOVE_PIXEL 85
 
 // Check the boundary
 enum { eTOP_END = -65, eBOTTOM_END = 700, eLEFT_END = -68, eRIGHT_END = 697 };
@@ -26,6 +28,6 @@ enum { eTOP_END = -65, eBOTTOM_END = 700, eLEFT_END = -68, eRIGHT_END = 697 };
 enum enumOperation { eOP_RECV, eOP_SEND };
 
 // Distiction of data type
-enum enumDataType{ eMOVE = 1 };
+enum enumDataType{ eMOVE = 1, eCLIENT_INFO};
 
 enum enumLocation { eLOBBY, eGAME_ROOM, eLOGOUT };

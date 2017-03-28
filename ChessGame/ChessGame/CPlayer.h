@@ -8,7 +8,7 @@ class CPlayer : public CTransmission
 public:
 	CImage m_chess;
 	bool IsPlayerGameRoom();
-	void SetPlayerLocation(const ELocation&);
+	void SetPlayerLocation(const enumLocation&);
 	void SetMove(unsigned short);
 	void SetPos();
 
@@ -24,6 +24,6 @@ private:
 	static CPlayer* m_pInstance;
 
 private:
-	ELocation m_eLocation;
+	enumLocation m_eLocation;
 	unsigned short m_usRidder;
 };

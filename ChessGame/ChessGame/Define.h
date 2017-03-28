@@ -10,16 +10,19 @@
 
 #define MOVE_PIXEL 85
 
+#define MAX_PLAYER 10
+
 // POS_LEN
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2)
 
 enum { eUP = 0, eDOWN, eLEFT, eRIGHT };
 
-enum ELocation { eLOBBY = 10, eGAME_ROOM };
 
 // Distiction of data type
-enum enumDataType { eMOVE = 1 };
+enum enumDataType { eMOVE = 1, eCLIENT_INFO};
 
+// Location
+enum enumLocation { eLOBBY, eGAME_ROOM, eLOGOUT };
 
 enum { eID_IP_EDIT = 101 };
 enum { eIDC_CONNECT = 1001 };

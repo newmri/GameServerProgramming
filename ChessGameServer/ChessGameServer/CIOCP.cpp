@@ -186,11 +186,43 @@ void CIOCP::StartServer()
 		stpClientInfo->m_eLocation = eGAME_ROOM;
 
 		enumDataType eDataType = eMOVE;
+		SetNewClientInfo(stpClientInfo);
 		AssembleAndSendPacket(stpClientInfo, eDataType);
-
 		m_nClientCnt++;
+
+		SetFirstChessPos();
+
+		SearchOldClientInfo(stpClientInfo);
 	}
 
+}
+
+void CIOCP::SetNewClientInfo(stClientInfo* a_stpClientInfo)
+{
+	a_stpClientInfo->m_usId = m_nClientCnt + 1;
+	a_stpClientInfo->m_pos.x = m_pos.x;
+	a_stpClientInfo->m_pos.y = m_pos.y;
+}
+
+void CIOCP::SetFirstChessPos()
+{
+	if (m_pos.x != eRIGHT_END - MOVE_PIXEL) m_pos.x += MOVE_PIXEL;
+	else {
+		m_pos.x = CHESS_FIRST_X;
+		m_pos.y += MOVE_PIXEL;
+	}
+}
+
+void CIOCP::SearchOldClientInfo(stClientInfo* a_stpNewClientInfo)
+{
+	for (int i = 0; i < m_nClientCnt; ++i) {
+		enumDataType eDataType = eCLIENT_INFO;
+		if (m_stpClientInfo[i].m_eLocation == eGAME_ROOM && m_stpClientInfo[i].m_usId != a_stpNewClientInfo->m_usId) {
+			m_stpClientInfo[i].m_AnotherPos = a_stpNewClientInfo->m_pos;
+			m_stpClientInfo[i].m_usAnotherId = a_stpNewClientInfo->m_usId;
+			AssembleAndSendPacket(&m_stpClientInfo[i], eDataType);
+		}
+	}
 }
 
 void CIOCP::AssembleAndSendPacket(stClientInfo* a_stpClientInfo, const enumDataType& a_eDataType)
@@ -210,6 +242,25 @@ void CIOCP::AssembleAndSendPacket(stClientInfo* a_stpClientInfo, const enumDataT
 
 		m_nBufLen += sizeof(int);
 		SendMsg(a_stpClientInfo, m_szFirstPosbuf, m_nBufLen);
+		break;
+	}
+	case eCLIENT_INFO: {
+		int nCommand = eCLIENT_INFO;
+
+		stSimpleClientInfo stSimpleClientInfo;
+		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usId;
+		stSimpleClientInfo.m_pos = a_stpClientInfo->m_AnotherPos;
+
+		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
+		// len
+		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
+		// command
+		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(nCommand));
+		// client info
+		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
+
+		m_nBufLen += sizeof(int);
+		SendMsg(a_stpClientInfo, a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, m_nBufLen);
 		break;
 	}
 	default:
