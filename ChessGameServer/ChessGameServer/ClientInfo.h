@@ -6,6 +6,7 @@ struct stClientInfo {
 	SOCKADDR_IN m_saClientAddr; // Store client's information of address
 	SOCKET m_SocketClient; // Client Socket
 	enumLocation m_eLocation; // Client Location
+	enumLocation m_eAnotherLocation;
 	stOverlappedEx m_stRecvOverlappedEx; // The variable to recv Overlapped I/O Working
 	stOverlappedEx m_stSendOverlappedEx; // The variable to send Overlapped I/O Working
 	POINT m_pos;
@@ -20,6 +21,7 @@ struct stClientInfo {
 		ZeroMemory(&m_saClientAddr, sizeof(SOCKADDR_IN));
 		m_SocketClient = INVALID_SOCKET;
 		m_eLocation = eLOBBY;
+		m_eAnotherLocation = eLOBBY;
 		m_pos.x = CHESS_FIRST_X, m_pos.y = CHESS_FIRST_Y;
 		m_usId = 0, m_usAnotherId = 0;
 		m_AnotherPos.x = 0, m_AnotherPos.y = 0;

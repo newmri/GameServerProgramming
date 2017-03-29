@@ -187,6 +187,7 @@ void CIOCP::StartServer()
 
 		enumDataType eDataType = eMOVE;
 		SetNewClientInfo(stpClientInfo);
+		// To new client
 		AssembleAndSendPacket(stpClientInfo, eDataType);
 		m_nClientCnt++;
 
@@ -218,9 +219,16 @@ void CIOCP::SearchOldClientInfo(stClientInfo* a_stpNewClientInfo)
 	for (int i = 0; i < m_nClientCnt; ++i) {
 		enumDataType eDataType = eCLIENT_INFO;
 		if (m_stpClientInfo[i].m_eLocation == eGAME_ROOM && m_stpClientInfo[i].m_usId != a_stpNewClientInfo->m_usId) {
-			m_stpClientInfo[i].m_AnotherPos = a_stpNewClientInfo->m_pos;
+			m_stpClientInfo[i].m_eAnotherLocation = a_stpNewClientInfo->m_eLocation;
 			m_stpClientInfo[i].m_usAnotherId = a_stpNewClientInfo->m_usId;
+			m_stpClientInfo[i].m_AnotherPos = a_stpNewClientInfo->m_pos;
+			// To Old client
 			AssembleAndSendPacket(&m_stpClientInfo[i], eDataType);
+			// To new client
+			a_stpNewClientInfo->m_eAnotherLocation = m_stpClientInfo[i].m_eLocation;
+			a_stpNewClientInfo->m_usAnotherId = m_stpClientInfo[i].m_usId;
+			a_stpNewClientInfo->m_AnotherPos = m_stpClientInfo[i].m_pos;
+			AssembleAndSendPacket(a_stpNewClientInfo, eDataType);
 		}
 	}
 }
@@ -230,25 +238,30 @@ void CIOCP::AssembleAndSendPacket(stClientInfo* a_stpClientInfo, const enumDataT
 	switch (a_eDataType) {
 	case eMOVE: {
 		int nCommand = eMOVE;
-		m_nBufLen = POS_LEN;
-		// len
-		memcpy(m_szFirstPosbuf, &m_nBufLen, sizeof(m_nBufLen));
-		// command
-		memcpy(&m_szFirstPosbuf[sizeof(m_nBufLen)], &nCommand, sizeof(int));
-		// pos x
-		itoa(a_stpClientInfo->m_pos.x, &m_szFirstPosbuf[sizeof(m_nBufLen) + sizeof(nCommand)], 10);
-		// pos y
-		itoa(a_stpClientInfo->m_pos.y, &m_szFirstPosbuf[sizeof(m_nBufLen) + sizeof(nCommand) + sizeof(int)], 10);
 
+		stSimpleClientInfo stSimpleClientInfo;
+		stSimpleClientInfo.m_eLocation = a_stpClientInfo->m_eLocation;
+		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usId;
+		stSimpleClientInfo.m_pos = a_stpClientInfo->m_pos;
+
+		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
+		// len
+		memcpy(a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
+		// command
+		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(int));
+		// client info
+		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
+		
 		m_nBufLen += sizeof(int);
-		SendMsg(a_stpClientInfo, m_szFirstPosbuf, m_nBufLen);
+		SendMsg(a_stpClientInfo, a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, m_nBufLen);
 		break;
 	}
 	case eCLIENT_INFO: {
 		int nCommand = eCLIENT_INFO;
 
 		stSimpleClientInfo stSimpleClientInfo;
-		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usId;
+		stSimpleClientInfo.m_eLocation = a_stpClientInfo->m_eAnotherLocation;
+		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usAnotherId;
 		stSimpleClientInfo.m_pos = a_stpClientInfo->m_AnotherPos;
 
 		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
@@ -256,6 +269,25 @@ void CIOCP::AssembleAndSendPacket(stClientInfo* a_stpClientInfo, const enumDataT
 		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
 		// command
 		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(nCommand));
+		// client info
+		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
+
+		m_nBufLen += sizeof(int);
+		SendMsg(a_stpClientInfo, a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, m_nBufLen);
+		break;
+	}
+	case eANOTHER_MOVE: {
+		int nCommand = eANOTHER_MOVE;
+		stSimpleClientInfo stSimpleClientInfo;
+		stSimpleClientInfo.m_eLocation = a_stpClientInfo->m_eAnotherLocation;
+		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usAnotherId;
+		stSimpleClientInfo.m_pos = a_stpClientInfo->m_AnotherPos;
+
+		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
+		// len
+		memcpy(a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
+		// command
+		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(int));
 		// client info
 		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
 
@@ -273,29 +305,39 @@ void CIOCP::DisassemblePacket(stClientInfo* a_stpClientInfo)
 {
 	switch (a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int)]) {
 	case eMOVE: {
-		if (atoi(&a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 2]) == eLEFT_END ||
-			atoi(&a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 2]) == eRIGHT_END) {
-			enumDataType eDataType = eMOVE;
-			AssembleAndSendPacket(a_stpClientInfo, eDataType);
-			return;
-		}
-		if (atoi(&a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 3]) == eTOP_END  ||
-			atoi(&a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 3]) == eBOTTOM_END) {
-			enumDataType eDataType = eMOVE;
-			AssembleAndSendPacket(a_stpClientInfo, eDataType);
-			return;
-		}
+		stSimpleClientInfo stSimpleClientInfo;
+		memcpy(&stSimpleClientInfo, &a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 2], sizeof(stSimpleClientInfo));
 
-		// pos x
-		a_stpClientInfo->m_pos.x = atoi(&a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 2]);
-		// pos y
-		a_stpClientInfo->m_pos.y = atoi(&a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 3]);
+		if (stSimpleClientInfo.m_pos.x == eLEFT_END ||stSimpleClientInfo.m_pos.x == eRIGHT_END) {
 		enumDataType eDataType = eMOVE;
 		AssembleAndSendPacket(a_stpClientInfo, eDataType);
+		return;
+		}
+		if (stSimpleClientInfo.m_pos.y == eTOP_END  || stSimpleClientInfo.m_pos.y == eBOTTOM_END) {
+		enumDataType eDataType = eMOVE;
+		AssembleAndSendPacket(a_stpClientInfo, eDataType);
+		return;
+		}
+
+		a_stpClientInfo->m_pos = stSimpleClientInfo.m_pos;
+		enumDataType eDataType = eMOVE;
+		
+		// To the moved client
+		AssembleAndSendPacket(a_stpClientInfo, eDataType);
+
+		if(m_nClientCnt != 1) eDataType = eANOTHER_MOVE;
+		for (int i = 0; i < m_nClientCnt; ++i) {
+			if (m_stpClientInfo[i].m_eLocation == eGAME_ROOM && m_stpClientInfo[i].m_usId != stSimpleClientInfo.m_usId) {
+				m_stpClientInfo[i].m_eAnotherLocation = a_stpClientInfo->m_eLocation;
+				m_stpClientInfo[i].m_AnotherPos = a_stpClientInfo->m_pos;
+				m_stpClientInfo[i].m_usAnotherId = a_stpClientInfo->m_usId;
+				AssembleAndSendPacket(&m_stpClientInfo[i], eDataType);
+			}
+		}
 		break;
 	}
 	}
-}
+	}
 
 bool CIOCP::BindRecv(stClientInfo* a_pClientInfo)
 {
