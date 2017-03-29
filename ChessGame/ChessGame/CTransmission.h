@@ -25,13 +25,16 @@ public:
 	bool Send(char*, int);
 	POINT GetPos();
 	void Close(bool);
-
+public:
+	stPlayerInfo m_stPlayerInfo[MAX_PLAYER];
 protected:
 	TCHAR m_tchServerIp[MAX_IP_LEN];
 	SOCKET m_sock;
 	SOCKADDR_IN m_saServerAddr;
 	char m_szBuf[MAX_BUF_SIZE];
 	int m_nDataLen;
+	enumLocation m_eLocation;
 	POINT m_pos;
-	stPlayerInfo m_stPlayerInfo[MAX_PLAYER];
+	int m_nPlayerCnt;
+	unsigned short m_usId;
 };

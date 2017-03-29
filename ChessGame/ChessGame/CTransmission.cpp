@@ -6,7 +6,10 @@ CTransmission::CTransmission()
 	// CTransmission variables
 	m_sock = INVALID_SOCKET;
 	ZeroMemory(&m_saServerAddr, sizeof(m_saServerAddr));
+	m_eLocation = eLOBBY;
 	m_pos.x = 0, m_pos.y = 0;
+	m_nPlayerCnt = 0;
+	m_usId = 0;
 }
 
 CTransmission::~CTransmission() { WSACleanup(); }
@@ -49,20 +52,33 @@ bool CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMess
 
 		switch(m_szBuf[sizeof(int)]) {
 		case eMOVE: {
-			// pos x
-			m_pos.x = atoi(&m_szBuf[sizeof(int) * 2]);
-			// pos y
-			m_pos.y = atoi(&m_szBuf[sizeof(int) * 3]);
+			stPlayerInfo stTempPlayerInfo;
+			memcpy(&stTempPlayerInfo, &m_szBuf[sizeof(int) * 2], sizeof(stPlayerInfo) - sizeof(CImage));
+			m_usId = stTempPlayerInfo.m_usId;
+			m_pos = stTempPlayerInfo.m_pos;
+
 			return true;
 		}
 		case eCLIENT_INFO: {
 			for (int i = 0; i < MAX_PLAYER; ++i) {
-				if (m_stPlayerInfo[i].m_usId == 0) {
-					memcpy(&m_stPlayerInfo[i], &m_szBuf[sizeof(int) * 2], sizeof(stPlayerInfo));
-					printf("%d", m_stPlayerInfo[i].m_pos.y);
-					break;
+				if (m_stPlayerInfo[i].m_usId != m_usId && m_stPlayerInfo[i].m_usId == 0) {
+					memcpy(&m_stPlayerInfo[i], &m_szBuf[sizeof(int) * 2], sizeof(stPlayerInfo) - sizeof(CImage));
+					m_stPlayerInfo[i].m_ciChess.Load("Pawn.png");
+					m_nPlayerCnt++;
+					return true;
 				}
 
+			}
+		}
+		case eANOTHER_MOVE: {
+			stSimplePlayerInfo stTempPlayerInfo;
+			memcpy(&stTempPlayerInfo, &m_szBuf[sizeof(int) * 2], sizeof(stSimplePlayerInfo));
+			for (int i = 0; i < MAX_PLAYER; ++i) {
+				if (m_stPlayerInfo[i].m_usId == stTempPlayerInfo.m_usId) {
+					m_stPlayerInfo[i].m_eLocation = stTempPlayerInfo.m_eLocation;
+					m_stPlayerInfo[i].m_pos = stTempPlayerInfo.m_pos;
+					return true;
+				}
 			}
 		}
 		}
@@ -140,15 +156,20 @@ void CTransmission::AssembleAndSendPacket(enumDataType& a_eDataType)
 	switch (a_eDataType) {
 	case eMOVE: {
 		int nCommand = eMOVE;
-		m_nDataLen = POS_LEN;
+
+		stSimplePlayerInfo stSimplePlayerInfo;
+		stSimplePlayerInfo.m_eLocation = m_eLocation;
+		stSimplePlayerInfo.m_usId = m_usId;
+		stSimplePlayerInfo.m_pos = m_pos;
+
+		m_nDataLen = sizeof(nCommand) + sizeof(stSimplePlayerInfo);
 		// len
 		memcpy(m_szBuf, &m_nDataLen, sizeof(m_nDataLen));
 		// command
-		memcpy(&m_szBuf[sizeof(m_nDataLen)], &nCommand, sizeof(int));
-		// pos x
-		itoa(m_pos.x, &m_szBuf[sizeof(m_nDataLen) + sizeof(nCommand)], 10);
-		// pos y
-		itoa(m_pos.y, &m_szBuf[sizeof(m_nDataLen) + sizeof(nCommand) + sizeof(int)], 10);
+		memcpy(&m_szBuf[sizeof(m_nDataLen)], &nCommand, sizeof(nCommand));
+		// player info
+		memcpy(&m_szBuf[sizeof(m_nDataLen)+ sizeof(nCommand)], (char*)&stSimplePlayerInfo, sizeof(stSimplePlayerInfo));
+		
 		m_nDataLen += sizeof(int);
 		Send(m_szBuf, m_nDataLen);
 		break;

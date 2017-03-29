@@ -19,7 +19,7 @@ enum { eUP = 0, eDOWN, eLEFT, eRIGHT };
 
 
 // Distiction of data type
-enum enumDataType { eMOVE = 1, eCLIENT_INFO};
+enum enumDataType { eMOVE = 1, eCLIENT_INFO, eANOTHER_MOVE };
 
 // Location
 enum enumLocation { eLOBBY, eGAME_ROOM, eLOGOUT };

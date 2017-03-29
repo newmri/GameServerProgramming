@@ -11,6 +11,7 @@ HWND g_hIpEdit;
 // Global Static Handler
 HWND g_hStatic;
 
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
 	HWND hWnd;
@@ -66,6 +67,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		// Load the Login image.
 		cChessmap.Load("ChessLogin.bmp");
 		cChessGameMap.Load("Chessmap.bmp");
+		//pPlayer->m_stPlayerInfo[0].m_ciChess.Load("Pawn.png");
 		// Display various edits.
 		g_hStatic = CreateWindow(TEXT("Static"), TEXT("SIP:"), WS_CHILD | WS_VISIBLE, FIRST_X - 80, FIRST_Y - 45, 30, 30, hWnd, (HMENU)-1, g_hInst, NULL);
 		g_hIpEdit = CreateWindow(TEXT("Edit"), NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, FIRST_X - 50, FIRST_Y - 50, 120, 30, hWnd, (HMENU)eID_IP_EDIT, g_hInst, NULL);
@@ -139,8 +141,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		else 
 			cChessmap.BitBlt(hMemDC, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
-	
-		
+
+	// Draw the other Players
+		if (pPlayer->GetPlayerNum() != 0) {
+			for (int i = 0; i < pPlayer->GetPlayerNum(); ++i) {
+				pPlayer->m_stPlayerInfo[i].m_ciChess.TransparentBlt(hMemDC, pPlayer->m_stPlayerInfo[i].m_pos.x, pPlayer->m_stPlayerInfo[i].m_pos.y,
+					pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(),
+					0, 0, pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
+				
+			}
+		}
+
 		BitBlt(hdc, 0, 0, g_Clntrt.right, g_Clntrt.bottom, hMemDC, 0, 0, SRCCOPY);
 
 		DeleteObject(hBitmap);

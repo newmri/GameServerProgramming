@@ -11,6 +11,7 @@ public:
 	void SetPlayerLocation(const enumLocation&);
 	void SetMove(unsigned short);
 	void SetPos();
+	const int& GetPlayerNum();
 
 // To contrcut only one CPlayer
 public:
@@ -24,6 +25,5 @@ private:
 	static CPlayer* m_pInstance;
 
 private:
-	enumLocation m_eLocation;
 	unsigned short m_usRidder;
 };

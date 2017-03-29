@@ -18,15 +18,13 @@ void CPlayer::DestroyInstance()
 
 CPlayer::CPlayer()
 {
-	// Location variables
-	m_eLocation = eLOBBY;
-
 	// Inputed key variable
 	m_usRidder = 0;
 
 	// Character Image
 	m_chess.Load("Pawn.png");
 }
+
 
 bool CPlayer::IsPlayerGameRoom()
 {
@@ -69,3 +67,5 @@ void CPlayer::SetPos()
 		break;
 	}
 }
+
+const int& CPlayer::GetPlayerNum(){ return m_nPlayerCnt; }
