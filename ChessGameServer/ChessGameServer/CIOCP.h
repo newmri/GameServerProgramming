@@ -23,11 +23,14 @@ public:
 	void SearchOldClientInfo(stClientInfo*);
 	// Assemble And Send Packet
 	void AssembleAndSendPacket(stClientInfo*, const enumDataType&);
+	// Check Collision
+	bool CheckCollision(const unsigned short&, const POINT&);
 	// Disassemble Packet
 	void DisassemblePacket(stClientInfo*);
 	// Create worker thread to wait in WaitingThread Queue
 	bool CreateWorkerThread();
 
+	bool CreateAccepterThread();
 	// release will not use objects
 	stClientInfo* GetEmptyClientInfo();
 
@@ -79,15 +82,11 @@ private:
 	bool m_bAccepterRun;
 	// Socket Buffer
 	char m_szSocketBuf[MAX_BUF_SIZE];
-	// FirstPos Buffer
-	char m_szFirstPosbuf[POS_LEN];
-
 	// Buffer Len
 	int m_nBufLen;
-	
-	// return variables
-	bool m_bRetval;
-	bool m_bErr;
-
+	// Pos to avoid collision
 	POINT m_pos;
+	// User Id
+	unsigned short m_usId;
+	CRITICAL_SECTION m_critical;
 };

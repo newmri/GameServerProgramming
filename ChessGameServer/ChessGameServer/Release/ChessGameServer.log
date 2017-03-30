@@ -1,15 +1,14 @@
-﻿CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSAGetLastError@0
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__setsockopt@20
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__htons@4
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__htonl@4
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSARecv@28
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSAStartup@8
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSASocketW@24
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__listen@8
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__shutdown@8
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__closesocket@4
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__bind@12
-CIOCP.obj : error LNK2001: unresolved external symbol "public: void __thiscall CIOCP::AccepterThread(void)" (?AccepterThread@CIOCP@@QAEXXZ)
-CIOCP.obj : error LNK2001: unresolved external symbol "public: void __thiscall CIOCP::WorkerThread(void)" (?WorkerThread@CIOCP@@QAEXXZ)
-CIOCP.obj : error LNK2001: unresolved external symbol __imp__WSACleanup@0
-S:\KPU\4-1\GameServer\Assignment\ChessGameServer\Release\ChessGameServer.exe : fatal error LNK1120: 14 unresolved externals
+﻿  CIOCP.cpp
+CIOCP.cpp(184): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
+CIOCP.cpp(440): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
+CIOCP.cpp(512): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
+CIOCP.cpp(519): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
+  main.cpp
+  Generating code
+  All 31 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  ChessGameServer.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGameServer\Release\ChessGameServer.exe
