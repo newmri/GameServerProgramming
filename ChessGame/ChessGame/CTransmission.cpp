@@ -61,7 +61,7 @@ bool CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMess
 		}
 		case eCLIENT_INFO: {
 			for (int i = 0; i < MAX_PLAYER; ++i) {
-				if (m_stPlayerInfo[i].m_usId != m_usId && m_stPlayerInfo[i].m_usId == 0) {
+				if (m_stPlayerInfo[i].m_usId != m_usId && (m_stPlayerInfo[i].m_usId == 0  || m_stPlayerInfo[i].m_eLocation == eLOGOUT ))  {
 					memcpy(&m_stPlayerInfo[i], &m_szBuf[sizeof(int) * 2], sizeof(stPlayerInfo) - sizeof(CImage));
 					m_stPlayerInfo[i].m_ciChess.Load("Pawn.png");
 					m_nPlayerCnt++;
@@ -73,13 +73,28 @@ bool CTransmission::ProcessSocketMessage(const HWND& a_hWnd, const UINT& a_iMess
 		case eANOTHER_MOVE: {
 			stSimplePlayerInfo stTempPlayerInfo;
 			memcpy(&stTempPlayerInfo, &m_szBuf[sizeof(int) * 2], sizeof(stSimplePlayerInfo));
+			printf(" id: %d \n", stTempPlayerInfo.m_usId);
 			for (int i = 0; i < MAX_PLAYER; ++i) {
 				if (m_stPlayerInfo[i].m_usId == stTempPlayerInfo.m_usId) {
+					printf("Got it \n");
 					m_stPlayerInfo[i].m_eLocation = stTempPlayerInfo.m_eLocation;
 					m_stPlayerInfo[i].m_pos = stTempPlayerInfo.m_pos;
 					return true;
 				}
 			}
+		}
+		case  eNOTIFY_LOGOUT: {
+			stSimplePlayerInfo stTempPlayerInfo;
+			memcpy(&stTempPlayerInfo, &m_szBuf[sizeof(int) * 2], sizeof(stSimplePlayerInfo));
+			for (int i = 0; i < MAX_PLAYER; ++i) {
+				if (m_stPlayerInfo[i].m_usId == stTempPlayerInfo.m_usId) {
+					m_stPlayerInfo[i].m_eLocation = eLOGOUT;
+					m_stPlayerInfo[i].m_ciChess.Destroy();
+					m_nPlayerCnt--;
+					return true;
+				}
+			}
+			
 		}
 		}
 	case FD_CLOSE:

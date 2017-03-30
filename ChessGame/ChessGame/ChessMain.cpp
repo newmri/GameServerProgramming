@@ -144,11 +144,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	// Draw the other Players
 		if (pPlayer->GetPlayerNum() != 0) {
-			for (int i = 0; i < pPlayer->GetPlayerNum(); ++i) {
-				pPlayer->m_stPlayerInfo[i].m_ciChess.TransparentBlt(hMemDC, pPlayer->m_stPlayerInfo[i].m_pos.x, pPlayer->m_stPlayerInfo[i].m_pos.y,
+			for (int i = 0; i < MAX_PLAYER; ++i) {
+				// If player is not logouted
+				if(pPlayer->m_stPlayerInfo[i].m_eLocation == eGAME_ROOM)
+					pPlayer->m_stPlayerInfo[i].m_ciChess.TransparentBlt(hMemDC, pPlayer->m_stPlayerInfo[i].m_pos.x, pPlayer->m_stPlayerInfo[i].m_pos.y,
 					pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(),
 					0, 0, pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
-				
 			}
 		}
 
