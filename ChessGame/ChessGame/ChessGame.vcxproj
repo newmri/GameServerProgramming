@@ -145,9 +145,11 @@
     <ClCompile Include="ChessMain.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CTransmission.cpp" />
+    <ClCompile Include="STMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChessMain.h" />
+    <ClInclude Include="STMap.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CTransmission.h" />

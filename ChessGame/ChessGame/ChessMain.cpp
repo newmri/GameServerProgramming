@@ -47,15 +47,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
-	HDC hdc, hMemDC;
+	HDC hdc;
 	PAINTSTRUCT ps;
-	static HBITMAP hBitmap;
 	static POINT mapos, chesspos;
-	static CImage cChessmap, cChessGameMap, cChessImg;
+	static CImage cChessmap, cChessImg;
 	CPlayer* pPlayer = CPlayer::Instance();
 	static bool bInit = false;
-
-
+	static STMap stMap;
+	USHORT wLeft{}, wTop{}, wRight{}, wBottom{};
 	switch (uMsg) {
 	case WM_SOCKET: {
 		if(pPlayer->ProcessSocketMessage(hWnd, uMsg, wParam, lParam))
@@ -66,12 +65,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		hWndMain = hWnd;
 		// Load the Login image.
 		cChessmap.Load("ChessLogin.bmp");
-		cChessGameMap.Load("Chessmap.bmp");
-		//pPlayer->m_stPlayerInfo[0].m_ciChess.Load("Pawn.png");
 		// Display various edits.
 		g_hStatic = CreateWindow(TEXT("Static"), TEXT("SIP:"), WS_CHILD | WS_VISIBLE, FIRST_X - 80, FIRST_Y - 45, 30, 30, hWnd, (HMENU)-1, g_hInst, NULL);
 		g_hIpEdit = CreateWindow(TEXT("Edit"), NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, FIRST_X - 50, FIRST_Y - 50, 120, 30, hWnd, (HMENU)eID_IP_EDIT, g_hInst, NULL);
 		g_hConnectBtn = CreateWindow((LPCSTR)"Button", (LPCSTR)"Connect", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, FIRST_X - 50, FIRST_Y, 120, 30, hWnd, (HMENU)eIDC_CONNECT, g_hInst, NULL);
+		GetWindowRect(hWndMain, &g_Clntrt);
 		break;
 	}
 	case WM_COMMAND: {
@@ -122,41 +120,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		hdc = BeginPaint(hWnd, &ps);
 		GetClientRect(hWndMain, &g_Clntrt); 
 
-		hMemDC = CreateCompatibleDC(hdc);
-		hBitmap = CreateCompatibleBitmap(hdc, g_Clntrt.right, g_Clntrt.bottom);
-
-		SelectObject(hMemDC, hBitmap);
-
-		cChessmap.BitBlt(hMemDC, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
-
 		// Draw the player's the image of character and cChessGameMap
 		// If player is in one of the game-rooms.
 		if (pPlayer->IsPlayerGameRoom()) {
-			cChessGameMap.BitBlt(hMemDC, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
-			
-			chesspos = pPlayer->GetPos();
-	
-			pPlayer->m_chess.TransparentBlt(hMemDC, chesspos.x, chesspos.y, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(),
-				0, 0, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(), RGB(0, 0, 0));	
-		}
-		else 
-			cChessmap.BitBlt(hMemDC, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
+			if (cChessmap.IsNull()) cChessmap.Destroy();
 
+			stMap.DrawMap(hdc);
+			chesspos = pPlayer->GetPos();
+			pPlayer->m_chess.TransparentBlt(hdc, chesspos.x, chesspos.y, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(),
+				0, 0, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(), RGB(0, 0, 0));	
+			
+		}
+		else
+			cChessmap.BitBlt(hdc, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
+		
 	// Draw the other Players
 		if (pPlayer->GetPlayerNum() != 0) {
+
 			for (int i = 0; i < MAX_PLAYER; ++i) {
-				// If player is not logouted
+				 //If player is not logouted
 				if(pPlayer->m_stPlayerInfo[i].m_eLocation == eGAME_ROOM)
-					pPlayer->m_stPlayerInfo[i].m_ciChess.TransparentBlt(hMemDC, pPlayer->m_stPlayerInfo[i].m_pos.x, pPlayer->m_stPlayerInfo[i].m_pos.y,
+					pPlayer->m_stPlayerInfo[i].m_ciChess.TransparentBlt(hdc, pPlayer->m_stPlayerInfo[i].m_pos.x, pPlayer->m_stPlayerInfo[i].m_pos.y,
 					pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(),
 					0, 0, pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
+			
 			}
 		}
 
-		BitBlt(hdc, 0, 0, g_Clntrt.right, g_Clntrt.bottom, hMemDC, 0, 0, SRCCOPY);
 
-		DeleteObject(hBitmap);
-		DeleteDC(hMemDC);
+		DeleteDC(hdc);
 		EndPaint(hWnd, &ps);
 		break;
 	}

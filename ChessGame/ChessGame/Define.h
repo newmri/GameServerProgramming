@@ -12,6 +12,9 @@
 
 #define MAX_PLAYER 10
 
+#define MAX_MAP_X 100
+#define MAX_MAP_Y 100
+
 // POS_LEN
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2)
 

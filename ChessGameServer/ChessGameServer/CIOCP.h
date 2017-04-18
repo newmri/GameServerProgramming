@@ -88,5 +88,4 @@ private:
 	POINT m_pos;
 	// User Id
 	unsigned short m_usId;
-	CRITICAL_SECTION m_critical;
 };

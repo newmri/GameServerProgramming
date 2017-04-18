@@ -53,7 +53,6 @@ CIOCP::CIOCP()
 	m_pos.x = CHESS_FIRST_X;
 	m_pos.y = CHESS_FIRST_Y;
 	m_usId = 0;
-	InitializeCriticalSection(&m_critical);
 }
 
 CIOCP::~CIOCP(void)
@@ -65,8 +64,6 @@ CIOCP::~CIOCP(void)
 		delete[] m_stpClientInfo;
 		m_stpClientInfo = NULL;
 	}
-
-	DeleteCriticalSection(&m_critical);
 }
 
 bool CIOCP::InitSocket()
@@ -198,8 +195,8 @@ void CIOCP::StartServer()
 void CIOCP::SetNewClientInfo(stClientInfo* a_stpClientInfo)
 {
 	a_stpClientInfo->m_usId = ++m_usId;
-	a_stpClientInfo->m_pos.x = m_pos.x;
-	a_stpClientInfo->m_pos.y = m_pos.y;
+	a_stpClientInfo->m_pos.x = CHESS_FIRST_X;
+	a_stpClientInfo->m_pos.y = CHESS_FIRST_Y;
 }
 
 void CIOCP::SetFirstChessPos()
@@ -442,7 +439,7 @@ void CIOCP::AccepterThread()
 		// To new client
 		AssembleAndSendPacket(pClientInfo, eDataType);
 
-		SetFirstChessPos();
+		//SetFirstChessPos();
 
 		SearchOldClientInfo(pClientInfo);
 
