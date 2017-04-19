@@ -26,7 +26,7 @@ bool CTransmission::Init(const HWND& a_hWnd)
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 		printf("[Error] Location : CTransmission::Init, Reason : WSAStartup() has been failed: %d \n", WSAGetLastError());
 		return false;
-	}
+	}	
 
 
 	// bind()

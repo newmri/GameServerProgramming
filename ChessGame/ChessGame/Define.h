@@ -5,12 +5,15 @@
 
 #define FIRST_X 357
 #define FIRST_Y 360
+
 #define MAX_IP_LEN 16
 #define MAX_BUF_SIZE 1024
 
-#define MOVE_PIXEL 85
+#define MOVE_PIXEL 70
 
 #define MAX_PLAYER 10
+
+#define MAX_VIEW 11
 
 #define MAX_MAP_X 100
 #define MAX_MAP_Y 100

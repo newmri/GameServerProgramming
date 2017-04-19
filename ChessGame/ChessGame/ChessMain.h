@@ -9,8 +9,8 @@ HINSTANCE g_hInst;
 LPCTSTR lpszClass = TEXT("ChessGame");
 HWND hWndMain;
 
-#define MAX_WIN_SIZE_X 735
-#define MAX_WIN_SIZE_Y 750
+#define MAX_WIN_SIZE_X 785
+#define MAX_WIN_SIZE_Y 805
 
 
 int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int);
