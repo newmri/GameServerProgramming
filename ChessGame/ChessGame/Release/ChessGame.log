@@ -1,17 +1,24 @@
-﻿  CPlayer.cpp
+﻿  ChessMain.cpp
+  CPlayer.cpp
   CTransmission.cpp
-CTransmission.cpp(34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+CTransmission.cpp(33): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1828): note: see declaration of 'inet_addr'
-CTransmission.cpp(108): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+CTransmission.cpp(79): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(2677): note: see declaration of 'WSAAsyncSelect'
-CTransmission.cpp(123): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+CTransmission.cpp(94): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(2677): note: see declaration of 'WSAAsyncSelect'
-  ChessMain.cpp
+  STMap.cpp
+STMap.cpp(14): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+STMap.cpp(15): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+STMap.cpp(27): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+STMap.cpp(43): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+STMap.cpp(44): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+STMap.cpp(56): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
   Generating code
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(112): warning C4715: 'CTransmission::ProcessSocketMessage': not all control paths return a value
-  18 of 233 functions ( 7.7%) were compiled, the rest were copied from previous compilation.
-    1 functions were new in current compilation
-    5 functions had inline decision re-evaluated but remain unchanged
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(83): warning C4715: 'CTransmission::ProcessPacket': not all control paths return a value
+  116 of 259 functions (44.8%) were compiled, the rest were copied from previous compilation.
+    37 functions were new in current compilation
+    11 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGame\Release\ChessGame.exe
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGame\Release\ChessGame.pdb (Full PDB)

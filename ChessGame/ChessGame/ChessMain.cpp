@@ -30,7 +30,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 	WndClass.lpszMenuName = NULL;
 	WndClass.style = CS_HREDRAW | CS_VREDRAW;
 	RegisterClass(&WndClass);
-	int a = GetSystemMetrics(SM_CYSCREEN);
 	hWnd = CreateWindow(lpszClass, lpszClass, WS_OVERLAPPEDWINDOW, 0, 0, MAX_WIN_SIZE_X, MAX_WIN_SIZE_Y,
 		NULL, (HMENU)NULL, hInstance, NULL);
 	ShowWindow(hWnd, nCmdShow);
@@ -54,11 +53,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	CPlayer* pPlayer = CPlayer::Instance();
 	static bool bInit = false;
 	static STMap stMap;
-	USHORT wLeft{}, wTop{}, wRight{}, wBottom{};
+	CString cStr;
 	switch (uMsg) {
 	case WM_SOCKET: {
-		if(pPlayer->ProcessSocketMessage(hWnd, uMsg, wParam, lParam))
-			InvalidateRect(hWnd, &g_Clntrt, NULL);
+		if (pPlayer->ProcessPacket(hWnd, uMsg, wParam, lParam)) 
+			InvalidateRect(hWnd, &g_Clntrt, TRUE);
+		
 		break;
 	}
 	case WM_CREATE: {
@@ -72,13 +72,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		GetWindowRect(hWndMain, &g_Clntrt);
 		break;
 	}
+
 	case WM_COMMAND: {
 		switch (wParam) {
 		case eIDC_CONNECT: {
 			pPlayer->SetServerIP(g_hIpEdit);
 			pPlayer->Init(hWnd);
 			if (pPlayer->Connect(hWnd)) {
-				pPlayer->SetPlayerLocation(eGAME_ROOM);
 				ShowWindow(g_hIpEdit, SW_HIDE);
 				ShowWindow(g_hConnectBtn, SW_HIDE);
 				ShowWindow(g_hStatic, SW_HIDE);
@@ -96,19 +96,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_UP:
-			pPlayer->SetMove(eUP);
+			pPlayer->SetMove(eCS_UP);
 			pPlayer->SetPos();
 			break;
 		case VK_DOWN:
-			pPlayer->SetMove(eDOWN);
+			pPlayer->SetMove(eCS_DOWN);
 			pPlayer->SetPos();
 			break;
 		case VK_LEFT:
-			pPlayer->SetMove(eLEFT);
+			pPlayer->SetMove(eCS_LEFT);
 			pPlayer->SetPos();
 			break;
 		case VK_RIGHT:
-			pPlayer->SetMove(eRIGHT);
+			pPlayer->SetMove(eCS_RIGHT);
 			pPlayer->SetPos();
 			break;
 		default:
@@ -122,30 +122,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		// Draw the player's the image of character and cChessGameMap
 		// If player is in one of the game-rooms.
-		if (pPlayer->IsPlayerGameRoom()) {
-			if (cChessmap.IsNull()) cChessmap.Destroy();
-
-			stMap.DrawMap(hdc);
-			chesspos = pPlayer->GetPos();
-			pPlayer->m_chess.TransparentBlt(hdc, chesspos.x, chesspos.y, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(),
-				0, 0, pPlayer->m_chess.GetWidth(), pPlayer->m_chess.GetHeight(), RGB(0, 0, 0));	
-			
-		}
-		else
-			cChessmap.BitBlt(hdc, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
-		
-	// Draw the other Players
 		if (pPlayer->GetPlayerNum() != 0) {
+			if (!cChessmap.IsNull()) cChessmap.Destroy(); 
+
+			POINT pos = pPlayer->GetPos();
+			static bool bSwapMap = false;
+
+			if (pos.x >= MAX_MAP_TILE) if (pos.x % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap;}
+			
+			if(pos.y >= MAX_MAP_TILE) if (pos.y % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
+
+			stMap.DrawMap(hdc, bSwapMap);
 
 			for (int i = 0; i < MAX_PLAYER; ++i) {
-				 //If player is not logouted
-				if(pPlayer->m_stPlayerInfo[i].m_eLocation == eGAME_ROOM)
-					pPlayer->m_stPlayerInfo[i].m_ciChess.TransparentBlt(hdc, pPlayer->m_stPlayerInfo[i].m_pos.x, pPlayer->m_stPlayerInfo[i].m_pos.y,
-					pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(),
-					0, 0, pPlayer->m_stPlayerInfo[i].m_ciChess.GetWidth(), pPlayer->m_stPlayerInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
-			
+				//If player is not logouted
+				if (pPlayer->m_stClientInfo[i].m_IsConnected) {
+
+					memcpy(&pPlayer->m_stClientInfo[i].m_DrawPos, &pPlayer->m_stClientInfo[i].m_pos, sizeof(POINT));
+
+					if (pPlayer->m_stClientInfo[i].m_DrawPos.x >= MAX_MAP_TILE) 
+						pPlayer->m_stClientInfo[i].m_DrawPos.x = pPlayer->m_stClientInfo[i].m_DrawPos.x % MAX_MAP_TILE;
+					
+					if (pPlayer->m_stClientInfo[i].m_DrawPos.y >= MAX_MAP_TILE) 
+						pPlayer->m_stClientInfo[i].m_DrawPos.y = pPlayer->m_stClientInfo[i].m_DrawPos.y % MAX_MAP_TILE;
+					
+
+					pPlayer->m_stClientInfo[i].m_ciChess.TransparentBlt(hdc, (pPlayer->m_stClientInfo[i].m_DrawPos.x * MOVE_PIXEL) + 10, pPlayer->m_stClientInfo[i].m_DrawPos.y * MOVE_PIXEL,
+						pPlayer->m_stClientInfo[i].m_ciChess.GetWidth(), pPlayer->m_stClientInfo[i].m_ciChess.GetHeight(),
+						0, 0, pPlayer->m_stClientInfo[i].m_ciChess.GetWidth(), pPlayer->m_stClientInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
+
+					cStr.Format("(%d, %d)", pPlayer->m_stClientInfo[i].m_pos.y, pPlayer->m_stClientInfo[i].m_pos.x);
+					TextOut(hdc, (pPlayer->m_stClientInfo[i].m_DrawPos.x * MOVE_PIXEL) + 15, (pPlayer->m_stClientInfo[i].m_DrawPos.y * MOVE_PIXEL) + 50, cStr, cStr.GetLength());
+				}
 			}
+
 		}
+
+		else cChessmap.BitBlt(hdc, 0, mapos.y, cChessmap.GetWidth(), cChessmap.GetHeight() + mapos.y, 0, 0, SRCCOPY);
 
 
 		DeleteDC(hdc);

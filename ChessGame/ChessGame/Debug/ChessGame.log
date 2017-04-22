@@ -1,17 +1,3 @@
-﻿  STMap.cpp
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(13): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(14): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(26): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-  ChessMain.cpp
-  CTransmission.cpp
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1828): note: see declaration of 'inet_addr'
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(108): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(2677): note: see declaration of 'WSAAsyncSelect'
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(123): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(2677): note: see declaration of 'WSAAsyncSelect'
-  CPlayer.cpp
-  Generating Code...
-s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(112): warning C4715: 'CTransmission::ProcessSocketMessage': not all control paths return a value
+﻿  ChessMain.cpp
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGame\Debug\ChessGame.exe
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGame\Debug\ChessGame.pdb (Partial PDB)

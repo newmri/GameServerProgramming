@@ -7,12 +7,10 @@ class CPlayer : public CTransmission
 {
 public:
 	CImage m_chess;
-	bool IsPlayerGameRoom();
-	void SetPlayerLocation(const enumLocation&);
 	void SetMove(unsigned short);
 	void SetPos();
 	const int& GetPlayerNum();
-
+	const bool& IsMoved();
 // To contrcut only one CPlayer
 public:
 	static CPlayer* Instance();

@@ -21,46 +21,35 @@ CPlayer::CPlayer()
 	// Inputed key variable
 	m_usRidder = 0;
 
-	// Character Image
-	m_chess.Load("Pawn.png");
 }
 
 
-bool CPlayer::IsPlayerGameRoom()
-{
-	if (m_eLocation == eGAME_ROOM) return true;
-	else return false;
-}
 
-void CPlayer::SetPlayerLocation(const enumLocation& location){ m_eLocation = location; }
+
 
 void CPlayer::SetMove(unsigned short ridder) { m_usRidder = ridder; }
 
 void CPlayer::SetPos()
 {
 	switch (m_usRidder) {
-	case eUP: {
-		m_pos.y -= MOVE_PIXEL;
-		enumDataType eDataType = eMOVE;
-		AssembleAndSendPacket(eDataType);
+	case eCS_UP: {
+		m_nPacketType = eCS_UP;
+		SendPacket();
 		break;
 	}
-	case eDOWN: {
-		m_pos.y += MOVE_PIXEL;
-		enumDataType eDataType = eMOVE;
-		AssembleAndSendPacket(eDataType);
+	case eCS_DOWN: {
+		m_nPacketType = eCS_DOWN;
+		SendPacket();
 		break;
 	}
-	case eLEFT: {
-		m_pos.x -= MOVE_PIXEL;
-		enumDataType eDataType = eMOVE;
-		AssembleAndSendPacket(eDataType);
+	case eCS_LEFT: {
+		m_nPacketType = eCS_LEFT;
+		SendPacket();
 		break;
 	}
-	case eRIGHT: {
-		m_pos.x += MOVE_PIXEL;
-		enumDataType eDataType = eMOVE;
-		AssembleAndSendPacket(eDataType);
+	case eCS_RIGHT: {
+		m_nPacketType = eCS_RIGHT;
+		SendPacket();
 		break;
 	}
 	default:
@@ -68,4 +57,6 @@ void CPlayer::SetPos()
 	}
 }
 
-const int& CPlayer::GetPlayerNum(){ return m_nPlayerCnt; }
+const int& CPlayer::GetPlayerNum(){ return m_nClientCnt; }
+
+const bool& CPlayer::IsMoved() { return m_IsMoved; }

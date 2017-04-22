@@ -15,5 +15,5 @@ struct STMap
 	CImage m_BlackBlock;
 	STPoint m_Point;
 	STMap();
-	void DrawMap(const HDC&);
+	void DrawMap(const HDC&, const bool&);
 };

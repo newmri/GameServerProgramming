@@ -153,7 +153,7 @@
     <ClInclude Include="Define.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CTransmission.h" />
-    <ClInclude Include="stPlayerInfo.h" />
+    <ClInclude Include="stClientInfo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

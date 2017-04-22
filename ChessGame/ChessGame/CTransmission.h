@@ -2,13 +2,14 @@
 
 #include <WinSock2.h>
 
-#include "stPlayerInfo.h"
+#include "stClientInfo.h"
 
 #pragma comment(lib,"ws2_32")
 #pragma comment(lib, "user32.lib")
 
 #define SERVER_PORT 9000
 #define WM_SOCKET WM_USER+1
+
 
 class CTransmission
 {
@@ -17,24 +18,37 @@ public:
 	~CTransmission();
 	void SetServerIP(const HWND&);
 	bool Init(const HWND&);
-	bool ProcessSocketMessage(const HWND&, const UINT&, const WPARAM&, const LPARAM&);
+	bool ProcessPacket(const HWND&, const UINT&, const WPARAM&, const LPARAM&);
+	void ProcessPacket(char*);
 	bool Connect(const HWND&);
-	bool Recv(char*, int, int);
-	int Recvn(char*, int, int);
-	void AssembleAndSendPacket(enumDataType&);
+	void ReadPacket();
+	void SendPacket();
 	bool Send(char*, int);
-	POINT GetPos();
+	const POINT& GetPos();
 	void Close(bool);
 public:
-	stPlayerInfo m_stPlayerInfo[MAX_PLAYER];
+	stClientInfo m_stClientInfo[MAX_PLAYER];
+
+private:
+	bool m_First;
+
 protected:
+	int m_nPacketType;
+	int m_nClientCnt;
+	POINT m_pos;
+	WORD m_wId;
+	bool m_IsMoved;
+private:
 	TCHAR m_tchServerIp[MAX_IP_LEN];
 	SOCKET m_sock;
 	SOCKADDR_IN m_saServerAddr;
-	char m_szBuf[MAX_BUF_SIZE];
-	int m_nDataLen;
-	enumLocation m_eLocation;
-	POINT m_pos;
-	int m_nPlayerCnt;
-	unsigned short m_usId;
+
+	WSABUF m_send_wsabuf;
+	char m_send_buffer[MAX_BUF_SIZE];
+	WSABUF m_recv_wsabuf;
+	char m_recv_buffer[MAX_BUF_SIZE];
+	char m_packet_buffer[MAX_BUF_SIZE];
+	DWORD m_in_packet_size = 0;
+	int	m_saved_packet_size = 0;
+
 };

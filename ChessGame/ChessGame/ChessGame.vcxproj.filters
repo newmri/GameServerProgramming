@@ -41,10 +41,10 @@
     <ClInclude Include="CTransmission.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stPlayerInfo.h">
+    <ClInclude Include="STMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="STMap.h">
+    <ClInclude Include="stClientInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
