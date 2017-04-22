@@ -5,42 +5,30 @@
 struct stClientInfo {
 	SOCKADDR_IN m_saClientAddr; // Store client's information of address
 	SOCKET m_SocketClient; // Client Socket
-	enumLocation m_eLocation; // Client Location
-	enumLocation m_eAnotherLocation;
+
 	stOverlappedEx m_stRecvOverlappedEx; // The variable to recv Overlapped I/O Working
-	stOverlappedEx m_stSendOverlappedEx; // The variable to send Overlapped I/O Working
+
+	unsigned char m_szPacketBuf[MAX_PACKET_SIZE];
+	WORD wPrevPacketData, wCurrPacketSize;
+
+	bool m_bIsConnected;
 	POINT m_pos;
-	POINT m_AnotherPos;
-	unsigned short m_usId;
-	unsigned short m_usAnotherId;
+	unordered_set<WORD> m_view_list;
+	mutex m_lock;
 	// Initialize member's variables
 	stClientInfo()
 	{
 		ZeroMemory(&m_stRecvOverlappedEx, sizeof(stOverlappedEx));
-		ZeroMemory(&m_stSendOverlappedEx, sizeof(stOverlappedEx));
 		ZeroMemory(&m_saClientAddr, sizeof(SOCKADDR_IN));
+		ZeroMemory(m_szPacketBuf, sizeof(m_szPacketBuf));
+
 		m_SocketClient = INVALID_SOCKET;
-		m_eLocation = eLOBBY;
-		m_eAnotherLocation = eLOBBY;
+		m_bIsConnected = false;
 		m_pos.x = CHESS_FIRST_X, m_pos.y = CHESS_FIRST_Y;
-		m_usId = 0, m_usAnotherId = 0;
-		m_AnotherPos.x = 0, m_AnotherPos.y = 0;
+
+		wPrevPacketData = 0;
+		wCurrPacketSize = 0;
+
 	}
 };
 
-#pragma pack(push, 1)
-struct stSimpleClientInfo
-{
-	enumLocation m_eLocation;
-	unsigned short m_usId;
-	POINT m_pos;
-
-	stSimpleClientInfo()
-	{
-		m_eLocation = eGAME_ROOM;
-		m_usId = 0;
-		m_pos.x = 0, m_pos.y = 0;
-	}
-
-};
-#pragma pack(pop)

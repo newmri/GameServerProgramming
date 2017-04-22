@@ -9,43 +9,39 @@ public:
 
 	// -- Common Functions Server and Client  -- //
 	bool InitSocket();
-	void CloseSocket(stClientInfo*, bool bIsForce = false);
+	void CloseSocket(WORD, bool bIsForce = false);
 
 	// -- Functions for Server -- //
 	bool BindandListen(int);
 	void StartServer();
 
 	// Set new client info
-	void SetNewClientInfo(stClientInfo*);
-	// Set first chess pos
-	void SetFirstChessPos();
-	// Search old client info
-	void SearchOldClientInfo(stClientInfo*);
-	// Assemble And Send Packet
-	void AssembleAndSendPacket(stClientInfo*, const enumDataType&);
-	// Check Collision
-	bool CheckCollision(const unsigned short&, const POINT&);
-	// Disassemble Packet
-	void DisassemblePacket(stClientInfo*);
-	// Create worker thread to wait in WaitingThread Queue
+	void SetNewClientInfo(const WORD&);
+
+	bool IsClose(const WORD&, const WORD&);
+
 	bool CreateWorkerThread();
 
 	bool CreateAccepterThread();
-	// release will not use objects
-	stClientInfo* GetEmptyClientInfo();
 
 	// Connect object of completionPort and socket and completionKey
-	bool BindIOCompletionPort(stClientInfo*);
-
-	// Make doing WSARecv Overlapped I/O 
-	bool BindRecv(stClientInfo*);
-
-	// Make doing WSASend Overlapped I/O 
-	bool SendMsg(stClientInfo*, char*, int);
+	bool BindAndRecvIOCompletionPort(WORD);
 
 	// Recv and  process I/O work has been completed 
 	void WorkerThread();
 
+	// Handle Error
+	void DisPlayError(char*, int);
+
+	void ProcessPacket(WORD, unsigned char[]);
+
+	void SendPacket(WORD, void*);
+
+	void SendPutClient(WORD, WORD);
+
+	void SendMoveClient(WORD, WORD);
+
+	void SendRemoveClient(WORD, WORD);
 	// Accepter Thread
 	void AccepterThread();
 
@@ -87,5 +83,5 @@ private:
 	// Pos to avoid collision
 	POINT m_pos;
 	// User Id
-	unsigned short m_usId;
+	unsigned short m_wId;
 };

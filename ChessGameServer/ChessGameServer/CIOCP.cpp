@@ -52,7 +52,7 @@ CIOCP::CIOCP()
 	m_stpClientInfo = new stClientInfo[MAX_CLIENT_NUM];
 	m_pos.x = CHESS_FIRST_X;
 	m_pos.y = CHESS_FIRST_Y;
-	m_usId = 0;
+	m_wId = 0;
 }
 
 CIOCP::~CIOCP(void)
@@ -88,8 +88,13 @@ bool CIOCP::InitSocket()
 }
 
 
-void CIOCP::CloseSocket(stClientInfo* a_a_a_pClientInfo, bool a_bIsForce)
+void CIOCP::CloseSocket(WORD a_wId, bool a_bIsForce)
 {
+	m_stpClientInfo[a_wId].m_bIsConnected = false;
+	m_nClientCnt--;
+
+	for (int i = 0; i < MAX_CLIENT_NUM; ++i) if (m_stpClientInfo[i].m_bIsConnected) SendRemoveClient(i, a_wId);
+	
 	struct linger stLinger = { 0,0 }; // SO_DONTLINGER
 
 	// Is closed by force?									  
@@ -97,36 +102,17 @@ void CIOCP::CloseSocket(stClientInfo* a_a_a_pClientInfo, bool a_bIsForce)
 		stLinger.l_onoff = 1;
 
 	// Stop send and recv 
-	shutdown(a_a_a_pClientInfo->m_SocketClient, SD_BOTH);
+	shutdown(m_stpClientInfo[a_wId].m_SocketClient, SD_BOTH);
 	// Set the option
-	setsockopt(a_a_a_pClientInfo->m_SocketClient, SOL_SOCKET, SO_LINGER, (char*)&stLinger, sizeof(stLinger));
+	setsockopt(m_stpClientInfo[a_wId].m_SocketClient, SOL_SOCKET, SO_LINGER, (char*)&stLinger, sizeof(stLinger));
 	// Close Connection
-	closesocket(a_a_a_pClientInfo->m_SocketClient);
-	a_a_a_pClientInfo->m_SocketClient = INVALID_SOCKET;
+	closesocket(m_stpClientInfo[a_wId].m_SocketClient);
+
+	m_stpClientInfo[a_wId].m_SocketClient = INVALID_SOCKET;
+
+	printf("SOCKET(%d) is disconnected \n", m_stpClientInfo[a_wId].m_SocketClient);
 }
 
-bool CIOCP::BindandListen(int a_nBindPort)
-{
-	SOCKADDR_IN stServerAddr;
-	stServerAddr.sin_family = AF_INET;
-	stServerAddr.sin_port = htons(a_nBindPort);
-	stServerAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-	// bind
-	int nRet = ::bind(m_ListenSocket, (SOCKADDR*)&stServerAddr, sizeof(SOCKADDR_IN));
-	if (0 != nRet) {
-		printf("[Error] Location : CIOCP::BindandListen, Reason : bind() has been failed: %d \n", WSAGetLastError());
-		return false;
-	}
-
-	nRet = listen(m_ListenSocket, 5);
-	if (0 != nRet) {
-		printf("[Error] Location : CIOCP::BindandListen, Reason : listen() has been failed: %d \n", WSAGetLastError());
-		return false;
-	}
-	printf("Enrollment Success! \n");
-	return true;
-}
 
 bool CIOCP::CreateWorkerThread()
 {
@@ -162,15 +148,19 @@ bool CIOCP::CreateAccepterThread()
 }
 
 
-bool CIOCP::BindIOCompletionPort(stClientInfo* a_pClientInfo)
+bool CIOCP::BindAndRecvIOCompletionPort(WORD a_wNewId)
 {
 	HANDLE hIOCP;
+	DWORD DwRecvFlag = 0;
 	// Connect socket and pClientInfo into COmpletionPort object
-	hIOCP = CreateIoCompletionPort((HANDLE)a_pClientInfo->m_SocketClient, m_hIOCP, reinterpret_cast<DWORD>(a_pClientInfo), 0);
+	hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_stpClientInfo[a_wNewId].m_SocketClient), m_hIOCP, a_wNewId, 0);
 	if (hIOCP == NULL || m_hIOCP != hIOCP) {
 		printf("[Error] Location : CIOCP::BindIOCompletionPort, Reason : CreateIoCompletionPort() has been failed: %d \n", WSAGetLastError());
 		return false;
 	}
+	WSARecv(m_stpClientInfo[a_wNewId].m_SocketClient, &m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_wsaBuf, 1,
+		NULL, &DwRecvFlag, &(m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_wsaOverlapped), NULL);
+
 	return true;
 }
 
@@ -192,281 +182,228 @@ void CIOCP::StartServer()
 	while (m_bAccepterRun);
 }
 
-void CIOCP::SetNewClientInfo(stClientInfo* a_stpClientInfo)
+bool CIOCP::BindandListen(int a_nBindPort)
 {
-	a_stpClientInfo->m_usId = ++m_usId;
-	a_stpClientInfo->m_pos.x = CHESS_FIRST_X;
-	a_stpClientInfo->m_pos.y = CHESS_FIRST_Y;
-}
+	SOCKADDR_IN stServerAddr;
+	stServerAddr.sin_family = AF_INET;
+	stServerAddr.sin_port = htons(a_nBindPort);
+	stServerAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-void CIOCP::SetFirstChessPos()
-{
-	if (m_pos.x != eRIGHT_END - MOVE_PIXEL) m_pos.x += MOVE_PIXEL;
-	else {
-		m_pos.x = CHESS_FIRST_X;
-		m_pos.y += MOVE_PIXEL;
-	}
-}
-
-void CIOCP::SearchOldClientInfo(stClientInfo* a_stpNewClientInfo)
-{
-	for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
-		enumDataType eDataType = eCLIENT_INFO;
-		if (m_stpClientInfo[i].m_eLocation == eGAME_ROOM && m_stpClientInfo[i].m_usId != a_stpNewClientInfo->m_usId) {
-			m_stpClientInfo[i].m_eAnotherLocation = a_stpNewClientInfo->m_eLocation;
-			m_stpClientInfo[i].m_usAnotherId = a_stpNewClientInfo->m_usId;
-			m_stpClientInfo[i].m_AnotherPos = a_stpNewClientInfo->m_pos;
-			// To Old client
-			AssembleAndSendPacket(&m_stpClientInfo[i], eDataType);
-			// To new client
-			a_stpNewClientInfo->m_eAnotherLocation = m_stpClientInfo[i].m_eLocation;
-			a_stpNewClientInfo->m_usAnotherId = m_stpClientInfo[i].m_usId;
-			a_stpNewClientInfo->m_AnotherPos = m_stpClientInfo[i].m_pos;
-			AssembleAndSendPacket(a_stpNewClientInfo, eDataType);
-		}
-	}
-}
-
-void CIOCP::AssembleAndSendPacket(stClientInfo* a_stpClientInfo, const enumDataType& a_eDataType)
-{
-	switch (a_eDataType) {
-	case eMOVE: {
-		int nCommand = eMOVE;
-		stSimpleClientInfo stSimpleClientInfo;
-		stSimpleClientInfo.m_eLocation = a_stpClientInfo->m_eLocation;
-		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usId;
-		stSimpleClientInfo.m_pos = a_stpClientInfo->m_pos;
-
-		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
-		// len
-		memcpy(a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
-		// command
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(int));
-		// client info
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
-		
-		m_nBufLen += sizeof(int);
-		SendMsg(a_stpClientInfo, a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, m_nBufLen);
-		break;
-	}
-	case eCLIENT_INFO: {
-		int nCommand = eCLIENT_INFO;
-
-		stSimpleClientInfo stSimpleClientInfo;
-		stSimpleClientInfo.m_eLocation = a_stpClientInfo->m_eAnotherLocation;
-		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usAnotherId;
-		stSimpleClientInfo.m_pos = a_stpClientInfo->m_AnotherPos;
-
-		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
-		// len
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
-		// command
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(nCommand));
-		// client info
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
-
-		m_nBufLen += sizeof(int);
-		SendMsg(a_stpClientInfo, a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, m_nBufLen);
-		break;
-	}
-	case eANOTHER_MOVE: {
-		int nCommand = eANOTHER_MOVE;
-		stSimpleClientInfo stSimpleClientInfo;
-		stSimpleClientInfo.m_eLocation = a_stpClientInfo->m_eAnotherLocation;
-		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usAnotherId;
-		stSimpleClientInfo.m_pos = a_stpClientInfo->m_AnotherPos;
-
-		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
-		// len
-		memcpy(a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
-		// command
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(int));
-		// client info
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
-
-		m_nBufLen += sizeof(int);
-		SendMsg(a_stpClientInfo, a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, m_nBufLen);
-		break;
-	}
-	case eNOTIFY_LOGOUT: {
-		int nCommand = eNOTIFY_LOGOUT;
-		stSimpleClientInfo stSimpleClientInfo;
-		stSimpleClientInfo.m_eLocation = a_stpClientInfo->m_eAnotherLocation;
-		stSimpleClientInfo.m_usId = a_stpClientInfo->m_usAnotherId;
-
-		m_nBufLen = sizeof(nCommand) + sizeof(stSimpleClientInfo);
-		// len
-		memcpy(a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, &m_nBufLen, sizeof(m_nBufLen));
-		// command
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen)], &nCommand, sizeof(int));
-		// client info
-		memcpy(&a_stpClientInfo->m_stSendOverlappedEx.m_szBuf[sizeof(m_nBufLen) + sizeof(nCommand)], (char*)&stSimpleClientInfo, sizeof(stSimpleClientInfo));
-
-		m_nBufLen += sizeof(int);
-		SendMsg(a_stpClientInfo, a_stpClientInfo->m_stSendOverlappedEx.m_szBuf, m_nBufLen);
-		break;
-	}
-	default:
-		break;
-
-	}
-
-}
-
-bool CIOCP::CheckCollision(const unsigned short& a_usId, const POINT& a_pos)
-{
-	if (a_pos.x == eLEFT_END || a_pos.x == eRIGHT_END) return true;
-
-	if (a_pos.y == eTOP_END || a_pos.y == eBOTTOM_END) return true;
-
-	for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
-		if (m_stpClientInfo[i].m_usId != a_usId && m_stpClientInfo[i].m_pos.x == a_pos.x
-			&& m_stpClientInfo[i].m_pos.y == a_pos.y && m_stpClientInfo[i].m_eLocation == eGAME_ROOM) return true;
-	}
-	return false;
-}
-
-void CIOCP::DisassemblePacket(stClientInfo* a_stpClientInfo)
-{
-	switch (a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int)]) {
-	case eMOVE: {
-		stSimpleClientInfo stSimpleClientInfo;
-		memcpy(&stSimpleClientInfo, &a_stpClientInfo->m_stRecvOverlappedEx.m_szBuf[sizeof(int) * 2], sizeof(stSimpleClientInfo));
-
-
-		if (CheckCollision(a_stpClientInfo->m_usId, stSimpleClientInfo.m_pos)) {
-			enumDataType eDataType = eMOVE;
-			AssembleAndSendPacket(a_stpClientInfo, eDataType);
-			return;
-		}
-
-		a_stpClientInfo->m_pos = stSimpleClientInfo.m_pos;
-		enumDataType eDataType = eMOVE;
-		
-		// To the moved client
-		AssembleAndSendPacket(a_stpClientInfo, eDataType);
-
-		if(m_nClientCnt != 1) eDataType = eANOTHER_MOVE;
-		for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
-			if (m_stpClientInfo[i].m_eLocation == eGAME_ROOM && m_stpClientInfo[i].m_usId != stSimpleClientInfo.m_usId) {
-				m_stpClientInfo[i].m_eAnotherLocation = a_stpClientInfo->m_eLocation;
-				m_stpClientInfo[i].m_AnotherPos = a_stpClientInfo->m_pos;
-				m_stpClientInfo[i].m_usAnotherId = a_stpClientInfo->m_usId;
-				AssembleAndSendPacket(&m_stpClientInfo[i], eDataType);
-			}
-		}
-		break;
-	}
-
-	}
-	}
-
-bool CIOCP::BindRecv(stClientInfo* a_pClientInfo)
-{
-	DWORD dwFlag = 0;
-	DWORD dwRecvNumBytes = 0;
-
-	// Set Overlapped I/O Information
-	a_pClientInfo->m_stRecvOverlappedEx.m_wsaBuf.len = MAX_BUF_SIZE;
-	a_pClientInfo->m_stRecvOverlappedEx.m_wsaBuf.buf = a_pClientInfo->m_stRecvOverlappedEx.m_szBuf;
-	a_pClientInfo->m_stRecvOverlappedEx.m_eOperation = eOP_RECV;
-
-	int nRet = WSARecv(a_pClientInfo->m_SocketClient, &(a_pClientInfo->m_stRecvOverlappedEx.m_wsaBuf), 1, &dwRecvNumBytes, &dwFlag, (LPWSAOVERLAPPED)&(a_pClientInfo->m_stRecvOverlappedEx), NULL);
-
-	// A Client is disconnected
-	if (nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)) {
-		printf("[Error] Location : CIOCP::BindRecv, Reason : WSARecv() has been failed: %d \n", WSAGetLastError());
+	// bind
+	int nRet = ::bind(m_ListenSocket, (SOCKADDR*)&stServerAddr, sizeof(SOCKADDR_IN));
+	if (0 != nRet) {
+		printf("[Error] Location : CIOCP::BindandListen, Reason : bind() has been failed: %d \n", WSAGetLastError());
 		return false;
 	}
+
+	nRet = listen(m_ListenSocket, 5);
+	if (0 != nRet) {
+		printf("[Error] Location : CIOCP::BindandListen, Reason : listen() has been failed: %d \n", WSAGetLastError());
+		return false;
+	}
+	printf("Enrollment Success! \n");
 	return true;
 }
 
-bool CIOCP::SendMsg(stClientInfo* a_pClientInfo, char* a_pMsg, int a_nLen)
+void CIOCP::SetNewClientInfo(const WORD& a_wNewId)
 {
-	DWORD dwRecvNumBytes = 0;
+	m_stpClientInfo[a_wNewId].m_bIsConnected = true;
+	m_stpClientInfo[a_wNewId].m_pos.x = CHESS_FIRST_X;
+	m_stpClientInfo[a_wNewId].m_pos.y = CHESS_FIRST_Y;
+	m_stpClientInfo[a_wNewId].wCurrPacketSize = 0;
+	m_stpClientInfo[a_wNewId].wPrevPacketData = 0;
+	ZeroMemory(&m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx, sizeof(m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx));
+	m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_eOperation = eOP_RECV;
 
-	// Copy message to send
-	CopyMemory(a_pClientInfo->m_stSendOverlappedEx.m_szBuf, a_pMsg, a_nLen);
-
-	// Set Overlapped I/O Information
-	a_pClientInfo->m_stSendOverlappedEx.m_wsaBuf.len = a_nLen;
-	a_pClientInfo->m_stSendOverlappedEx.m_wsaBuf.buf = a_pClientInfo->m_stSendOverlappedEx.m_szBuf;
-	a_pClientInfo->m_stSendOverlappedEx.m_eOperation = eOP_SEND;
-
-	int nRet = WSASend(a_pClientInfo->m_SocketClient, &(a_pClientInfo->m_stSendOverlappedEx.m_wsaBuf), 1, &dwRecvNumBytes, 0, (LPWSAOVERLAPPED)&(a_pClientInfo->m_stSendOverlappedEx), NULL);
-	
-	if (nRet == SOCKET_ERROR && (WSAGetLastError() != ERROR_IO_PENDING)) {
-		printf("[Error] Location : CIOCP::SendMsg, Reason : WSASend() has been failed: %d \n", WSAGetLastError());
-		return false;
-	}
-	return true;
+	m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_wsaBuf.buf =
+		reinterpret_cast<CHAR *>(m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_szBuf);
+	m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_wsaBuf.len = sizeof(m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_szBuf);
 }
 
-stClientInfo* CIOCP::GetEmptyClientInfo()
+bool CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
 {
-	for (int i = 0; i < MAX_CLIENT_NUM; i++) {
-		if (INVALID_SOCKET == m_stpClientInfo[i].m_SocketClient) return &m_stpClientInfo[i];
-	}
-	return NULL;
+	return sqrt(((m_stpClientInfo[a_wFrom].m_pos.x - m_stpClientInfo[a_wTo].m_pos.x) *
+		(m_stpClientInfo[a_wFrom].m_pos.x - m_stpClientInfo[a_wTo].m_pos.x)) +
+		((m_stpClientInfo[a_wFrom].m_pos.y - m_stpClientInfo[a_wTo].m_pos.y) *
+		(m_stpClientInfo[a_wFrom].m_pos.y - m_stpClientInfo[a_wTo].m_pos.y))) < MAX_VIEW;
 }
 
 void CIOCP::AccepterThread()
 {
-	SOCKADDR_IN stClientAddr;
-	int nAddrLen = sizeof(SOCKADDR_IN);
+
 	while (m_bAccepterRun) {
-		// Get index
-		stClientInfo* pClientInfo = GetEmptyClientInfo();
-		if (pClientInfo == NULL) {
-			printf("[Error] Location : CIOCP::AccepterThread, Reason : Num of client is full \n");
-			return;
-		}
-		// Wait for connection
-		pClientInfo->m_SocketClient = accept(m_ListenSocket, (SOCKADDR*)&stClientAddr, &nAddrLen);
-		if (pClientInfo->m_SocketClient == INVALID_SOCKET) continue;
-		// Store Address Information
-		memcpy(&pClientInfo->m_saClientAddr, &stClientAddr, sizeof(SOCKADDR_IN));
-		// Connect I/O Completion Port and socket 
-		bool bRet = BindIOCompletionPort(pClientInfo);
-		if (bRet == false) return;
+	
+		SOCKADDR_IN stClientAddr;
+		ZeroMemory(&stClientAddr, sizeof(SOCKADDR_IN));
+		stClientAddr.sin_family = AF_INET;
+		stClientAddr.sin_port = htons(SERVER_PORT);
+		stClientAddr.sin_addr.s_addr = INADDR_ANY;
+		int nAddrLen = sizeof(stClientAddr);
 
-		printf("A cllient has been connected: IP(%s) SOCKET(%d) \n", inet_ntoa(stClientAddr.sin_addr), pClientInfo->m_SocketClient);
+		WORD wNewId = 65535;
+
+		for (int i = 0; i < MAX_CLIENT_NUM; ++i) if (m_stpClientInfo[i].m_bIsConnected == false) { wNewId = i; break; }
 		
-		pClientInfo->m_eLocation = eGAME_ROOM;
+		if (wNewId == 65535) { std::cout << "MAX USER OVERFLOW!\n"; CloseSocket(wNewId);  continue; }
 
-		enumDataType eDataType = eMOVE;
-		SetNewClientInfo(pClientInfo);
-		// To new client
-		AssembleAndSendPacket(pClientInfo, eDataType);
+		// Wait for connection
+		m_stpClientInfo[wNewId].m_SocketClient = WSAAccept(m_ListenSocket, reinterpret_cast<sockaddr*>(&stClientAddr), &nAddrLen, NULL, NULL);
+		if (m_stpClientInfo[wNewId].m_SocketClient == INVALID_SOCKET) {
+			int nErrNo = WSAGetLastError();
+			DisPlayError("WSAAccept:", nErrNo);
+			continue;
+		}
+		
+		SetNewClientInfo(wNewId);
 
-		//SetFirstChessPos();
-
-		SearchOldClientInfo(pClientInfo);
-
-		// Request Recv Overlapped I/O 
-		bRet = BindRecv(pClientInfo);
+		DWORD recv_flag = 0;
+		// Connect I/O Completion Port and socket 
+		bool bRet = BindAndRecvIOCompletionPort(wNewId);
 		if (bRet == false) return;
+		else {
+			printf("A cllient has been connected: IP(%s) SOCKET(%d) \n", inet_ntoa(stClientAddr.sin_addr), m_stpClientInfo[wNewId].m_SocketClient);
+			m_nClientCnt++;
+		}
 
-		m_nClientCnt++;
+		SendPutClient(wNewId, wNewId);
+
+		unordered_set<WORD> local_view_list;
+
+		for (int i = 0; i < MAX_CLIENT_NUM; ++i){
+			if (m_stpClientInfo[i].m_bIsConnected)
+				if (i != wNewId) {
+					if (IsClose(i, wNewId)){
+						SendPutClient(wNewId, i);
+						local_view_list.insert(i);
+						SendPutClient(i, wNewId);
+						m_stpClientInfo[wNewId].m_lock.lock();
+						m_stpClientInfo[i].m_view_list.insert(wNewId);
+						m_stpClientInfo[wNewId].m_lock.unlock();
+					}
+				}
+		}
+
+
+		m_stpClientInfo[wNewId].m_lock.lock();
+		for (auto p : local_view_list) m_stpClientInfo[wNewId].m_view_list.insert(p);
+		m_stpClientInfo[wNewId].m_lock.unlock();
+
+
+
+		
 	}
+}
+
+
+void CIOCP::SendPutClient(WORD a_wClient, WORD a_wObject)
+{
+	ST_SC_PUT_CLIENT stPacket;
+	stPacket.m_wId = a_wObject;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_PUT_CLIENT;
+	stPacket.m_bytX = m_stpClientInfo[a_wObject].m_pos.x;
+	stPacket.m_bytY = m_stpClientInfo[a_wObject].m_pos.y;
+
+	SendPacket(a_wClient, &stPacket);
+}
+
+void CIOCP::SendMoveClient(WORD a_wClient, WORD a_wObject)
+{
+	ST_SC_MOVE_CLIENT stPacket;
+	stPacket.m_wId = a_wObject;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_MOVE_CLIENT;
+	stPacket.m_bytX = m_stpClientInfo[a_wObject].m_pos.x;
+	stPacket.m_bytY = m_stpClientInfo[a_wObject].m_pos.y;
+
+	SendPacket(a_wClient, &stPacket);
+}
+
+void CIOCP::SendRemoveClient(WORD a_wClient, WORD a_wObject)
+{
+	ST_SC_REMOVE_CLIENT stPacket;
+	stPacket.m_wId = a_wObject;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_REMOVE_CLIENT;
+
+	SendPacket(a_wClient, &stPacket);
+
+}
+
+void CIOCP::DisPlayError(char* a_msg, int nErr_no)
+{
+	WCHAR *lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, nErr_no,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	std::cout << a_msg;
+	std::wcout << L"Error" << lpMsgBuf << std::endl;
+	LocalFree(lpMsgBuf);
+	while (true);
+}
+
+void CIOCP::ProcessPacket(WORD a_wId, unsigned char a_Packet[])
+{
+	switch (a_Packet[1]) {
+	case eCS_UP: if (m_stpClientInfo[a_wId].m_pos.y > eTOP_END) m_stpClientInfo[a_wId].m_pos.y--; break;
+	case eCS_DOWN: if (m_stpClientInfo[a_wId].m_pos.y < eBOTTOM_END) m_stpClientInfo[a_wId].m_pos.y++; break;
+	case eCS_LEFT: if (m_stpClientInfo[a_wId].m_pos.x > eLEFT_END) m_stpClientInfo[a_wId].m_pos.x--; break;
+	case eCS_RIGHT: if (m_stpClientInfo[a_wId].m_pos.x < eRIGHT_END) m_stpClientInfo[a_wId].m_pos.x++; break;
+	default: printf("Unknown Packet Type from Client : "); while (true);
+	}
+
+	SendMoveClient(a_wId, a_wId);
+
+	for (int i = 0; i < MAX_CLIENT_NUM; ++i)
+	{
+		if (m_stpClientInfo[i].m_bIsConnected) {
+			if (i != a_wId) {
+				SendMoveClient(i, a_wId);
+			}
+		}
+	}
+}
+
+void CIOCP::SendPacket(WORD a_wId, void* a_vPacket)
+{
+	int nPsize = reinterpret_cast<unsigned char *>(a_vPacket)[0];
+	int nPtype = reinterpret_cast<unsigned char *>(a_vPacket)[1];	
+	stOverlappedEx* stOver = new stOverlappedEx;
+	stOver->m_eOperation = eOP_SEND;
+	memcpy(stOver->m_szBuf, a_vPacket, nPsize);
+	ZeroMemory(&stOver->m_wsaOverlapped, sizeof(stOver->m_wsaOverlapped));
+	stOver->m_wsaBuf.buf = reinterpret_cast<CHAR *>(stOver->m_szBuf);
+	stOver->m_wsaBuf.len = nPsize;
+
+	int nRet = WSASend(m_stpClientInfo[a_wId].m_SocketClient, &stOver->m_wsaBuf, 1, NULL, 0,
+		&stOver->m_wsaOverlapped, NULL);
+
+	if (0 != nRet) {
+		int err_no = WSAGetLastError();
+		if (WSA_IO_PENDING != err_no)
+			DisPlayError("Error in SendPacket:", err_no);
+	}
+
+
 }
 
 void CIOCP::WorkerThread()
 {
-	// Pointer to recv CompletionKey
-	stClientInfo* pClientInfo = NULL;
 	BOOL bSuccess = TRUE;
 	// Sent size in Overlapped I/O 
 	DWORD dwIoSize = 0;
 	// Pointer to recv I/O  Overlapped Structure
-	LPOVERLAPPED lpOverlapped = NULL;
-
+	stOverlappedEx* stpOverlappedEx = nullptr;
+	unsigned long long Id{};
 	while (m_bWorkerRun) {
 		printf("Worker thread is running! \n");
 		bSuccess = GetQueuedCompletionStatus(m_hIOCP,
 			&dwIoSize, // Sent byte
-			(LPDWORD)&pClientInfo, // CompletionKey
-			&lpOverlapped, // Overlapped IO Object
+			(LPDWORD)&Id, // CompletionKey
+			reinterpret_cast<LPWSAOVERLAPPED*>(&stpOverlappedEx), // Overlapped IO Object
 			INFINITE); // Waiting Time
 
 		if (bSuccess == FALSE && GetLastError() != 64) {
@@ -474,68 +411,75 @@ void CIOCP::WorkerThread()
 		}
 
 		// A client is disconnected
-		if (bSuccess == FALSE && dwIoSize == 0) {
-			if (pClientInfo != NULL) {
-				//EnterCriticalSection(&m_critical);
-				printf("SOCKET(%d) is disconnected \n", pClientInfo->m_SocketClient);
-				if (pClientInfo->m_eLocation == eGAME_ROOM) {
-					pClientInfo->m_eLocation = eLOGOUT;
-					pClientInfo->m_eAnotherLocation = eLOBBY;
-					pClientInfo->m_usAnotherId = 0;
-					pClientInfo->m_AnotherPos.x = 0, pClientInfo->m_AnotherPos.y = 0;
-
-					enumDataType eDataType = eNOTIFY_LOGOUT;
-
-					for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
-						if (m_stpClientInfo[i].m_usId != pClientInfo->m_usId && m_stpClientInfo[i].m_eLocation == eGAME_ROOM) {
-							m_stpClientInfo[i].m_eAnotherLocation = pClientInfo->m_eLocation;
-							m_stpClientInfo[i].m_usAnotherId = pClientInfo->m_usId;
-							AssembleAndSendPacket(&m_stpClientInfo[i], eDataType);
-						}
-					}
-					pClientInfo->m_usId = 0;
-					pClientInfo->m_pos.x = 0;
-					pClientInfo->m_pos.y = 0;
-				}
-
-				m_nClientCnt--;
-		
+		if (bSuccess == FALSE) {
+			int nErrNo = WSAGetLastError();
+			if (nErrNo == 64) {
+				CloseSocket(Id, true);
+				continue;
 			}
-			CloseSocket(pClientInfo);
-			//LeaveCriticalSection(&m_critical);
+			else DisPlayError("GQCS : ", WSAGetLastError());
+		}
+
+		if(dwIoSize == 0){
+			CloseSocket(Id);
 			continue;
 		}
 
 		// A thread is closed
-		if (bSuccess == TRUE && dwIoSize == 0 && lpOverlapped == NULL) {
+		if (bSuccess == TRUE && dwIoSize == 0 && stpOverlappedEx == nullptr) {
 			m_bWorkerRun = false;
 			continue;
 		}
 
-		if (lpOverlapped == NULL) continue;
-		stOverlappedEx* stpOverlappedEx = (stOverlappedEx*)lpOverlapped;
+		if (stpOverlappedEx == nullptr) continue;
+
 		// Overlapped I/O Recv
 		if (stpOverlappedEx->m_eOperation == eOP_RECV) {
-			stpOverlappedEx->m_szBuf[dwIoSize] = NULL;
-			printf("[Recv] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(pClientInfo->m_saClientAddr.sin_addr), pClientInfo->m_SocketClient);
-			DisassemblePacket(pClientInfo);
-
-			// Request Recv Overlapped I/O 
-			bool bRet = BindRecv(pClientInfo);
-			if (bRet == false) continue;
+			printf("[Recv] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(m_stpClientInfo[Id].m_saClientAddr.sin_addr), m_stpClientInfo[Id].m_SocketClient);
+			unsigned char *buf = m_stpClientInfo[Id].m_stRecvOverlappedEx.m_szBuf;
+			unsigned psize = m_stpClientInfo[Id].wCurrPacketSize;
+			unsigned pr_size = m_stpClientInfo[Id].wPrevPacketData;
+			while (dwIoSize > 0) {
+				if (psize == 0) psize = buf[0];
+				if (dwIoSize + pr_size >= psize) {
+					// 지금 패킷 완성 가능
+					unsigned char packet[MAX_PACKET_SIZE];
+					memcpy(packet, m_stpClientInfo[Id].m_szPacketBuf, pr_size);
+					memcpy(packet + pr_size, buf, psize - pr_size);
+					ProcessPacket(static_cast<WORD>(Id), packet);
+					dwIoSize -= psize - pr_size;
+					buf += psize - pr_size;
+					psize = 0; pr_size = 0;
+				}
+				else {
+					memcpy(m_stpClientInfo[Id].m_szPacketBuf + pr_size, buf, dwIoSize);
+					pr_size += dwIoSize;
+					dwIoSize = 0;
+				}
+			}
+			m_stpClientInfo[Id].wCurrPacketSize = psize;
+			m_stpClientInfo[Id].wPrevPacketData = pr_size;
+			DWORD recv_flag = 0;
+			WSARecv(m_stpClientInfo[Id].m_SocketClient,
+				&m_stpClientInfo[Id].m_stRecvOverlappedEx.m_wsaBuf, 1,
+				NULL, &recv_flag, &m_stpClientInfo[Id].m_stRecvOverlappedEx.m_wsaOverlapped, NULL);
 
 		}
 
 		else if (stpOverlappedEx->m_eOperation == eOP_SEND) {
-			printf("[Send] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(pClientInfo->m_saClientAddr.sin_addr), pClientInfo->m_SocketClient);
-			//// Request Recv Overlapped I/O 
-			//bool bRet = BindRecv(pClientInfo);
-			//if (bRet == false) continue;
+			if (dwIoSize != stpOverlappedEx->m_wsaBuf.len) {
+				printf("Send Incomplete Error! \n");
+				CloseSocket(Id,true);
+			}
+
+			printf("[Send] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(m_stpClientInfo[Id].m_saClientAddr.sin_addr), m_stpClientInfo[Id].m_SocketClient);
+			delete stpOverlappedEx;
+
 		}
 			
 		// Exception
 		else {
-			printf("socket(%d) Exception", pClientInfo->m_SocketClient);
+			printf("socket(%d) Exception", m_stpClientInfo[Id].m_SocketClient);
 			continue;
 		}
 
