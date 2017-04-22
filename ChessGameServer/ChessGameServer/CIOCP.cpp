@@ -92,8 +92,6 @@ void CIOCP::CloseSocket(WORD a_wId, bool a_bIsForce)
 {
 	m_stpClientInfo[a_wId].m_bIsConnected = false;
 	m_nClientCnt--;
-
-	for (int i = 0; i < MAX_CLIENT_NUM; ++i) if (m_stpClientInfo[i].m_bIsConnected) SendRemoveClient(i, a_wId);
 	
 	struct linger stLinger = { 0,0 }; // SO_DONTLINGER
 
@@ -110,7 +108,30 @@ void CIOCP::CloseSocket(WORD a_wId, bool a_bIsForce)
 
 	m_stpClientInfo[a_wId].m_SocketClient = INVALID_SOCKET;
 
+	unordered_set<WORD> lvl;
+	m_stpClientInfo[a_wId].m_lock.lock();
+	lvl = m_stpClientInfo[a_wId].m_view_list;
+	m_stpClientInfo[a_wId].m_lock.unlock();
+
+	// Notify to everyone who is near
+	for (auto target : lvl){
+		m_stpClientInfo[target].m_lock.lock();
+		if (m_stpClientInfo[target].m_view_list.count(a_wId) != 0){
+			m_stpClientInfo[target].m_view_list.erase(a_wId);
+			m_stpClientInfo[target].m_lock.unlock();
+			SendRemoveClient(target, a_wId);
+		}
+		else m_stpClientInfo[target].m_lock.unlock();	
+	}
+	m_stpClientInfo[a_wId].m_lock.lock();
+	m_stpClientInfo[a_wId].m_view_list.clear();
+	m_stpClientInfo[a_wId].m_lock.unlock();
+
+
 	printf("SOCKET(%d) is disconnected \n", m_stpClientInfo[a_wId].m_SocketClient);
+
+
+
 }
 
 
@@ -345,6 +366,80 @@ void CIOCP::DisPlayError(char* a_msg, int nErr_no)
 	while (true);
 }
 
+void CIOCP::HandleView(WORD a_wId)
+{
+	unordered_set<WORD> new_view_list;
+
+	for (int i = 0; i < MAX_CLIENT_NUM; ++i) if (m_stpClientInfo[i].m_bIsConnected) 
+		if (i != a_wId) if (IsClose(a_wId, i)) new_view_list.insert(i);
+		
+	// Object to be added
+	unordered_set<WORD> vlc;
+	m_stpClientInfo[a_wId].m_lock.lock();
+	vlc = m_stpClientInfo[a_wId].m_view_list;
+	m_stpClientInfo[a_wId].m_lock.unlock();
+
+	// Roop in my view-list
+	for (auto target : new_view_list){
+		// If I don't have target
+		if (vlc.count(target) == 0){
+			SendPutClient(a_wId, target);
+			vlc.insert(target);
+
+			m_stpClientInfo[target].m_lock.lock();
+			// If Target have me
+			if (m_stpClientInfo[target].m_view_list.count(a_wId) != 0){
+				SendMoveClient(target, a_wId); // To target from me
+				m_stpClientInfo[target].m_lock.unlock();
+			}
+			else{ // Target doesn't have me
+
+				// From target to me
+				m_stpClientInfo[target].m_view_list.insert(a_wId);
+				m_stpClientInfo[target].m_lock.unlock();
+				SendPutClient(target, a_wId);
+			}
+
+		}
+		else{ // I have target
+			m_stpClientInfo[target].m_lock.lock();
+			if (m_stpClientInfo[target].m_view_list.count(a_wId) != 0){ // Target has me
+				SendMoveClient(target, a_wId);
+				m_stpClientInfo[target].m_lock.unlock();
+			}
+			else{ // I Don't have target
+				m_stpClientInfo[target].m_view_list.insert(a_wId);
+				m_stpClientInfo[target].m_lock.unlock();
+				SendPutClient(target, a_wId);
+			}
+		}
+	}
+
+
+	// Now object is far away...
+	unordered_set<WORD> removed_id_list;
+
+	for (auto target : vlc){
+		if (new_view_list.count(target) == 0){ // If target is far away
+			SendRemoveClient(a_wId, target);
+			removed_id_list.insert(target);
+
+			m_stpClientInfo[target].m_lock.lock();
+			if (m_stpClientInfo[target].m_view_list.count(a_wId) != 0){ // If target has me
+				m_stpClientInfo[target].m_view_list.erase(a_wId);
+				m_stpClientInfo[target].m_lock.unlock();
+				SendRemoveClient(target, a_wId);
+			}
+		}
+	}
+
+	m_stpClientInfo[a_wId].m_lock.lock();
+	for (auto p : vlc) m_stpClientInfo[a_wId].m_view_list.insert(p);
+	for (auto d : removed_id_list) m_stpClientInfo[a_wId].m_view_list.erase(d);
+	m_stpClientInfo[a_wId].m_lock.unlock();
+
+}
+
 void CIOCP::ProcessPacket(WORD a_wId, unsigned char a_Packet[])
 {
 	switch (a_Packet[1]) {
@@ -357,15 +452,10 @@ void CIOCP::ProcessPacket(WORD a_wId, unsigned char a_Packet[])
 
 	SendMoveClient(a_wId, a_wId);
 
-	for (int i = 0; i < MAX_CLIENT_NUM; ++i)
-	{
-		if (m_stpClientInfo[i].m_bIsConnected) {
-			if (i != a_wId) {
-				SendMoveClient(i, a_wId);
-			}
-		}
-	}
+	HandleView(a_wId);
+	
 }
+
 
 void CIOCP::SendPacket(WORD a_wId, void* a_vPacket)
 {

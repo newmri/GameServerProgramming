@@ -33,6 +33,8 @@ public:
 	// Handle Error
 	void DisPlayError(char*, int);
 
+	void HandleView(WORD);
+
 	void ProcessPacket(WORD, unsigned char[]);
 
 	void SendPacket(WORD, void*);
