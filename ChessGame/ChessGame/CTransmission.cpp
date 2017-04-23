@@ -32,7 +32,7 @@ void CTransmission::SetServerIP(const HWND& a_hIpEdit)
 	GetWindowText(a_hIpEdit, m_tchServerIp, MAX_IP_LEN);
 }
 
-bool CTransmission::Init(const HWND& a_hWnd)
+const bool& CTransmission::Init(const HWND& a_hWnd)
 {
 	// Winsock initialize
 	WSADATA wsa;
@@ -89,7 +89,7 @@ void CTransmission::ReadPacket()
 }
 
 
-bool CTransmission::ProcessPacket(const HWND& a_hWnd, const UINT& a_iMessage, const WPARAM& a_wParam, const LPARAM& a_lParam)
+const bool& CTransmission::ProcessPacket(const HWND& a_hWnd, const UINT& a_iMessage, const WPARAM& a_wParam, const LPARAM& a_lParam)
 {
 	switch (WSAGETSELECTEVENT(a_lParam)){
 	case FD_READ:
@@ -170,7 +170,7 @@ void CTransmission::ProcessPacket(char* a_ptr)
 	}
 }
 
-bool CTransmission::Connect(const HWND& a_hWnd)
+const bool& CTransmission::Connect(const HWND& a_hWnd)
 {
 	int nRetval{};
 	nRetval = connect(m_sock, (SOCKADDR*)&m_saServerAddr, sizeof(m_saServerAddr));
@@ -218,25 +218,9 @@ void CTransmission::SendPacket()
 	}
 }
 
-bool CTransmission::Send(char* data, int len)
-{
-	int nRetval{};
-	// sending data(flexible)
-	nRetval = send(m_sock, data, len, 0);
-	if (SOCKET_ERROR == nRetval) {
-		printf("[Error] Location : CTransmission::Send, Reason :  send() has been failed \n");
-		return false;
-	}
-
-	else if (nRetval == 0) {
-		printf("[Error] Location : CTransmission::Send, Reason : disconnected \n");
-		return false;
-	}
-	return true;
-}
 
 
-void CTransmission::Close(bool a_bForceClose)
+void CTransmission::Close(const bool& a_bForceClose)
 {
 	struct linger stLinger = { 0, 0 };
 	// Is closed by force?

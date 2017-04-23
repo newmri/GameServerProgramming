@@ -27,7 +27,7 @@ CPlayer::CPlayer()
 
 
 
-void CPlayer::SetMove(unsigned short ridder) { m_usRidder = ridder; }
+void CPlayer::SetMove(const WORD& ridder) { m_usRidder = ridder; }
 
 void CPlayer::SetPos()
 {

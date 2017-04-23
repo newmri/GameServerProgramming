@@ -7,7 +7,7 @@ class CPlayer : public CTransmission
 {
 public:
 	CImage m_chess;
-	void SetMove(unsigned short);
+	void SetMove(const WORD&);
 	void SetPos();
 	const int& GetPlayerNum();
 	const bool& IsMoved();
@@ -23,5 +23,5 @@ private:
 	static CPlayer* m_pInstance;
 
 private:
-	unsigned short m_usRidder;
+	WORD m_usRidder;
 };

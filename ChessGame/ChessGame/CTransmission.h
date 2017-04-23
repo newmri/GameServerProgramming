@@ -17,15 +17,14 @@ public:
 	CTransmission();
 	~CTransmission();
 	void SetServerIP(const HWND&);
-	bool Init(const HWND&);
-	bool ProcessPacket(const HWND&, const UINT&, const WPARAM&, const LPARAM&);
+	const bool& Init(const HWND&);
+	const bool& ProcessPacket(const HWND&, const UINT&, const WPARAM&, const LPARAM&);
 	void ProcessPacket(char*);
-	bool Connect(const HWND&);
+	const bool& Connect(const HWND&);
 	void ReadPacket();
 	void SendPacket();
-	bool Send(char*, int);
 	const POINT& GetPos();
-	void Close(bool);
+	void Close(const bool&);
 public:
 	stClientInfo m_stClientInfo[MAX_PLAYER];
 

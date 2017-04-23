@@ -128,9 +128,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			POINT pos = pPlayer->GetPos();
 			static bool bSwapMap = false;
 
-			if (pos.x >= MAX_MAP_TILE) if (pos.x % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap;}
-			
-			if(pos.y >= MAX_MAP_TILE) if (pos.y % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
+			if (pos.x >= MAX_MAP_TILE) if (pos.x % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
+			if (pos.y >= MAX_MAP_TILE) if (pos.y % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
 
 			stMap.DrawMap(hdc, bSwapMap);
 
