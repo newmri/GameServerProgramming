@@ -88,7 +88,7 @@ bool CIOCP::InitSocket()
 }
 
 
-void CIOCP::CloseSocket(WORD a_wId, bool a_bIsForce)
+void CIOCP::CloseSocket(const WORD& a_wId, const bool& a_bIsForce)
 {
 	m_stpClientInfo[a_wId].m_bIsConnected = false;
 	m_nClientCnt--;
@@ -135,7 +135,7 @@ void CIOCP::CloseSocket(WORD a_wId, bool a_bIsForce)
 }
 
 
-bool CIOCP::CreateWorkerThread()
+const bool& CIOCP::CreateWorkerThread()
 {
 	unsigned int uiThreadId = 0;
 
@@ -152,7 +152,7 @@ bool CIOCP::CreateWorkerThread()
 	return true;
 }
 
-bool CIOCP::CreateAccepterThread()
+const bool& CIOCP::CreateAccepterThread()
 {
 	unsigned int uiThreadId = 0;
 
@@ -169,7 +169,7 @@ bool CIOCP::CreateAccepterThread()
 }
 
 
-bool CIOCP::BindAndRecvIOCompletionPort(WORD a_wNewId)
+const bool& CIOCP::BindAndRecvIOCompletionPort(const WORD& a_wNewId)
 {
 	HANDLE hIOCP;
 	DWORD DwRecvFlag = 0;
@@ -203,7 +203,7 @@ void CIOCP::StartServer()
 	while (m_bAccepterRun);
 }
 
-bool CIOCP::BindandListen(int a_nBindPort)
+const bool& CIOCP::BindandListen(const int& a_nBindPort)
 {
 	SOCKADDR_IN stServerAddr;
 	stServerAddr.sin_family = AF_INET;
@@ -241,7 +241,7 @@ void CIOCP::SetNewClientInfo(const WORD& a_wNewId)
 	m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_wsaBuf.len = sizeof(m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx.m_szBuf);
 }
 
-bool CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
+const bool& CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
 {
 	return sqrt(((m_stpClientInfo[a_wFrom].m_pos.x - m_stpClientInfo[a_wTo].m_pos.x) *
 		(m_stpClientInfo[a_wFrom].m_pos.x - m_stpClientInfo[a_wTo].m_pos.x)) +
@@ -251,15 +251,14 @@ bool CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
 
 void CIOCP::AccepterThread()
 {
+	SOCKADDR_IN stClientAddr;
+	ZeroMemory(&stClientAddr, sizeof(SOCKADDR_IN));
+	stClientAddr.sin_family = AF_INET;
+	stClientAddr.sin_port = htons(SERVER_PORT);
+	stClientAddr.sin_addr.s_addr = INADDR_ANY;
+	int nAddrLen = sizeof(stClientAddr);
 
 	while (m_bAccepterRun) {
-	
-		SOCKADDR_IN stClientAddr;
-		ZeroMemory(&stClientAddr, sizeof(SOCKADDR_IN));
-		stClientAddr.sin_family = AF_INET;
-		stClientAddr.sin_port = htons(SERVER_PORT);
-		stClientAddr.sin_addr.s_addr = INADDR_ANY;
-		int nAddrLen = sizeof(stClientAddr);
 
 		WORD wNewId = 65535;
 
@@ -308,15 +307,12 @@ void CIOCP::AccepterThread()
 		m_stpClientInfo[wNewId].m_lock.lock();
 		for (auto p : local_view_list) m_stpClientInfo[wNewId].m_view_list.insert(p);
 		m_stpClientInfo[wNewId].m_lock.unlock();
-
-
-
 		
 	}
 }
 
 
-void CIOCP::SendPutClient(WORD a_wClient, WORD a_wObject)
+void CIOCP::SendPutClient(const WORD& a_wClient, const WORD& a_wObject)
 {
 	ST_SC_PUT_CLIENT stPacket;
 	stPacket.m_wId = a_wObject;
@@ -328,7 +324,7 @@ void CIOCP::SendPutClient(WORD a_wClient, WORD a_wObject)
 	SendPacket(a_wClient, &stPacket);
 }
 
-void CIOCP::SendMoveClient(WORD a_wClient, WORD a_wObject)
+void CIOCP::SendMoveClient(const WORD& a_wClient, const WORD& a_wObject)
 {
 	ST_SC_MOVE_CLIENT stPacket;
 	stPacket.m_wId = a_wObject;
@@ -340,7 +336,7 @@ void CIOCP::SendMoveClient(WORD a_wClient, WORD a_wObject)
 	SendPacket(a_wClient, &stPacket);
 }
 
-void CIOCP::SendRemoveClient(WORD a_wClient, WORD a_wObject)
+void CIOCP::SendRemoveClient(const WORD& a_wClient, const WORD& a_wObject)
 {
 	ST_SC_REMOVE_CLIENT stPacket;
 	stPacket.m_wId = a_wObject;
@@ -351,7 +347,7 @@ void CIOCP::SendRemoveClient(WORD a_wClient, WORD a_wObject)
 
 }
 
-void CIOCP::DisPlayError(char* a_msg, int nErr_no)
+void CIOCP::DisPlayError(const char* a_msg, const int& nErr_no)
 {
 	WCHAR *lpMsgBuf;
 	FormatMessage(
@@ -366,7 +362,7 @@ void CIOCP::DisPlayError(char* a_msg, int nErr_no)
 	while (true);
 }
 
-void CIOCP::HandleView(WORD a_wId)
+void CIOCP::HandleView(const WORD& a_wId)
 {
 	unordered_set<WORD> new_view_list;
 
@@ -440,7 +436,7 @@ void CIOCP::HandleView(WORD a_wId)
 
 }
 
-void CIOCP::ProcessPacket(WORD a_wId, unsigned char a_Packet[])
+void CIOCP::ProcessPacket(const WORD& a_wId, const unsigned char a_Packet[])
 {
 	switch (a_Packet[1]) {
 	case eCS_UP: if (m_stpClientInfo[a_wId].m_pos.y > eTOP_END) m_stpClientInfo[a_wId].m_pos.y--; break;
@@ -457,7 +453,7 @@ void CIOCP::ProcessPacket(WORD a_wId, unsigned char a_Packet[])
 }
 
 
-void CIOCP::SendPacket(WORD a_wId, void* a_vPacket)
+void CIOCP::SendPacket(const WORD& a_wId, void* a_vPacket)
 {
 	int nPsize = reinterpret_cast<unsigned char *>(a_vPacket)[0];
 	int nPtype = reinterpret_cast<unsigned char *>(a_vPacket)[1];	

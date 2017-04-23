@@ -5,7 +5,7 @@ int main()
 	CIOCP* pIOCP = CIOCP::Instance();
 
 	pIOCP->InitSocket();
-	pIOCP->BindandListen(9000);
+	pIOCP->BindandListen(SERVER_PORT);
 	pIOCP->StartServer();
 
 	pIOCP->DestroyInstance();

@@ -9,41 +9,42 @@ public:
 
 	// -- Common Functions Server and Client  -- //
 	bool InitSocket();
-	void CloseSocket(WORD, bool bIsForce = false);
+	void CloseSocket(const WORD&, const bool& bIsForce = false);
 
 	// -- Functions for Server -- //
-	bool BindandListen(int);
+	const bool& BindandListen(const int&);
 	void StartServer();
 
 	// Set new client info
 	void SetNewClientInfo(const WORD&);
 
-	bool IsClose(const WORD&, const WORD&);
+	const bool& IsClose(const WORD&, const WORD&);
 
-	bool CreateWorkerThread();
+	const bool& CreateWorkerThread();
 
-	bool CreateAccepterThread();
+	const bool& CreateAccepterThread();
 
 	// Connect object of completionPort and socket and completionKey
-	bool BindAndRecvIOCompletionPort(WORD);
+	const bool& BindAndRecvIOCompletionPort(const WORD&);
 
 	// Recv and  process I/O work has been completed 
 	void WorkerThread();
 
 	// Handle Error
-	void DisPlayError(char*, int);
+	void DisPlayError(const char*, const int&);
 
-	void HandleView(WORD);
+	void HandleView(const WORD&);
 
-	void ProcessPacket(WORD, unsigned char[]);
+	void ProcessPacket(const WORD&, const unsigned char[]);
 
-	void SendPacket(WORD, void*);
+	void SendPacket(const WORD&, void*);
 
-	void SendPutClient(WORD, WORD);
+	void SendPutClient(const WORD&, const WORD&);
 
-	void SendMoveClient(WORD, WORD);
+	void SendMoveClient(const WORD&, const WORD&);
 
-	void SendRemoveClient(WORD, WORD);
+	void SendRemoveClient(const WORD&, const WORD&);
+
 	// Accepter Thread
 	void AccepterThread();
 
