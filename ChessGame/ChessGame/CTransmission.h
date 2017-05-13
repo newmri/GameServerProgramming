@@ -27,7 +27,7 @@ public:
 	void Close(const bool&);
 public:
 	stClientInfo m_stClientInfo[MAX_PLAYER];
-
+	stNPCInfo m_stNPCInfo[MAX_NPC_NUM];
 private:
 	bool m_First;
 

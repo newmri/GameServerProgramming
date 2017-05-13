@@ -14,23 +14,25 @@
 #define MAX_BUF_SIZE 1024
 #define MAX_PACKET_SIZE 255
 
-#define MOVE_PIXEL 70
+#define MOVE_PIXEL 35
 
 #define MAX_PLAYER 10
 
-#define MAX_MAP_TILE 11
+#define MAX_MAP_TILE 20
 
-#define MAX_MAP_X 100
-#define MAX_MAP_Y 100
+#define MAX_MAP_X 400
+#define MAX_MAP_Y 400
+
+#define MAX_NPC_NUM 1000
 
 // POS_LEN
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2);
 
 // From Client To Server
 enum EMOVE { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
-// From Server To Client
-enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT };
 
+// From Server To Client
+enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC};
 enum { eID_IP_EDIT = 101 };
 enum { eIDC_CONNECT = 1001 };
 
@@ -43,22 +45,24 @@ struct ST_CS_MOVE
 	BYTE m_bytType;
 };
 
-struct ST_SC_PUT_CLIENT
+struct ST_SC_PUT_OBJECT
 {
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	WORD m_wId;
-	BYTE m_bytX, m_bytY;
+	WORD m_wX, m_wY;
 };
 
-struct ST_SC_MOVE_CLIENT {
+struct ST_SC_MOVE_OBJECT
+{
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	WORD m_wId;
-	BYTE m_bytX, m_bytY;
+	WORD m_wX, m_wY;
 };
 
-struct ST_SC_REMOVE_CLIENT {
+struct ST_SC_REMOVE_OBJECT
+{
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	WORD m_wId;

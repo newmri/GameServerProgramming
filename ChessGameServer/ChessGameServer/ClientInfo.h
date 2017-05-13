@@ -14,7 +14,10 @@ struct stClientInfo {
 	bool m_bIsConnected;
 	POINT m_pos;
 	unordered_set<WORD> m_view_list;
+	unordered_set<WORD> m_NPC_view_list;
 	mutex m_lock;
+	mutex m_NPC_Lock;
+
 	// Initialize member's variables
 	stClientInfo()
 	{

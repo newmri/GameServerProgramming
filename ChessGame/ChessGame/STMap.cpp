@@ -8,7 +8,6 @@ STMap::STMap()
 
 void STMap::DrawMap(const HDC& a_hdc, const bool& a_Swap)
 {
-
 	for (int y = 0; y < MAX_MAP_TILE; ++y) {
 		for (int x = 0; x < MAX_MAP_TILE; ++x) {
 			if (!a_Swap) {

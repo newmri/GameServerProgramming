@@ -140,10 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CIOCP.cpp" />
+    <ClCompile Include="CNPC.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientInfo.h" />
+    <ClInclude Include="CNPC.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="CIOCP.h" />
     <ClInclude Include="OverLappedEx.h" />

@@ -113,18 +113,18 @@ void CTransmission::ProcessPacket(char* a_ptr)
 {
 	switch (a_ptr[1]) {
 	case eSC_PUT_CLIENT: {
-		ST_SC_PUT_CLIENT* stPacket = reinterpret_cast<ST_SC_PUT_CLIENT*>(a_ptr);
+		ST_SC_PUT_OBJECT* stPacket = reinterpret_cast<ST_SC_PUT_OBJECT*>(a_ptr);
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			if (i == stPacket->m_wId && m_First) {
 				m_wId = stPacket->m_wId;
-				m_pos.x = stPacket->m_bytX;
-				m_pos.y = stPacket->m_bytY;
+				m_pos.x = stPacket->m_wX;
+				m_pos.y = stPacket->m_wY;
 				m_First = false;
 
 				m_stClientInfo[i].m_IsConnected = true;
 				m_stClientInfo[i].m_wId = stPacket->m_wId;
-				m_stClientInfo[i].m_pos.x = stPacket->m_bytX;
-				m_stClientInfo[i].m_pos.y = stPacket->m_bytY;
+				m_stClientInfo[i].m_pos.x = stPacket->m_wX;
+				m_stClientInfo[i].m_pos.y = stPacket->m_wY;
 				m_nClientCnt++;
 				break;
 			}
@@ -132,8 +132,8 @@ void CTransmission::ProcessPacket(char* a_ptr)
 			else if (i == stPacket->m_wId && i != m_wId) {
 				m_stClientInfo[i].m_IsConnected = true;
 				m_stClientInfo[i].m_wId = stPacket->m_wId;
-				m_stClientInfo[i].m_pos.x = stPacket->m_bytX;
-				m_stClientInfo[i].m_pos.y = stPacket->m_bytY;
+				m_stClientInfo[i].m_pos.x = stPacket->m_wX;
+				m_stClientInfo[i].m_pos.y = stPacket->m_wY;
 				m_nClientCnt++;
 				break;
 
@@ -141,20 +141,21 @@ void CTransmission::ProcessPacket(char* a_ptr)
 		}
 		break;
 	}
+
 	case eSC_MOVE_CLIENT: {
-		ST_SC_MOVE_CLIENT* stPacket = reinterpret_cast<ST_SC_MOVE_CLIENT*>(a_ptr);
+		ST_SC_MOVE_OBJECT* stPacket = reinterpret_cast<ST_SC_MOVE_OBJECT*>(a_ptr);
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			if (m_stClientInfo[i].m_wId == stPacket->m_wId) {
 				if (m_stClientInfo[i].m_wId == m_wId) {
-					m_pos.x = stPacket->m_bytX;
-					m_pos.y = stPacket->m_bytY;
-					m_stClientInfo[i].m_pos.x = stPacket->m_bytX;
-					m_stClientInfo[i].m_pos.y = stPacket->m_bytY;
+					m_pos.x = stPacket->m_wX;
+					m_pos.y = stPacket->m_wY;
+					m_stClientInfo[i].m_pos.x = stPacket->m_wX;
+					m_stClientInfo[i].m_pos.y = stPacket->m_wY;
 					break;
 				}
 				else {
-					m_stClientInfo[i].m_pos.x = stPacket->m_bytX;
-					m_stClientInfo[i].m_pos.y = stPacket->m_bytY;
+					m_stClientInfo[i].m_pos.x = stPacket->m_wX;
+					m_stClientInfo[i].m_pos.y = stPacket->m_wY;
 					break;
 				}
 			}
@@ -162,11 +163,39 @@ void CTransmission::ProcessPacket(char* a_ptr)
 		break;
 	}
 	case eSC_REMOVE_CLIENT: {
-		ST_SC_REMOVE_CLIENT* stPacket = reinterpret_cast<ST_SC_REMOVE_CLIENT*>(a_ptr);
+		ST_SC_REMOVE_OBJECT* stPacket = reinterpret_cast<ST_SC_REMOVE_OBJECT*>(a_ptr);
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			if (i == stPacket->m_wId) { m_stClientInfo[i].m_IsConnected = false; break; }
 		}
+		break;
 	}
+
+	case eSC_PUT_NPC: {
+		ST_SC_PUT_OBJECT* stPacket = reinterpret_cast<ST_SC_PUT_OBJECT*>(a_ptr);
+		m_stNPCInfo[stPacket->m_wId].m_wId = stPacket->m_wId;
+		m_stNPCInfo[stPacket->m_wId].m_pos.x = stPacket->m_wX;
+		m_stNPCInfo[stPacket->m_wId].m_pos.y = stPacket->m_wY;
+		m_stNPCInfo[stPacket->m_wId].m_IsAlive = true;
+		break;
+	}
+
+	case eSC_MOVE_NPC: {
+		ST_SC_MOVE_OBJECT* stPacket = reinterpret_cast<ST_SC_MOVE_OBJECT*>(a_ptr);
+		for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
+			if (stPacket->m_wId == i) {
+				m_stNPCInfo[i].m_pos.x = stPacket->m_wX;
+				m_stNPCInfo[i].m_pos.y = stPacket->m_wY;
+			}
+		}
+
+		break;
+	}
+	case eSC_REMOVE_NPC: {
+		ST_SC_REMOVE_OBJECT* stPacket = reinterpret_cast<ST_SC_REMOVE_OBJECT*>(a_ptr);
+		m_stNPCInfo[stPacket->m_wId].m_IsAlive = false;
+		break;
+	}
+
 	}
 }
 

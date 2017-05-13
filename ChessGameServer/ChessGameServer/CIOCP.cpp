@@ -11,11 +11,18 @@ unsigned int  WINAPI CallWorkerThread(LPVOID a_p)
 	return 0;
 }
 
-// to proccess WSARecv and WSASend 
+// to proccess Accept 
 unsigned int  WINAPI CallAccepterThread(LPVOID a_p)
 {
 	CIOCP* pcOverlappedEvent = (CIOCP*)a_p;
 	pcOverlappedEvent->AccepterThread();
+	return 0;
+}
+
+unsigned int  WINAPI CallTimerThread(LPVOID a_p)
+{
+	CIOCP* pcOverlappedEvent = (CIOCP*)a_p;
+	pcOverlappedEvent->TimerThread();
 	return 0;
 }
 
@@ -53,6 +60,17 @@ CIOCP::CIOCP()
 	m_pos.x = CHESS_FIRST_X;
 	m_pos.y = CHESS_FIRST_Y;
 	m_wId = 0;
+
+	STTimerInfo stTimerInfo;
+	stTimerInfo.eOperation = enumOperation::eMOVE;
+	stTimerInfo.lTime = AddTime(NPC_MOVE_SEC);
+	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
+		stTimerInfo.wId = i;
+		m_TimerQueue.push(stTimerInfo);
+		m_cNPC[i].Init();
+	}
+
+	srand((unsigned int)time(NULL));
 }
 
 CIOCP::~CIOCP(void)
@@ -127,10 +145,13 @@ void CIOCP::CloseSocket(const WORD& a_wId, const bool& a_bIsForce)
 	m_stpClientInfo[a_wId].m_view_list.clear();
 	m_stpClientInfo[a_wId].m_lock.unlock();
 
+	m_stpClientInfo[a_wId].m_NPC_Lock.lock();
+	m_stpClientInfo[a_wId].m_NPC_view_list.clear();
+	m_stpClientInfo[a_wId].m_NPC_Lock.unlock();
+
+
 
 	printf("SOCKET(%d) is disconnected \n", m_stpClientInfo[a_wId].m_SocketClient);
-
-
 
 }
 
@@ -159,7 +180,7 @@ const bool& CIOCP::CreateAccepterThread()
 	// Thread Creation to input into WaitingThread Queue
 
 	m_hAccepterThread = (HANDLE)_beginthreadex(NULL, 0, &CallAccepterThread, this, CREATE_SUSPENDED, &uiThreadId);
-	if (m_hWorkerThread == NULL) {
+	if (m_hAccepterThread == NULL) {
 		printf("[Error] Location : CIOCP::CreateAccepterThread, Reason : CallAccepterThread() has been failed: %d \n", WSAGetLastError());
 		return false;
 	}
@@ -168,6 +189,21 @@ const bool& CIOCP::CreateAccepterThread()
 	return true;
 }
 
+const bool&  CIOCP::CreateTimerThread()
+{
+	unsigned int uiThreadId = 0;
+
+	// Thread Creation to input into WaitingThread Queue
+
+	m_hTimerThread = (HANDLE)_beginthreadex(NULL, 0, &CallTimerThread, this, CREATE_SUSPENDED, &uiThreadId);
+	if (m_hTimerThread == NULL) {
+		printf("[Error] Location : CIOCP::CreateTimerThread, Reason : CallTimerThread() has been failed: %d \n", WSAGetLastError());
+		return false;
+	}
+	ResumeThread(m_hTimerThread);
+	printf("Timer thread is starting! \n");
+	return true;
+}
 
 const bool& CIOCP::BindAndRecvIOCompletionPort(const WORD& a_wNewId)
 {
@@ -193,11 +229,14 @@ void CIOCP::StartServer()
 		printf("[Error] Location : CIOCP::StartServer, Reason : CreateIoCompletionPort() has been failed: %d \n", WSAGetLastError());
 		return;
 	}
-	printf("Server is started!");
+	printf("Server is started! \n");
 	bool bRet = CreateWorkerThread();
 	if (bRet == false) return;
 
 	bRet = CreateAccepterThread();
+	if (bRet == false) return;
+
+	bRet = CreateTimerThread();
 	if (bRet == false) return;
 
 	while (m_bAccepterRun);
@@ -249,6 +288,13 @@ const bool& CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
 		(m_stpClientInfo[a_wFrom].m_pos.y - m_stpClientInfo[a_wTo].m_pos.y))) < MAX_VIEW;
 }
 
+const bool& CIOCP::IsCloseWithNPC(const WORD& a_wFrom, const WORD& a_wTo)
+{
+	return sqrt(((m_cNPC[a_wFrom].GetPos().x - m_stpClientInfo[a_wTo].m_pos.x) *
+		(m_cNPC[a_wFrom].GetPos().x - m_stpClientInfo[a_wTo].m_pos.x)) +
+		((m_cNPC[a_wFrom].GetPos().y - m_stpClientInfo[a_wTo].m_pos.y) *
+		(m_cNPC[a_wFrom].GetPos().y - m_stpClientInfo[a_wTo].m_pos.y))) < MAX_VIEW;
+}
 void CIOCP::AccepterThread()
 {
 	SOCKADDR_IN stClientAddr;
@@ -288,7 +334,9 @@ void CIOCP::AccepterThread()
 		SendPutClient(wNewId, wNewId);
 
 		unordered_set<WORD> local_view_list;
+		unordered_set<WORD> local_NPC_view_list;
 
+		// Client view
 		for (int i = 0; i < MAX_CLIENT_NUM; ++i){
 			if (m_stpClientInfo[i].m_bIsConnected)
 				if (i != wNewId) {
@@ -307,6 +355,18 @@ void CIOCP::AccepterThread()
 		m_stpClientInfo[wNewId].m_lock.lock();
 		for (auto p : local_view_list) m_stpClientInfo[wNewId].m_view_list.insert(p);
 		m_stpClientInfo[wNewId].m_lock.unlock();
+
+		// NPC view
+		for (int i = 0; i < MAX_NPC_NUM; ++i) {
+			if (IsCloseWithNPC(i, wNewId)) {
+				SendPutNPC(wNewId, i);
+				local_NPC_view_list.insert(i);
+			}
+		}
+
+		m_stpClientInfo[wNewId].m_NPC_Lock.lock();
+		for (auto p : local_NPC_view_list) m_stpClientInfo[wNewId].m_NPC_view_list.insert(p);
+		m_stpClientInfo[wNewId].m_NPC_Lock.unlock();
 		
 	}
 }
@@ -314,34 +374,70 @@ void CIOCP::AccepterThread()
 
 void CIOCP::SendPutClient(const WORD& a_wClient, const WORD& a_wObject)
 {
-	ST_SC_PUT_CLIENT stPacket;
+	ST_SC_PUT_OBJECT stPacket;
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_PUT_CLIENT;
-	stPacket.m_bytX = m_stpClientInfo[a_wObject].m_pos.x;
-	stPacket.m_bytY = m_stpClientInfo[a_wObject].m_pos.y;
+	stPacket.m_wX = m_stpClientInfo[a_wObject].m_pos.x;
+	stPacket.m_wY = m_stpClientInfo[a_wObject].m_pos.y;
 
 	SendPacket(a_wClient, &stPacket);
 }
 
+
 void CIOCP::SendMoveClient(const WORD& a_wClient, const WORD& a_wObject)
 {
-	ST_SC_MOVE_CLIENT stPacket;
+	ST_SC_MOVE_OBJECT stPacket;
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_MOVE_CLIENT;
-	stPacket.m_bytX = m_stpClientInfo[a_wObject].m_pos.x;
-	stPacket.m_bytY = m_stpClientInfo[a_wObject].m_pos.y;
+	stPacket.m_wX = m_stpClientInfo[a_wObject].m_pos.x;
+	stPacket.m_wY = m_stpClientInfo[a_wObject].m_pos.y;
 
 	SendPacket(a_wClient, &stPacket);
 }
 
 void CIOCP::SendRemoveClient(const WORD& a_wClient, const WORD& a_wObject)
 {
-	ST_SC_REMOVE_CLIENT stPacket;
+	ST_SC_REMOVE_OBJECT stPacket;
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_REMOVE_CLIENT;
+
+	SendPacket(a_wClient, &stPacket);
+
+}
+
+void CIOCP::SendPutNPC(const WORD& a_wClient, const WORD& a_wObject)
+{
+	ST_SC_PUT_OBJECT stPacket;
+	stPacket.m_wId = a_wObject;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_PUT_NPC;
+	stPacket.m_wX = m_cNPC[a_wObject].GetPos().x;
+	stPacket.m_wY = m_cNPC[a_wObject].GetPos().y;
+
+	SendPacket(a_wClient, &stPacket);
+}
+
+void CIOCP::SendMoveNPC(const WORD& a_wClient, const WORD& a_wObject)
+{
+	ST_SC_MOVE_OBJECT stPacket;
+	stPacket.m_wId = a_wObject;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_MOVE_NPC;
+	stPacket.m_wX = m_cNPC[a_wObject].GetPos().x;
+	stPacket.m_wY = m_cNPC[a_wObject].GetPos().y;
+
+	SendPacket(a_wClient, &stPacket);
+}
+
+void CIOCP::SendRemoveNPC(const WORD& a_wClient, const WORD& a_wObject)
+{
+	ST_SC_REMOVE_OBJECT stPacket;
+	stPacket.m_wId = a_wObject;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_REMOVE_NPC;
 
 	SendPacket(a_wClient, &stPacket);
 
@@ -434,8 +530,53 @@ void CIOCP::HandleView(const WORD& a_wId)
 	for (auto d : removed_id_list) m_stpClientInfo[a_wId].m_view_list.erase(d);
 	m_stpClientInfo[a_wId].m_lock.unlock();
 
+	// HandleNPCView
+	/*for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
+		if (IsCloseWithNPC(i, a_wId)) HandleNPCView(a_wId, i);
+	}*/
 }
 
+void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
+{
+	unordered_set<WORD> new_view_list;
+
+	// Object to be added
+	unordered_set<WORD> vlc;
+	// Object to be removed
+	unordered_set<WORD> removed_id_list;
+
+	if (IsCloseWithNPC(a_NPC, a_wId)) new_view_list.insert(a_NPC);
+
+	m_stpClientInfo[a_wId].m_NPC_Lock.lock();
+	vlc = m_stpClientInfo[a_wId].m_NPC_view_list;
+	m_stpClientInfo[a_wId].m_NPC_Lock.unlock();
+
+	for (auto target : new_view_list) {
+		// If Client doesn't have target NPC
+		if (vlc.count(target) == 0) {
+			SendPutNPC(a_wId, a_NPC);
+			vlc.insert(target);
+		}
+
+		else {  // Client has target NPC
+			SendMoveNPC(a_wId, a_NPC);
+		}
+	}
+
+			// Now object is far away...
+	for (auto target : vlc) {
+		if (new_view_list.count(target) == 0) { // If target is far away
+			SendRemoveNPC(a_wId, target);
+			removed_id_list.insert(target);
+
+		}
+	}
+	m_stpClientInfo[a_wId].m_NPC_Lock.lock();
+	for (auto p : vlc) m_stpClientInfo[a_wId].m_NPC_view_list.insert(p);
+	for (auto d : removed_id_list) m_stpClientInfo[a_wId].m_NPC_view_list.erase(d);
+	m_stpClientInfo[a_wId].m_NPC_Lock.unlock();
+		
+}
 void CIOCP::ProcessPacket(const WORD& a_wId, const unsigned char a_Packet[])
 {
 	switch (a_Packet[1]) {
@@ -470,7 +611,7 @@ void CIOCP::SendPacket(const WORD& a_wId, void* a_vPacket)
 	if (0 != nRet) {
 		int err_no = WSAGetLastError();
 		if (WSA_IO_PENDING != err_no)
-			DisPlayError("Error in SendPacket:", err_no);
+			DisPlayError("Error in SendPacket: \n", err_no);
 	}
 
 
@@ -485,7 +626,7 @@ void CIOCP::WorkerThread()
 	stOverlappedEx* stpOverlappedEx = nullptr;
 	unsigned long long Id{};
 	while (m_bWorkerRun) {
-		printf("Worker thread is running! \n");
+		//printf("Worker thread is running! \n");
 		bSuccess = GetQueuedCompletionStatus(m_hIOCP,
 			&dwIoSize, // Sent byte
 			(LPDWORD)&Id, // CompletionKey
@@ -521,14 +662,14 @@ void CIOCP::WorkerThread()
 
 		// Overlapped I/O Recv
 		if (stpOverlappedEx->m_eOperation == eOP_RECV) {
-			printf("[Recv] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(m_stpClientInfo[Id].m_saClientAddr.sin_addr), m_stpClientInfo[Id].m_SocketClient);
+			//printf("[Recv] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(m_stpClientInfo[Id].m_saClientAddr.sin_addr), m_stpClientInfo[Id].m_SocketClient);
 			unsigned char *buf = m_stpClientInfo[Id].m_stRecvOverlappedEx.m_szBuf;
 			unsigned psize = m_stpClientInfo[Id].wCurrPacketSize;
 			unsigned pr_size = m_stpClientInfo[Id].wPrevPacketData;
 			while (dwIoSize > 0) {
 				if (psize == 0) psize = buf[0];
 				if (dwIoSize + pr_size >= psize) {
-					// 지금 패킷 완성 가능
+					// Now can assemble packet
 					unsigned char packet[MAX_PACKET_SIZE];
 					memcpy(packet, m_stpClientInfo[Id].m_szPacketBuf, pr_size);
 					memcpy(packet + pr_size, buf, psize - pr_size);
@@ -558,8 +699,20 @@ void CIOCP::WorkerThread()
 				CloseSocket(Id,true);
 			}
 
-			printf("[Send] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(m_stpClientInfo[Id].m_saClientAddr.sin_addr), m_stpClientInfo[Id].m_SocketClient);
+			//printf("[Send] bytes: %d IP(%s) SOCKET(%d) \n", dwIoSize, inet_ntoa(m_stpClientInfo[Id].m_saClientAddr.sin_addr), m_stpClientInfo[Id].m_SocketClient);
 			delete stpOverlappedEx;
+
+		}
+
+		else if (stpOverlappedEx->m_eOperation == eMOVE) {
+			m_cNPC[Id].lock.lock();
+
+			for (int i = 0; i < MAX_CLIENT_NUM; ++i) 
+				if (m_stpClientInfo[i].m_bIsConnected) HandleNPCView(i, Id);
+		
+			m_cNPC[Id].Move();
+			m_cNPC[Id].lock.unlock();
+	
 
 		}
 			
@@ -588,5 +741,42 @@ void CIOCP::DestroyThread()
 	closesocket(m_ListenSocket);
 	// Wait for thread
 	WaitForSingleObject(m_hAccepterThread, INFINITE);
+
+}
+
+LONGLONG CIOCP::Get_Current_Time()
+{
+	milliseconds ms = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
+	return ms.count();
+}
+
+
+LONGLONG CIOCP::AddTime(WORD a_wTime)
+{
+	milliseconds ms = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
+	return ms.count() + a_wTime;
+}
+
+void CIOCP::TimerThread()
+{
+	STTimerInfo stTimerInfo;
+	stOverlappedEx  stOver;
+	do {
+		Sleep(1);
+		do {
+			if (m_TimerQueue.size() > 0) {
+				stTimerInfo = m_TimerQueue.front();
+				if (stTimerInfo.lTime > Get_Current_Time()) break;
+				m_TimerQueue.pop();
+
+				stOver.m_eOperation = stTimerInfo.eOperation;
+				PostQueuedCompletionStatus(m_hIOCP, 1, stTimerInfo.wId, reinterpret_cast<LPWSAOVERLAPPED>(&stOver));
+
+				stTimerInfo.lTime = AddTime(NPC_MOVE_SEC);
+				m_TimerQueue.push(stTimerInfo);
+
+			}
+		} while (true);
+	} while (true);
 
 }

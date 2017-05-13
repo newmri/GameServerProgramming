@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ClientInfo.h"
+#include "CNPC.h"
 
 class CIOCP
 {
@@ -20,9 +21,13 @@ public:
 
 	const bool& IsClose(const WORD&, const WORD&);
 
+	const bool& IsCloseWithNPC(const WORD&, const WORD&);
+
 	const bool& CreateWorkerThread();
 
 	const bool& CreateAccepterThread();
+
+	const bool& CreateTimerThread();
 
 	// Connect object of completionPort and socket and completionKey
 	const bool& BindAndRecvIOCompletionPort(const WORD&);
@@ -35,21 +40,32 @@ public:
 
 	void HandleView(const WORD&);
 
+	void HandleNPCView(const WORD&, const WORD& a_NPC);
+
 	void ProcessPacket(const WORD&, const unsigned char[]);
 
 	void SendPacket(const WORD&, void*);
 
 	void SendPutClient(const WORD&, const WORD&);
-
 	void SendMoveClient(const WORD&, const WORD&);
-
 	void SendRemoveClient(const WORD&, const WORD&);
+
+	void SendPutNPC(const WORD&, const WORD&);
+	void SendMoveNPC(const WORD&, const WORD&);
+	void SendRemoveNPC(const WORD&, const WORD&);
 
 	// Accepter Thread
 	void AccepterThread();
 
+	// Timer Thread
+	void TimerThread();
+
 	// Destroy constructed thread
 	void DestroyThread();
+
+public:
+	LONGLONG AddTime(WORD a_wTime);
+	LONGLONG Get_Current_Time();
 
 // To contrcut only one IOCP
 public:
@@ -73,6 +89,8 @@ private:
 	HANDLE m_hWorkerThread[MAX_WORKER_THREAD];
 	// Accept Thread Handle
 	HANDLE m_hAccepterThread;
+	// Timer Thread Handle
+	HANDLE m_hTimerThread;
 	// CompletionPort Object Handle
 	HANDLE m_hIOCP;
 	// Working Thread Operation Flag
@@ -87,4 +105,8 @@ private:
 	POINT m_pos;
 	// User Id
 	unsigned short m_wId;
+
+private:
+	CNPC m_cNPC[MAX_NPC_NUM];
+	queue<STTimerInfo> m_TimerQueue;
 };
