@@ -1,0 +1,41 @@
+﻿  main.cpp
+  CIOCP.cpp
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(72): warning C4996: 'WSASocketA': Use WSASocketW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(3413): note: see declaration of 'WSASocketA'
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(146): warning C4311: 'reinterpret_cast': pointer truncation from 'stClientInfo *' to 'DWORD'
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(146): warning C4302: 'reinterpret_cast': truncation from 'stClientInfo *' to 'DWORD'
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(461): error C2664: 'BOOL GetQueuedCompletionStatus(HANDLE,LPDWORD,PULONG_PTR,LPOVERLAPPED *,DWORD)': cannot convert argument 3 from 'LPDWORD' to 'PULONG_PTR'
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(461): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): note: consider using '%I64d' in the format string
+  Generating Code...
