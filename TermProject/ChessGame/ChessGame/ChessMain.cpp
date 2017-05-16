@@ -53,9 +53,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	static CImage cChessmap, cChessImg;
 	CPlayer* pPlayer = CPlayer::Instance();
 	static bool bInit = false;
-	static STMap stMap;
 	CString cStr;
-	static POINT pos{ 0,0 };
+	static Point pos;
 	static bool bSwapMap = false;
 	HFONT hFont, hOldFont;
 
@@ -140,31 +139,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			pos = pPlayer->GetPos();
 
-			if (pos.x >= MAX_MAP_TILE) if (pos.x % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
-			if (pos.y >= MAX_MAP_TILE) if (pos.y % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
+			if (pos.m_wX >= MAX_MAP_TILE) if (pos.m_wX % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
+			if (pos.m_wY >= MAX_MAP_TILE) if (pos.m_wY % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
 
-			stMap.DrawMap(hMemDC, bSwapMap);
+			pPlayer->m_stMap.DrawMap(hMemDC, bSwapMap,pPlayer->GetPos());
 
 
 			for (int i = 0; i < MAX_PLAYER; ++i) {
 				//If player is not logouted
 				if (pPlayer->m_stClientInfo[i].m_IsConnected) {
 
-					memcpy(&pPlayer->m_stClientInfo[i].m_DrawPos, &pPlayer->m_stClientInfo[i].m_pos, sizeof(POINT));
+					memcpy(&pPlayer->m_stClientInfo[i].m_DrawPos, &pPlayer->m_stClientInfo[i].m_pos, sizeof(Point));
 
-					if (pPlayer->m_stClientInfo[i].m_DrawPos.x >= MAX_MAP_TILE) 
-						pPlayer->m_stClientInfo[i].m_DrawPos.x = pPlayer->m_stClientInfo[i].m_DrawPos.x % MAX_MAP_TILE;
+					if (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX >= MAX_MAP_TILE) 
+						pPlayer->m_stClientInfo[i].m_DrawPos.m_wX = pPlayer->m_stClientInfo[i].m_DrawPos.m_wX % MAX_MAP_TILE;
 					
-					if (pPlayer->m_stClientInfo[i].m_DrawPos.y >= MAX_MAP_TILE) 
-						pPlayer->m_stClientInfo[i].m_DrawPos.y = pPlayer->m_stClientInfo[i].m_DrawPos.y % MAX_MAP_TILE;
+					if (pPlayer->m_stClientInfo[i].m_DrawPos.m_wY >= MAX_MAP_TILE)
+						pPlayer->m_stClientInfo[i].m_DrawPos.m_wY = pPlayer->m_stClientInfo[i].m_DrawPos.m_wY % MAX_MAP_TILE;
 					
 
-					pPlayer->m_stClientInfo[i].m_ciChess.TransparentBlt(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.x * MOVE_PIXEL) + 5, pPlayer->m_stClientInfo[i].m_DrawPos.y * MOVE_PIXEL,
+					pPlayer->m_stClientInfo[i].m_ciChess.TransparentBlt(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stClientInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
 						pPlayer->m_stClientInfo[i].m_ciChess.GetWidth(), pPlayer->m_stClientInfo[i].m_ciChess.GetHeight(),
 						0, 0, pPlayer->m_stClientInfo[i].m_ciChess.GetWidth(), pPlayer->m_stClientInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
 
-					cStr.Format("(%d, %d)", pPlayer->m_stClientInfo[i].m_pos.y, pPlayer->m_stClientInfo[i].m_pos.x);
-					TextOut(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.x * MOVE_PIXEL), (pPlayer->m_stClientInfo[i].m_DrawPos.y * MOVE_PIXEL) + 25, cStr, cStr.GetLength());
+					cStr.Format("(%d, %d)", pPlayer->m_stClientInfo[i].m_pos.m_wY, pPlayer->m_stClientInfo[i].m_pos.m_wX);
+					TextOut(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX * MOVE_PIXEL), (pPlayer->m_stClientInfo[i].m_DrawPos.m_wY * MOVE_PIXEL) + 25, cStr, cStr.GetLength());
 				}
 			}
 
@@ -172,18 +171,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				if (pPlayer->m_stNPCInfo[i].m_IsAlive) {
 					memcpy(&pPlayer->m_stNPCInfo[i].m_DrawPos, &pPlayer->m_stNPCInfo[i].m_pos, sizeof(POINT));
 
-					if (pPlayer->m_stNPCInfo[i].m_DrawPos.x >= MAX_MAP_TILE)
-						pPlayer->m_stNPCInfo[i].m_DrawPos.x = pPlayer->m_stNPCInfo[i].m_DrawPos.x % MAX_MAP_TILE;
+					if (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX >= MAX_MAP_TILE)
+						pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX = pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX % MAX_MAP_TILE;
 
-					if (pPlayer->m_stNPCInfo[i].m_DrawPos.y >= MAX_MAP_TILE)
-						pPlayer->m_stNPCInfo[i].m_DrawPos.y = pPlayer->m_stNPCInfo[i].m_DrawPos.y % MAX_MAP_TILE;
+					if (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY >= MAX_MAP_TILE)
+						pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY = pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY % MAX_MAP_TILE;
 
-					pPlayer->m_stNPCInfo[i].m_ciChess.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.x * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.y * MOVE_PIXEL,
+					pPlayer->m_stNPCInfo[i].m_ciChess.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
 						pPlayer->m_stNPCInfo[i].m_ciChess.GetWidth(), pPlayer->m_stNPCInfo[i].m_ciChess.GetHeight(),
 						0, 0, pPlayer->m_stNPCInfo[i].m_ciChess.GetWidth(), pPlayer->m_stNPCInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
 
-					cStr.Format("(%d, %d)", pPlayer->m_stNPCInfo[i].m_pos.y, pPlayer->m_stNPCInfo[i].m_pos.x);
-					TextOut(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.x * MOVE_PIXEL), (pPlayer->m_stNPCInfo[i].m_DrawPos.y * MOVE_PIXEL) + 25, cStr, cStr.GetLength());
+					cStr.Format("(%d, %d)", pPlayer->m_stNPCInfo[i].m_pos.m_wY, pPlayer->m_stNPCInfo[i].m_pos.m_wX);
+					TextOut(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL), (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL) + 25, cStr, cStr.GetLength());
 
 				}
 			}

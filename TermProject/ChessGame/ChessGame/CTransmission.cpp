@@ -8,9 +8,9 @@ CTransmission::CTransmission()
 	ZeroMemory(&m_saServerAddr, sizeof(m_saServerAddr));
 	m_nClientCnt = 0;
 
-	m_pos.x = FIRST_X;
-	m_pos.y = FIRST_Y;
-
+	m_pos.m_wX = FIRST_X;
+	m_pos.m_wY = FIRST_Y;
+	m_pos.m_wZone = 1;
 	m_wId = 65535;
 	m_IsMoved = false;
 	m_First = true;
@@ -111,20 +111,19 @@ const bool& CTransmission::ProcessPacket(const HWND& a_hWnd, const UINT& a_iMess
 
 void CTransmission::ProcessPacket(char* a_ptr)
 {
+
 	switch (a_ptr[1]) {
 	case eSC_PUT_CLIENT: {
 		ST_SC_PUT_OBJECT* stPacket = reinterpret_cast<ST_SC_PUT_OBJECT*>(a_ptr);
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			if (i == stPacket->m_wId && m_First) {
 				m_wId = stPacket->m_wId;
-				m_pos.x = stPacket->m_wX;
-				m_pos.y = stPacket->m_wY;
+				m_pos = stPacket->m_pos;
 				m_First = false;
 
 				m_stClientInfo[i].m_IsConnected = true;
 				m_stClientInfo[i].m_wId = stPacket->m_wId;
-				m_stClientInfo[i].m_pos.x = stPacket->m_wX;
-				m_stClientInfo[i].m_pos.y = stPacket->m_wY;
+				m_stClientInfo[i].m_pos = stPacket->m_pos;
 				m_nClientCnt++;
 				break;
 			}
@@ -132,8 +131,7 @@ void CTransmission::ProcessPacket(char* a_ptr)
 			else if (i == stPacket->m_wId && i != m_wId) {
 				m_stClientInfo[i].m_IsConnected = true;
 				m_stClientInfo[i].m_wId = stPacket->m_wId;
-				m_stClientInfo[i].m_pos.x = stPacket->m_wX;
-				m_stClientInfo[i].m_pos.y = stPacket->m_wY;
+				m_stClientInfo[i].m_pos = stPacket->m_pos;
 				m_nClientCnt++;
 				break;
 
@@ -147,15 +145,12 @@ void CTransmission::ProcessPacket(char* a_ptr)
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			if (m_stClientInfo[i].m_wId == stPacket->m_wId) {
 				if (m_stClientInfo[i].m_wId == m_wId) {
-					m_pos.x = stPacket->m_wX;
-					m_pos.y = stPacket->m_wY;
-					m_stClientInfo[i].m_pos.x = stPacket->m_wX;
-					m_stClientInfo[i].m_pos.y = stPacket->m_wY;
+					m_pos = stPacket->m_pos;
+					m_stClientInfo[i].m_pos = stPacket->m_pos;
 					break;
 				}
 				else {
-					m_stClientInfo[i].m_pos.x = stPacket->m_wX;
-					m_stClientInfo[i].m_pos.y = stPacket->m_wY;
+					m_stClientInfo[i].m_pos = stPacket->m_pos;
 					break;
 				}
 			}
@@ -173,8 +168,7 @@ void CTransmission::ProcessPacket(char* a_ptr)
 	case eSC_PUT_NPC: {
 		ST_SC_PUT_OBJECT* stPacket = reinterpret_cast<ST_SC_PUT_OBJECT*>(a_ptr);
 		m_stNPCInfo[stPacket->m_wId].m_wId = stPacket->m_wId;
-		m_stNPCInfo[stPacket->m_wId].m_pos.x = stPacket->m_wX;
-		m_stNPCInfo[stPacket->m_wId].m_pos.y = stPacket->m_wY;
+		m_stNPCInfo[stPacket->m_wId].m_pos = stPacket->m_pos;
 		m_stNPCInfo[stPacket->m_wId].m_IsAlive = true;
 		break;
 	}
@@ -183,8 +177,7 @@ void CTransmission::ProcessPacket(char* a_ptr)
 		ST_SC_MOVE_OBJECT* stPacket = reinterpret_cast<ST_SC_MOVE_OBJECT*>(a_ptr);
 		for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
 			if (stPacket->m_wId == i) {
-				m_stNPCInfo[i].m_pos.x = stPacket->m_wX;
-				m_stNPCInfo[i].m_pos.y = stPacket->m_wY;
+				m_stNPCInfo[i].m_pos = stPacket->m_pos;
 			}
 		}
 
@@ -193,6 +186,11 @@ void CTransmission::ProcessPacket(char* a_ptr)
 	case eSC_REMOVE_NPC: {
 		ST_SC_REMOVE_OBJECT* stPacket = reinterpret_cast<ST_SC_REMOVE_OBJECT*>(a_ptr);
 		m_stNPCInfo[stPacket->m_wId].m_IsAlive = false;
+		break;
+	}
+	case eSC_MAP_NOTIFY: {
+		ST_SC_NOTIFY_MAP* stPacket = reinterpret_cast<ST_SC_NOTIFY_MAP*>(a_ptr);
+		m_stMap.m_MapInfo.push_back(stPacket->m_pos);
 		break;
 	}
 
@@ -264,4 +262,4 @@ void CTransmission::Close(const bool& a_bForceClose)
 	m_sock = INVALID_SOCKET;
 }
 
-const POINT& CTransmission::GetPos(){ return m_pos; }
+const Point& CTransmission::GetPos(){ return m_pos; }

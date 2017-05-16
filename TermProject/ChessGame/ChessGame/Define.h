@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <atlimage.h>
 #include <atlstr.h>
+#include <vector>
 
 #define FIRST_X 357
 #define FIRST_Y 360
@@ -32,10 +33,17 @@
 enum EMOVE { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
 
 // From Server To Client
-enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC};
+enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC,
+	eSC_MAP_NOTIFY
+};
 enum { eID_IP_EDIT = 101 };
 enum { eIDC_CONNECT = 1001 };
 
+struct Point
+{
+	WORD m_wX, m_wY;
+	WORD m_wZone;
+};
 
 #pragma pack (push, 1)
 
@@ -50,7 +58,7 @@ struct ST_SC_PUT_OBJECT
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	WORD m_wId;
-	WORD m_wX, m_wY;
+	Point m_pos;
 };
 
 struct ST_SC_MOVE_OBJECT
@@ -58,7 +66,7 @@ struct ST_SC_MOVE_OBJECT
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	WORD m_wId;
-	WORD m_wX, m_wY;
+	Point m_pos;
 };
 
 struct ST_SC_REMOVE_OBJECT
@@ -66,6 +74,14 @@ struct ST_SC_REMOVE_OBJECT
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	WORD m_wId;
+};
+
+
+struct ST_SC_NOTIFY_MAP
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	Point m_pos;
 };
 
 #pragma pack (pop)

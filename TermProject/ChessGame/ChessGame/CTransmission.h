@@ -3,7 +3,7 @@
 #include <WinSock2.h>
 
 #include "stClientInfo.h"
-
+#include "STMap.h"
 #pragma comment(lib,"ws2_32")
 #pragma comment(lib, "user32.lib")
 
@@ -23,7 +23,7 @@ public:
 	const bool& Connect(const HWND&);
 	void ReadPacket();
 	void SendPacket();
-	const POINT& GetPos();
+	const Point& GetPos();
 	void Close(const bool&);
 public:
 	stClientInfo m_stClientInfo[MAX_PLAYER];
@@ -34,9 +34,13 @@ private:
 protected:
 	int m_nPacketType;
 	int m_nClientCnt;
-	POINT m_pos;
+	Point m_pos;
 	WORD m_wId;
 	bool m_IsMoved;
+
+public:
+	STMap m_stMap;
+
 private:
 	TCHAR m_tchServerIp[MAX_IP_LEN];
 	SOCKET m_sock;

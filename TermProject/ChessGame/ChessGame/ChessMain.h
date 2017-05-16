@@ -2,7 +2,7 @@
 
 #include "CPlayer.h"
 #include "STMap.h"
-//#pragma comment(linker , "/entry:WinMainCRTStartup /subsystem:console")
+#pragma comment(linker , "/entry:WinMainCRTStartup /subsystem:console")
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;
