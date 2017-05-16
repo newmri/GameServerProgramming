@@ -3,6 +3,11 @@
 #include "ClientInfo.h"
 #include "CNPC.h"
 
+bool cmp (const Point& a, const Point& b)
+{
+	return a.m_wZone < b.m_wZone;
+}
+
 class CIOCP
 {
 public:
@@ -45,6 +50,8 @@ public:
 	void ProcessPacket(const WORD&, const unsigned char[]);
 
 	void SendPacket(const WORD&, void*);
+
+	void SendNotiFyMap(const WORD&);
 
 	void SendPutClient(const WORD&, const WORD&);
 	void SendMoveClient(const WORD&, const WORD&);
@@ -109,4 +116,7 @@ private:
 private:
 	CNPC m_cNPC[MAX_NPC_NUM];
 	queue<STTimerInfo> m_TimerQueue;
+
+private:
+	vector <Point> m_MapInfo;
 };

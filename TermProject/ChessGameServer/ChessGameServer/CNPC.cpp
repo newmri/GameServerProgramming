@@ -11,18 +11,18 @@ enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y, eLEFT_END = 0, eRIGHT_END = MAX_MA
 
 void CNPC::Init()
 {
-	m_pos.x = 30;
-	m_pos.y = 30;
+	m_pos.m_wX = 30;
+	m_pos.m_wY = 30;
 }
 
 void CNPC::Move()
 {
 	switch (rand() % 4) {
-	case eCS_UP: if(m_pos.y > eTOP_END) m_pos.y -= 1; break;
-	case eCS_DOWN: if(m_pos.y < eBOTTOM_END) m_pos.y += 1; break;
-	case eCS_LEFT: if(m_pos.x > eLEFT_END) m_pos.x -= 1; break;
-	case eCS_RIGHT: if(m_pos.x < eRIGHT_END) m_pos.x += 1; break;
+	case eCS_UP: if(m_pos.m_wY > eTOP_END) m_pos.m_wY -= 1; break;
+	case eCS_DOWN: if(m_pos.m_wY < eBOTTOM_END) m_pos.m_wY += 1; break;
+	case eCS_LEFT: if(m_pos.m_wX > eLEFT_END) m_pos.m_wX -= 1; break;
+	case eCS_RIGHT: if(m_pos.m_wX < eRIGHT_END) m_pos.m_wX += 1; break;
 	}
 }
 
-const POINT& CNPC::GetPos() { return m_pos; }
+const Point2& CNPC::GetPos() { return m_pos; }

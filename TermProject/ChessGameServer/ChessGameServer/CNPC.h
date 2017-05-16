@@ -2,6 +2,12 @@
 
 #include <Windows.h>
 #include <mutex>
+
+struct Point2
+{
+	WORD m_wX, m_wY;
+	WORD m_wZone;
+};
 class CNPC
 {
 public:
@@ -11,12 +17,12 @@ public:
 	void Move();
 
 public:
-	const POINT& GetPos();
+	const Point2& GetPos();
 
 public:
 	std::mutex lock;
 
 private:
-	POINT m_pos;
+	Point2 m_pos;
 
 };

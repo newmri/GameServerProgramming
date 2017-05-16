@@ -12,7 +12,7 @@ struct stClientInfo {
 	WORD wPrevPacketData, wCurrPacketSize;
 
 	bool m_bIsConnected;
-	POINT m_pos;
+	Point m_pos;
 	unordered_set<WORD> m_view_list;
 	unordered_set<WORD> m_NPC_view_list;
 	mutex m_lock;
@@ -27,7 +27,8 @@ struct stClientInfo {
 
 		m_SocketClient = INVALID_SOCKET;
 		m_bIsConnected = false;
-		m_pos.x = CHESS_FIRST_X, m_pos.y = CHESS_FIRST_Y;
+		m_pos.m_wX = CHESS_FIRST_X, m_pos.m_wY = CHESS_FIRST_Y;
+		m_pos.m_wZone = 1;
 
 		wPrevPacketData = 0;
 		wCurrPacketSize = 0;

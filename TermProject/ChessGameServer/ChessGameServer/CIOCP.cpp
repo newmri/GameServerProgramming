@@ -64,6 +64,7 @@ CIOCP::CIOCP()
 	STTimerInfo stTimerInfo;
 	stTimerInfo.eOperation = enumOperation::eMOVE;
 	stTimerInfo.lTime = AddTime(NPC_MOVE_SEC);
+
 	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
 		stTimerInfo.wId = i;
 		m_TimerQueue.push(stTimerInfo);
@@ -71,6 +72,28 @@ CIOCP::CIOCP()
 	}
 
 	srand((unsigned int)time(NULL));
+
+
+	Point pos;
+	WORD wZone{};
+	for (int y = 0; y < MAX_MAP_Y / MAX_MAP_TILE; ++y) {
+		for (int x = 0; x <  MAX_MAP_X / MAX_MAP_TILE; ++x) {
+			pos.m_wX = rand() % (MAX_MAP_TILE - 1) + (x * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+			pos.m_wY = rand() % (MAX_MAP_TILE - 1) + (y * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+
+			while (!((pos.m_wX < ((x + 1) * MAX_MAP_TILE)) && (pos.m_wX >(x * MAX_MAP_TILE)))) {
+				pos.m_wX = rand() % (MAX_MAP_TILE - 1) + (x * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+				pos.m_wY = rand() % (MAX_MAP_TILE - 1) + (y * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+			}
+		
+			pos.m_wZone = ++wZone;
+			m_MapInfo.push_back(pos);
+			
+		}
+		
+	}
+	sort(m_MapInfo.begin(), m_MapInfo.end(), cmp);
+	for (auto d : m_MapInfo) cout << d.m_wY<<" " << d.m_wX <<" "<<d.m_wZone<< endl;
 }
 
 CIOCP::~CIOCP(void)
@@ -268,8 +291,9 @@ const bool& CIOCP::BindandListen(const int& a_nBindPort)
 void CIOCP::SetNewClientInfo(const WORD& a_wNewId)
 {
 	m_stpClientInfo[a_wNewId].m_bIsConnected = true;
-	m_stpClientInfo[a_wNewId].m_pos.x = CHESS_FIRST_X;
-	m_stpClientInfo[a_wNewId].m_pos.y = CHESS_FIRST_Y;
+	m_stpClientInfo[a_wNewId].m_pos.m_wX = CHESS_FIRST_X;
+	m_stpClientInfo[a_wNewId].m_pos.m_wY = CHESS_FIRST_Y;
+	m_stpClientInfo[a_wNewId].m_pos.m_wZone = 1;
 	m_stpClientInfo[a_wNewId].wCurrPacketSize = 0;
 	m_stpClientInfo[a_wNewId].wPrevPacketData = 0;
 	ZeroMemory(&m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx, sizeof(m_stpClientInfo[a_wNewId].m_stRecvOverlappedEx));
@@ -282,18 +306,18 @@ void CIOCP::SetNewClientInfo(const WORD& a_wNewId)
 
 const bool& CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
 {
-	return sqrt(((m_stpClientInfo[a_wFrom].m_pos.x - m_stpClientInfo[a_wTo].m_pos.x) *
-		(m_stpClientInfo[a_wFrom].m_pos.x - m_stpClientInfo[a_wTo].m_pos.x)) +
-		((m_stpClientInfo[a_wFrom].m_pos.y - m_stpClientInfo[a_wTo].m_pos.y) *
-		(m_stpClientInfo[a_wFrom].m_pos.y - m_stpClientInfo[a_wTo].m_pos.y))) < MAX_VIEW;
+	return sqrt(((m_stpClientInfo[a_wFrom].m_pos.m_wX - m_stpClientInfo[a_wTo].m_pos.m_wX) *
+		(m_stpClientInfo[a_wFrom].m_pos.m_wX - m_stpClientInfo[a_wTo].m_pos.m_wX)) +
+		((m_stpClientInfo[a_wFrom].m_pos.m_wY - m_stpClientInfo[a_wTo].m_pos.m_wY) *
+		(m_stpClientInfo[a_wFrom].m_pos.m_wY - m_stpClientInfo[a_wTo].m_pos.m_wY))) < MAX_VIEW;
 }
 
 const bool& CIOCP::IsCloseWithNPC(const WORD& a_wFrom, const WORD& a_wTo)
 {
-	return sqrt(((m_cNPC[a_wFrom].GetPos().x - m_stpClientInfo[a_wTo].m_pos.x) *
-		(m_cNPC[a_wFrom].GetPos().x - m_stpClientInfo[a_wTo].m_pos.x)) +
-		((m_cNPC[a_wFrom].GetPos().y - m_stpClientInfo[a_wTo].m_pos.y) *
-		(m_cNPC[a_wFrom].GetPos().y - m_stpClientInfo[a_wTo].m_pos.y))) < MAX_VIEW;
+	return sqrt(((m_cNPC[a_wFrom].GetPos().m_wX - m_stpClientInfo[a_wTo].m_pos.m_wX) *
+		(m_cNPC[a_wFrom].GetPos().m_wX - m_stpClientInfo[a_wTo].m_pos.m_wX)) +
+		((m_cNPC[a_wFrom].GetPos().m_wY - m_stpClientInfo[a_wTo].m_pos.m_wY) *
+		(m_cNPC[a_wFrom].GetPos().m_wY - m_stpClientInfo[a_wTo].m_pos.m_wY))) < MAX_VIEW;
 }
 void CIOCP::AccepterThread()
 {
@@ -332,7 +356,7 @@ void CIOCP::AccepterThread()
 		}
 
 		SendPutClient(wNewId, wNewId);
-
+		SendNotiFyMap(wNewId);
 		unordered_set<WORD> local_view_list;
 		unordered_set<WORD> local_NPC_view_list;
 
@@ -372,14 +396,26 @@ void CIOCP::AccepterThread()
 }
 
 
+void CIOCP::SendNotiFyMap(const WORD& a_wClient)
+{
+	ST_SC_NOTIFY_MAP stPacket;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_MAP_NOTIFY;
+
+	for (auto d : m_MapInfo) {
+		memcpy(&stPacket.m_pos,&d,sizeof(Point));
+		SendPacket(a_wClient, &stPacket);
+	}
+}
+
 void CIOCP::SendPutClient(const WORD& a_wClient, const WORD& a_wObject)
 {
 	ST_SC_PUT_OBJECT stPacket;
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_PUT_CLIENT;
-	stPacket.m_wX = m_stpClientInfo[a_wObject].m_pos.x;
-	stPacket.m_wY = m_stpClientInfo[a_wObject].m_pos.y;
+	stPacket.m_pos.m_wX = m_stpClientInfo[a_wObject].m_pos.m_wX;
+	stPacket.m_pos.m_wY = m_stpClientInfo[a_wObject].m_pos.m_wY;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -391,8 +427,8 @@ void CIOCP::SendMoveClient(const WORD& a_wClient, const WORD& a_wObject)
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_MOVE_CLIENT;
-	stPacket.m_wX = m_stpClientInfo[a_wObject].m_pos.x;
-	stPacket.m_wY = m_stpClientInfo[a_wObject].m_pos.y;
+	stPacket.m_pos.m_wX = m_stpClientInfo[a_wObject].m_pos.m_wX;
+	stPacket.m_pos.m_wY = m_stpClientInfo[a_wObject].m_pos.m_wY;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -414,8 +450,8 @@ void CIOCP::SendPutNPC(const WORD& a_wClient, const WORD& a_wObject)
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_PUT_NPC;
-	stPacket.m_wX = m_cNPC[a_wObject].GetPos().x;
-	stPacket.m_wY = m_cNPC[a_wObject].GetPos().y;
+	stPacket.m_pos.m_wX = m_cNPC[a_wObject].GetPos().m_wX;
+	stPacket.m_pos.m_wY = m_cNPC[a_wObject].GetPos().m_wY;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -426,8 +462,8 @@ void CIOCP::SendMoveNPC(const WORD& a_wClient, const WORD& a_wObject)
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_MOVE_NPC;
-	stPacket.m_wX = m_cNPC[a_wObject].GetPos().x;
-	stPacket.m_wY = m_cNPC[a_wObject].GetPos().y;
+	stPacket.m_pos.m_wX = m_cNPC[a_wObject].GetPos().m_wX;
+	stPacket.m_pos.m_wY = m_cNPC[a_wObject].GetPos().m_wY;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -580,10 +616,10 @@ void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
 void CIOCP::ProcessPacket(const WORD& a_wId, const unsigned char a_Packet[])
 {
 	switch (a_Packet[1]) {
-	case eCS_UP: if (m_stpClientInfo[a_wId].m_pos.y > eTOP_END) m_stpClientInfo[a_wId].m_pos.y--; break;
-	case eCS_DOWN: if (m_stpClientInfo[a_wId].m_pos.y < eBOTTOM_END) m_stpClientInfo[a_wId].m_pos.y++; break;
-	case eCS_LEFT: if (m_stpClientInfo[a_wId].m_pos.x > eLEFT_END) m_stpClientInfo[a_wId].m_pos.x--; break;
-	case eCS_RIGHT: if (m_stpClientInfo[a_wId].m_pos.x < eRIGHT_END) m_stpClientInfo[a_wId].m_pos.x++; break;
+	case eCS_UP: if (m_stpClientInfo[a_wId].m_pos.m_wY > eTOP_END) m_stpClientInfo[a_wId].m_pos.m_wY--; break;
+	case eCS_DOWN: if (m_stpClientInfo[a_wId].m_pos.m_wY < eBOTTOM_END) m_stpClientInfo[a_wId].m_pos.m_wY++; break;
+	case eCS_LEFT: if (m_stpClientInfo[a_wId].m_pos.m_wX > eLEFT_END) m_stpClientInfo[a_wId].m_pos.m_wX--; break;
+	case eCS_RIGHT: if (m_stpClientInfo[a_wId].m_pos.m_wX < eRIGHT_END) m_stpClientInfo[a_wId].m_pos.m_wX++; break;
 	default: printf("Unknown Packet Type from Client : "); while (true);
 	}
 
@@ -705,14 +741,14 @@ void CIOCP::WorkerThread()
 		}
 
 		else if (stpOverlappedEx->m_eOperation == eMOVE) {
-			m_cNPC[Id].lock.lock();
+			/*m_cNPC[Id].lock.lock();
 
 			for (int i = 0; i < MAX_CLIENT_NUM; ++i) 
 				if (m_stpClientInfo[i].m_bIsConnected) HandleNPCView(i, Id);
 		
 			m_cNPC[Id].Move();
 			m_cNPC[Id].lock.unlock();
-	
+	*/
 
 		}
 			
