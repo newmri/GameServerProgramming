@@ -36,14 +36,16 @@ using namespace chrono;
 #define MAX_MAP_X 300
 #define MAX_MAP_Y 300
 #define MAX_MAP_TILE 20 
+#define MAX_MAP_X_ZONE (MAX_MAP_X / MAX_MAP_TILE)
+#define MAX_MAP_Y_ZONE (MAX_MAP_Y / MAX_MAP_TILE)
 
 // NPC
-#define MAX_NPC_NUM 1000
+#define MAX_NPC_NUM 30000
 
 #define NPC_MOVE_SEC 1000
 
 // Check the boundary
-enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X};
+enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y - 1, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X - 1};
 
 enum enumOperation { eOP_RECV, eOP_SEND, eMOVE };
 

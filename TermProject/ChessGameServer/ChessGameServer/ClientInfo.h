@@ -13,6 +13,8 @@ struct stClientInfo {
 
 	bool m_bIsConnected;
 	Point m_pos;
+	short m_wXZone, m_wYZone;
+
 	unordered_set<WORD> m_view_list;
 	unordered_set<WORD> m_NPC_view_list;
 	mutex m_lock;
@@ -32,6 +34,8 @@ struct stClientInfo {
 
 		wPrevPacketData = 0;
 		wCurrPacketSize = 0;
+		m_wXZone = 1;
+		m_wYZone = -1;
 
 	}
 };

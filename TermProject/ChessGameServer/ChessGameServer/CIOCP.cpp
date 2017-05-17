@@ -93,7 +93,7 @@ CIOCP::CIOCP()
 		
 	}
 	sort(m_MapInfo.begin(), m_MapInfo.end(), cmp);
-	for (auto d : m_MapInfo) cout << d.m_wY<<" " << d.m_wX <<" "<<d.m_wZone<< endl;
+	//for (auto d : m_MapInfo) cout << d.m_wY<<" " << d.m_wX <<" "<<d.m_wZone<< endl;
 }
 
 CIOCP::~CIOCP(void)
@@ -414,8 +414,7 @@ void CIOCP::SendPutClient(const WORD& a_wClient, const WORD& a_wObject)
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_PUT_CLIENT;
-	stPacket.m_pos.m_wX = m_stpClientInfo[a_wObject].m_pos.m_wX;
-	stPacket.m_pos.m_wY = m_stpClientInfo[a_wObject].m_pos.m_wY;
+	stPacket.m_pos  = m_stpClientInfo[a_wObject].m_pos;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -427,8 +426,7 @@ void CIOCP::SendMoveClient(const WORD& a_wClient, const WORD& a_wObject)
 	stPacket.m_wId = a_wObject;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eSC_MOVE_CLIENT;
-	stPacket.m_pos.m_wX = m_stpClientInfo[a_wObject].m_pos.m_wX;
-	stPacket.m_pos.m_wY = m_stpClientInfo[a_wObject].m_pos.m_wY;
+	stPacket.m_pos = m_stpClientInfo[a_wObject].m_pos;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -452,6 +450,7 @@ void CIOCP::SendPutNPC(const WORD& a_wClient, const WORD& a_wObject)
 	stPacket.m_bytType = eSC_PUT_NPC;
 	stPacket.m_pos.m_wX = m_cNPC[a_wObject].GetPos().m_wX;
 	stPacket.m_pos.m_wY = m_cNPC[a_wObject].GetPos().m_wY;
+	stPacket.m_pos.m_wZone = m_cNPC[a_wObject].GetPos().m_wZone;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -464,6 +463,7 @@ void CIOCP::SendMoveNPC(const WORD& a_wClient, const WORD& a_wObject)
 	stPacket.m_bytType = eSC_MOVE_NPC;
 	stPacket.m_pos.m_wX = m_cNPC[a_wObject].GetPos().m_wX;
 	stPacket.m_pos.m_wY = m_cNPC[a_wObject].GetPos().m_wY;
+	stPacket.m_pos.m_wZone = m_cNPC[a_wObject].GetPos().m_wZone;
 
 	SendPacket(a_wClient, &stPacket);
 }
@@ -616,10 +616,53 @@ void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
 void CIOCP::ProcessPacket(const WORD& a_wId, const unsigned char a_Packet[])
 {
 	switch (a_Packet[1]) {
-	case eCS_UP: if (m_stpClientInfo[a_wId].m_pos.m_wY > eTOP_END) m_stpClientInfo[a_wId].m_pos.m_wY--; break;
-	case eCS_DOWN: if (m_stpClientInfo[a_wId].m_pos.m_wY < eBOTTOM_END) m_stpClientInfo[a_wId].m_pos.m_wY++; break;
-	case eCS_LEFT: if (m_stpClientInfo[a_wId].m_pos.m_wX > eLEFT_END) m_stpClientInfo[a_wId].m_pos.m_wX--; break;
-	case eCS_RIGHT: if (m_stpClientInfo[a_wId].m_pos.m_wX < eRIGHT_END) m_stpClientInfo[a_wId].m_pos.m_wX++; break;
+	case eCS_UP: 
+		if (m_stpClientInfo[a_wId].m_pos.m_wY > eTOP_END)
+			if (m_stpClientInfo[a_wId].m_pos.m_wX != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wX
+				|| m_stpClientInfo[a_wId].m_pos.m_wY - 1 != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wY) {
+			m_stpClientInfo[a_wId].m_pos.m_wY--;
+		if (m_stpClientInfo[a_wId].m_wYZone > -1 && m_stpClientInfo[a_wId].m_pos.m_wY != 38) {
+			if (m_stpClientInfo[a_wId].m_pos.m_wY % (((((m_stpClientInfo[a_wId].m_wYZone + 1) * 16) - m_stpClientInfo[a_wId].m_wYZone) - ((m_stpClientInfo[a_wId].m_wYZone * (MAX_MAP_Y_ZONE - 1)) + MAX_MAP_Y_ZONE)) * MAX_MAP_TILE - 1) == 0) {
+				m_stpClientInfo[a_wId].m_pos.m_wZone -= MAX_MAP_Y_ZONE;
+				m_stpClientInfo[a_wId].m_wYZone--;
+			}
+
+		}
+	}break;
+	case eCS_DOWN: 
+		if (m_stpClientInfo[a_wId].m_pos.m_wY < eBOTTOM_END)
+			if (m_stpClientInfo[a_wId].m_pos.m_wX != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wX
+				|| m_stpClientInfo[a_wId].m_pos.m_wY + 1 != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wY) {
+		m_stpClientInfo[a_wId].m_pos.m_wY++;
+		if (m_stpClientInfo[a_wId].m_pos.m_wY % MAX_MAP_TILE == 0) {
+			m_stpClientInfo[a_wId].m_pos.m_wZone += MAX_MAP_Y_ZONE;
+			m_stpClientInfo[a_wId].m_wYZone++;
+		}
+	}break;
+	case eCS_LEFT: 
+		if (m_stpClientInfo[a_wId].m_pos.m_wX > eLEFT_END)
+			if (m_stpClientInfo[a_wId].m_pos.m_wX - 1 != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wX
+				|| m_stpClientInfo[a_wId].m_pos.m_wY != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wY) {
+			m_stpClientInfo[a_wId].m_pos.m_wX--;
+		if(m_stpClientInfo[a_wId].m_pos.m_wZone >  eLEFT_END + 1 && m_stpClientInfo[a_wId].m_pos.m_wX != 38)
+			if (m_stpClientInfo[a_wId].m_pos.m_wX % (((m_stpClientInfo[a_wId].m_wXZone - 1) * (MAX_MAP_TILE)) - 1) == 0) {
+				if ((((m_stpClientInfo[a_wId].m_wXZone - 1) * (MAX_MAP_TILE)) - 1) > 0) {
+					m_stpClientInfo[a_wId].m_pos.m_wZone--;
+					m_stpClientInfo[a_wId].m_wXZone--;
+				}
+
+			}
+	}break;
+	case eCS_RIGHT: 
+		if (m_stpClientInfo[a_wId].m_pos.m_wX < eRIGHT_END)
+			if(m_stpClientInfo[a_wId].m_pos.m_wX + 1 != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wX
+			|| m_stpClientInfo[a_wId].m_pos.m_wY != m_MapInfo[m_stpClientInfo[a_wId].m_pos.m_wZone - 1].m_wY){
+		m_stpClientInfo[a_wId].m_pos.m_wX++;
+		if (m_stpClientInfo[a_wId].m_pos.m_wX % MAX_MAP_TILE == 0) {
+			m_stpClientInfo[a_wId].m_pos.m_wZone++;
+			m_stpClientInfo[a_wId].m_wXZone++;
+		}
+	}break;
 	default: printf("Unknown Packet Type from Client : "); while (true);
 	}
 
@@ -741,14 +784,14 @@ void CIOCP::WorkerThread()
 		}
 
 		else if (stpOverlappedEx->m_eOperation == eMOVE) {
-			/*m_cNPC[Id].lock.lock();
+			//m_cNPC[Id].lock.lock();
 
-			for (int i = 0; i < MAX_CLIENT_NUM; ++i) 
-				if (m_stpClientInfo[i].m_bIsConnected) HandleNPCView(i, Id);
+			//for (int i = 0; i < MAX_CLIENT_NUM; ++i) 
+			//	if (m_stpClientInfo[i].m_bIsConnected) HandleNPCView(i, Id);
 		
-			m_cNPC[Id].Move();
-			m_cNPC[Id].lock.unlock();
-	*/
+			//m_cNPC[Id].Move();
+			//m_cNPC[Id].lock.unlock();
+	
 
 		}
 			
