@@ -54,4 +54,7 @@ private:
 	DWORD m_in_packet_size = 0;
 	int	m_saved_packet_size = 0;
 
+public:
+	CImage m_NightImg;
+	CImage m_PawnImg;
 };

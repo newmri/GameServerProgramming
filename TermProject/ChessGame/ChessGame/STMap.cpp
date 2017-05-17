@@ -76,16 +76,16 @@ void STMap::DrawMap(const HDC& a_hdc, const bool& a_Swap, const Point& a_pos)
 	}
 	ZeroMemory(&m_Point, sizeof(m_Point));
 
-	for (int i=0; i<20; ++i){
-		
-		if ((m_MapInfo[i].m_wY - a_pos.m_wY) < 20 && (m_MapInfo[i].m_wX - a_pos.m_wX) < 20) {
-			printf("%d \n", m_MapInfo[i].m_wX);
-				m_RedBlock.TransparentBlt(a_hdc, m_MapInfo[i].m_wX * m_RedBlock.GetWidth(), m_MapInfo[i].m_wY * m_RedBlock.GetHeight(), m_RedBlock.GetWidth(), m_RedBlock.GetHeight(),
-					0, 0, m_BlackBlock.GetWidth(), m_BlackBlock.GetHeight(), RGB(255, 255, 255));
-				break;
-			
-		}
+	Point DrawPos = m_MapInfo[a_pos.m_wZone - 1];
+	if (m_MapInfo[a_pos.m_wZone - 1].m_wX >= MAX_MAP_TILE)
+		DrawPos.m_wX = m_MapInfo[a_pos.m_wZone - 1].m_wX % MAX_MAP_TILE;
 
-	}
+	if (m_MapInfo[a_pos.m_wZone - 1].m_wY >= MAX_MAP_TILE)
+		DrawPos.m_wY = m_MapInfo[a_pos.m_wZone - 1].m_wY % MAX_MAP_TILE;
+
+
+	m_RedBlock.TransparentBlt(a_hdc, DrawPos.m_wX * m_BlackBlock.GetWidth(), DrawPos.m_wY * m_BlackBlock.GetHeight(), m_RedBlock.GetWidth(), m_RedBlock.GetHeight(),
+		0, 0, m_BlackBlock.GetWidth(), m_BlackBlock.GetHeight(), RGB(255, 255, 255));
+	
 
 }

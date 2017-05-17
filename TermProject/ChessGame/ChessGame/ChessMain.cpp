@@ -158,9 +158,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						pPlayer->m_stClientInfo[i].m_DrawPos.m_wY = pPlayer->m_stClientInfo[i].m_DrawPos.m_wY % MAX_MAP_TILE;
 					
 
-					pPlayer->m_stClientInfo[i].m_ciChess.TransparentBlt(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stClientInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
-						pPlayer->m_stClientInfo[i].m_ciChess.GetWidth(), pPlayer->m_stClientInfo[i].m_ciChess.GetHeight(),
-						0, 0, pPlayer->m_stClientInfo[i].m_ciChess.GetWidth(), pPlayer->m_stClientInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
+					pPlayer->m_PawnImg.TransparentBlt(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stClientInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
+						pPlayer->m_PawnImg.GetWidth(), pPlayer->m_PawnImg.GetHeight(),
+						0, 0, pPlayer->m_PawnImg.GetWidth(), pPlayer->m_PawnImg.GetHeight(), RGB(0, 0, 0));
 
 					cStr.Format("(%d, %d)", pPlayer->m_stClientInfo[i].m_pos.m_wY, pPlayer->m_stClientInfo[i].m_pos.m_wX);
 					TextOut(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX * MOVE_PIXEL), (pPlayer->m_stClientInfo[i].m_DrawPos.m_wY * MOVE_PIXEL) + 25, cStr, cStr.GetLength());
@@ -177,9 +177,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					if (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY >= MAX_MAP_TILE)
 						pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY = pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY % MAX_MAP_TILE;
 
-					pPlayer->m_stNPCInfo[i].m_ciChess.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
-						pPlayer->m_stNPCInfo[i].m_ciChess.GetWidth(), pPlayer->m_stNPCInfo[i].m_ciChess.GetHeight(),
-						0, 0, pPlayer->m_stNPCInfo[i].m_ciChess.GetWidth(), pPlayer->m_stNPCInfo[i].m_ciChess.GetHeight(), RGB(0, 0, 0));
+					pPlayer->m_NightImg.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
+						pPlayer->m_NightImg.GetWidth(), pPlayer->m_NightImg.GetHeight(),
+						0, 0, pPlayer->m_NightImg.GetWidth(), pPlayer->m_NightImg.GetHeight(), RGB(0, 0, 0));
 
 					cStr.Format("(%d, %d)", pPlayer->m_stNPCInfo[i].m_pos.m_wY, pPlayer->m_stNPCInfo[i].m_pos.m_wX);
 					TextOut(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL), (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL) + 25, cStr, cStr.GetLength());

@@ -21,6 +21,8 @@ CTransmission::CTransmission()
 	m_recv_wsabuf.buf = m_recv_buffer;
 	m_recv_wsabuf.len = MAX_BUF_SIZE;
 
+	m_NightImg.Load("Night.png");
+	m_PawnImg.Load("Pawn.png");
 
 	
 }

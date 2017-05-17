@@ -4,6 +4,9 @@
 #include <atlimage.h>
 #include <atlstr.h>
 #include <vector>
+#include <iostream>
+
+using namespace std;
 
 #define FIRST_X 357
 #define FIRST_Y 360
@@ -24,7 +27,7 @@
 #define MAX_MAP_X 400
 #define MAX_MAP_Y 400
 
-#define MAX_NPC_NUM 1000
+#define MAX_NPC_NUM 30000
 
 // POS_LEN
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2);

@@ -1,5 +1,4 @@
 #include "CPlayer.h"
-
 CPlayer* CPlayer::m_pInstance = NULL;
 
 CPlayer* CPlayer::Instance()
@@ -31,6 +30,10 @@ void CPlayer::SetMove(const WORD& ridder) { m_usRidder = ridder; }
 
 void CPlayer::SetPos()
 {
+	auto curr_time = std::chrono::high_resolution_clock::now();
+	if (m_last_move_time < curr_time - 0.1s) m_last_move_time = curr_time;
+	else return;
+
 	switch (m_usRidder) {
 	case eCS_UP: {
 		m_nPacketType = eCS_UP;

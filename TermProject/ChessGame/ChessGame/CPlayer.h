@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CTransmission.h"
-
+#include <chrono>
 
 class CPlayer : public CTransmission
 {
@@ -15,6 +15,9 @@ public:
 public:
 	static CPlayer* Instance();
 	static void DestroyInstance();
+
+private:
+	std::chrono::high_resolution_clock::time_point m_last_move_time;
 
 private:
 	CPlayer();
