@@ -22,9 +22,12 @@ public:
 	void ProcessPacket(char*);
 	const bool& Connect(const HWND&);
 	void ReadPacket();
-	void SendPacket();
+	void SendMovePacket();
+	void SendLoginPacket(char a_ID[], char a_PWD[]);
 	const POINT& GetPos();
 	void Close(const bool&);
+
+
 public:
 	stClientInfo m_stClientInfo[MAX_PLAYER];
 	stNPCInfo m_stNPCInfo[MAX_NPC_NUM];

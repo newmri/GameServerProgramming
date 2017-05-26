@@ -2,6 +2,7 @@
 
 #include "ClientInfo.h"
 #include "CNPC.h"
+#include "CDB.h"
 
 bool cmp (const Point& a, const Point& b)
 {
@@ -119,4 +120,5 @@ private:
 
 private:
 	vector <Point> m_MapInfo;
+
 };

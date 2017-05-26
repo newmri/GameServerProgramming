@@ -34,22 +34,22 @@ void CPlayer::SetPos()
 	switch (m_usRidder) {
 	case eCS_UP: {
 		m_nPacketType = eCS_UP;
-		SendPacket();
+		SendMovePacket();
 		break;
 	}
 	case eCS_DOWN: {
 		m_nPacketType = eCS_DOWN;
-		SendPacket();
+		SendMovePacket();
 		break;
 	}
 	case eCS_LEFT: {
 		m_nPacketType = eCS_LEFT;
-		SendPacket();
+		SendMovePacket();
 		break;
 	}
 	case eCS_RIGHT: {
 		m_nPacketType = eCS_RIGHT;
-		SendPacket();
+		SendMovePacket();
 		break;
 	}
 	default:
@@ -60,3 +60,10 @@ void CPlayer::SetPos()
 const int& CPlayer::GetPlayerNum(){ return m_nClientCnt; }
 
 const bool& CPlayer::IsMoved() { return m_IsMoved; }
+
+
+void CPlayer::Login(char a_ID[], char a_PWD[])
+{
+	m_nPacketType = eCS_LOGIN;
+	SendLoginPacket(a_ID, a_PWD);
+}

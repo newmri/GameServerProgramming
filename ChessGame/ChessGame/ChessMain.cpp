@@ -1,4 +1,5 @@
 #include "ChessMain.h"
+#include "resource.h"
 // Draw
 RECT g_Clntrt;
 
@@ -10,7 +11,9 @@ HWND g_hIpEdit;
 
 // Global Static Handler
 HWND g_hStatic;
+CPlayer* pPlayer = CPlayer::Instance();
 
+BOOL CALLBACK Dlg_LoginProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -51,7 +54,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	static POINT mapos, chesspos;
 	static CImage cChessmap, cChessImg;
-	CPlayer* pPlayer = CPlayer::Instance();
 	static bool bInit = false;
 	static STMap stMap;
 	CString cStr;
@@ -88,7 +90,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				ShowWindow(g_hConnectBtn, SW_HIDE);
 				ShowWindow(g_hStatic, SW_HIDE);
 				InvalidateRect(hWnd, &g_Clntrt, TRUE);
-				SetTimer(hWnd, 1, 1000/60, NULL);
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LOGIN), hWnd, Dlg_LoginProc);
 			}
 			else MessageBox(NULL, _T("U should enter right IP Ex) 127.0.0.1"), _T("Connect's been failed"), 0);
 			break;
@@ -133,6 +135,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		hOldFont = (HFONT)SelectObject(hMemDC, hFont);
 		SetBkColor(hMemDC, TRANSPARENT);
 		SetTextColor(hMemDC, RGB(255, 0, 0));
+
 		// Draw the player's the image of character and cChessGameMap
 		// If player is in one of the game-rooms.
 		if (pPlayer->GetPlayerNum() != 0) {
@@ -219,3 +222,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 
+BOOL CALLBACK Dlg_LoginProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	char ID[ID_LEN];
+	char PWD[PWD_LEN];
+	switch (iMessage){
+	case WM_COMMAND:
+		switch (LOWORD(wParam)){
+		case ID_LOGIN:
+			GetDlgItemText(hWnd, IDC_ID, ID, ID_LEN);
+			GetDlgItemText(hWnd, IDC_PWD, PWD, PWD_LEN);
+			pPlayer->Login(ID, PWD);
+			break;
+		case ID_EXIT:
+			pPlayer->Close(true);
+			PostQuitMessage(0);
+			break;
+		}
+		break;
+
+	}
+
+	return 0;
+}

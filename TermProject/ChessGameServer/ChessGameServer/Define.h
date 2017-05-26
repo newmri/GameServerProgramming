@@ -20,7 +20,7 @@ using namespace chrono;
 #define MAX_PACKET_SIZE 255
 #define MAX_BUF_SIZE 1024
 #define MAX_MSG_SIZE 30
-#define MAX_CLIENT_NUM 11 // Server can accommodate MAX_CLIENT_NUM - 1
+#define MAX_CLIENT_NUM 110000 // Server can accommodate MAX_CLIENT_NUM - 1
 #define MAX_WORKER_THREAD 6
 
 // POS_LEN
@@ -43,6 +43,9 @@ using namespace chrono;
 #define MAX_NPC_NUM 30000
 
 #define NPC_MOVE_SEC 1000
+
+#define NAME_LEN 10  
+#define PWD_LEN 10  
 
 // Check the boundary
 enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y - 1, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X - 1};

@@ -331,43 +331,43 @@ void CIOCP::AccepterThread()
 			m_nClientCnt++;
 		}
 
-		SendPutClient(wNewId, wNewId);
+		//SendPutClient(wNewId, wNewId);
 
-		unordered_set<WORD> local_view_list;
-		unordered_set<WORD> local_NPC_view_list;
+		//unordered_set<WORD> local_view_list;
+		//unordered_set<WORD> local_NPC_view_list;
 
-		// Client view
-		for (int i = 0; i < MAX_CLIENT_NUM; ++i){
-			if (m_stpClientInfo[i].m_bIsConnected)
-				if (i != wNewId) {
-					if (IsClose(i, wNewId)){
-						SendPutClient(wNewId, i);
-						local_view_list.insert(i);
-						SendPutClient(i, wNewId);
-						m_stpClientInfo[wNewId].m_lock.lock();
-						m_stpClientInfo[i].m_view_list.insert(wNewId);
-						m_stpClientInfo[wNewId].m_lock.unlock();
-					}
-				}
-		}
+		//// Client view
+		//for (int i = 0; i < MAX_CLIENT_NUM; ++i){
+		//	if (m_stpClientInfo[i].m_bIsConnected)
+		//		if (i != wNewId) {
+		//			if (IsClose(i, wNewId)){
+		//				SendPutClient(wNewId, i);
+		//				local_view_list.insert(i);
+		//				SendPutClient(i, wNewId);
+		//				m_stpClientInfo[wNewId].m_lock.lock();
+		//				m_stpClientInfo[i].m_view_list.insert(wNewId);
+		//				m_stpClientInfo[wNewId].m_lock.unlock();
+		//			}
+		//		}
+		//}
 
 
-		m_stpClientInfo[wNewId].m_lock.lock();
-		for (auto p : local_view_list) m_stpClientInfo[wNewId].m_view_list.insert(p);
-		m_stpClientInfo[wNewId].m_lock.unlock();
+		//m_stpClientInfo[wNewId].m_lock.lock();
+		//for (auto p : local_view_list) m_stpClientInfo[wNewId].m_view_list.insert(p);
+		//m_stpClientInfo[wNewId].m_lock.unlock();
 
-		// NPC view
-		for (int i = 0; i < MAX_NPC_NUM; ++i) {
-			if (IsCloseWithNPC(i, wNewId)) {
-				SendPutNPC(wNewId, i);
-				local_NPC_view_list.insert(i);
-			}
-		}
+		//// NPC view
+		//for (int i = 0; i < MAX_NPC_NUM; ++i) {
+		//	if (IsCloseWithNPC(i, wNewId)) {
+		//		SendPutNPC(wNewId, i);
+		//		local_NPC_view_list.insert(i);
+		//	}
+		//}
 
-		m_stpClientInfo[wNewId].m_NPC_Lock.lock();
-		for (auto p : local_NPC_view_list) m_stpClientInfo[wNewId].m_NPC_view_list.insert(p);
-		m_stpClientInfo[wNewId].m_NPC_Lock.unlock();
-		
+		//m_stpClientInfo[wNewId].m_NPC_Lock.lock();
+		//for (auto p : local_NPC_view_list) m_stpClientInfo[wNewId].m_NPC_view_list.insert(p);
+		//m_stpClientInfo[wNewId].m_NPC_Lock.unlock();
+		//
 	}
 }
 
@@ -577,13 +577,24 @@ void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
 	m_stpClientInfo[a_wId].m_NPC_Lock.unlock();
 		
 }
-void CIOCP::ProcessPacket(const WORD& a_wId, const unsigned char a_Packet[])
+void CIOCP::ProcessPacket(const WORD& a_wId, unsigned char a_Packet[])
 {
 	switch (a_Packet[1]) {
 	case eCS_UP: if (m_stpClientInfo[a_wId].m_pos.y > eTOP_END) m_stpClientInfo[a_wId].m_pos.y--; break;
 	case eCS_DOWN: if (m_stpClientInfo[a_wId].m_pos.y < eBOTTOM_END) m_stpClientInfo[a_wId].m_pos.y++; break;
 	case eCS_LEFT: if (m_stpClientInfo[a_wId].m_pos.x > eLEFT_END) m_stpClientInfo[a_wId].m_pos.x--; break;
 	case eCS_RIGHT: if (m_stpClientInfo[a_wId].m_pos.x < eRIGHT_END) m_stpClientInfo[a_wId].m_pos.x++; break;
+	case eCS_LOGIN: {
+		char ID[ID_LEN];
+		char PWD[PWD_LEN];
+		memcpy(ID, (const void*)&a_Packet[4], a_Packet[2]);
+		memcpy(PWD, (const void*)&a_Packet[4 + ID_LEN], a_Packet[3]);
+		ID[a_Packet[2]] = '\0';
+		PWD[a_Packet[3]] = '\0';
+		cout << ID << endl;
+		m_CDB.Login(ID, PWD);
+		return;
+	}
 	default: printf("Unknown Packet Type from Client : "); while (true);
 	}
 
@@ -778,5 +789,12 @@ void CIOCP::TimerThread()
 			}
 		} while (true);
 	} while (true);
+
+}
+
+
+void CIOCP::ConnectDB()
+{
+	m_CDB.Connect();
 
 }

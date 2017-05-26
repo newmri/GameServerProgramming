@@ -24,6 +24,9 @@
     <ClCompile Include="CNPC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CDB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Define.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CNPC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

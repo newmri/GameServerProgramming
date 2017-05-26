@@ -46,6 +46,7 @@ enum enumOperation { eOP_RECV, eOP_SEND, eMOVE };
 
 // From Client To Server
 enum { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
+enum { eCS_LOGIN = 50 };
 // From Server To Client
 enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC};
 
@@ -59,6 +60,14 @@ struct STTimerInfo
 };
 
 #pragma pack (push, 1)
+
+struct ST_CS_LOGIN
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	char* m_ID;
+	char* m_PWD;
+};
 
 struct ST_SC_PUT_OBJECT
 {

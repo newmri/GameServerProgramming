@@ -2,6 +2,7 @@
 
 #include "ClientInfo.h"
 #include "CNPC.h"
+#include "CDB.h"
 
 class CIOCP
 {
@@ -42,7 +43,7 @@ public:
 
 	void HandleNPCView(const WORD&, const WORD& a_NPC);
 
-	void ProcessPacket(const WORD&, const unsigned char[]);
+	void ProcessPacket(const WORD&, unsigned char[]);
 
 	void SendPacket(const WORD&, void*);
 
@@ -71,6 +72,9 @@ public:
 public:
 	static CIOCP* Instance();
 	static void DestroyInstance();
+
+public:
+	void ConnectDB();
 
 private:
 	CIOCP();
@@ -109,4 +113,7 @@ private:
 private:
 	CNPC m_cNPC[MAX_NPC_NUM];
 	queue<STTimerInfo> m_TimerQueue;
+
+private:
+	CDB m_CDB;
 };

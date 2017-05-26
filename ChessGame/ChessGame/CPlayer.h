@@ -16,6 +16,8 @@ public:
 	static CPlayer* Instance();
 	static void DestroyInstance();
 
+public:
+	void Login(char a_ID[], char a_PWD[]);
 private:
 	CPlayer();
 

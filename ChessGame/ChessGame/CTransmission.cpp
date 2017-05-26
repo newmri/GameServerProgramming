@@ -218,7 +218,7 @@ const bool& CTransmission::Connect(const HWND& a_hWnd)
 
 
 
-void CTransmission::SendPacket()
+void CTransmission::SendMovePacket()
 {
 	ST_CS_MOVE* stPacket = reinterpret_cast<ST_CS_MOVE*>(m_send_buffer);
 	stPacket->m_bytSize = sizeof(stPacket);
@@ -247,7 +247,24 @@ void CTransmission::SendPacket()
 	}
 }
 
+void CTransmission::SendLoginPacket(char a_ID[], char a_PWD[])
+{
 
+	ST_CS_LOGIN stPacket;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eCS_LOGIN;
+	stPacket.m_bytIDLen = strlen(a_ID);
+	stPacket.m_bytPWDLen = strlen(a_PWD);
+	memcpy(stPacket.m_ID, a_ID, sizeof(a_ID));
+	memcpy(stPacket.m_PWD, a_PWD, sizeof(a_PWD));
+	memcpy(m_send_wsabuf.buf, &stPacket, sizeof(stPacket));
+	m_send_wsabuf.len = sizeof(stPacket);
+
+
+	DWORD iobyte;
+	WSASend(m_sock, &m_send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+}
 
 void CTransmission::Close(const bool& a_bForceClose)
 {
@@ -265,3 +282,5 @@ void CTransmission::Close(const bool& a_bForceClose)
 }
 
 const POINT& CTransmission::GetPos(){ return m_pos; }
+
+
