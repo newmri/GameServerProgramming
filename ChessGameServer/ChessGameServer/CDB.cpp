@@ -27,7 +27,7 @@ void CDB::Connect()
 				SQLSetConnectAttr(m_hdbc, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
 
 				// Connect to data source  
-				m_retcode = SQLConnect(m_hdbc, (SQLCHAR*)"GAME_DB", SQL_NTS, (SQLCHAR*)NULL, 0, NULL, 0);
+				m_retcode = SQLConnect(m_hdbc, (SQLCHAR*)"GAME_DB_2014180050", SQL_NTS, (SQLCHAR*)NULL, 0, NULL, 0);
 				// Allocate statement handle  
 				if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
 					cout << "DB has been connected!" << endl;
@@ -41,32 +41,49 @@ void CDB::Connect()
 }
 
 
-bool CDB::Login(char* ID, char* PWD)
+const DBInfo CDB::Login(char* ID, char* PWD)
 {
-	m_retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_hdbc, &m_hstmt);
-
+	DBInfo CInfo;
 	char command[100];
+
+	m_retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_hdbc, &m_hstmt);
+	
 	wsprintf(command, "EXEC dbo.Login '%s', '%s'", ID, PWD);
 	m_retcode = SQLExecDirect(m_hstmt, (SQLCHAR*)command, SQL_NTS);
 
 	if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
 
-		m_retcode = SQLBindCol(m_hstmt, 1, SQL_WCHAR, &m_ID, ID_LEN, &m_cbID);
-		m_retcode = SQLBindCol(m_hstmt, 2, SQL_INTEGER, &m_pos_x, sizeof(int), &m_cbID);
-		m_retcode = SQLBindCol(m_hstmt, 3, SQL_INTEGER, &m_pos_y, sizeof(int), &m_cbID);
+		m_retcode = SQLBindCol(m_hstmt, 1, SQL_CHAR, &CInfo.ID, ID_LEN, &m_cbID);
+		m_retcode = SQLBindCol(m_hstmt, 2, SQL_INTEGER, &CInfo.Pos_X, sizeof(int), &m_cb_pos_x);
+		m_retcode = SQLBindCol(m_hstmt, 3, SQL_INTEGER, &CInfo.Pos_Y, sizeof(int), &m_cb_pos_y);
 		m_retcode = SQLFetch(m_hstmt);
-		if (m_retcode == SQL_NO_DATA_FOUND) {
-			return false;
-		}
+		if (m_retcode == SQL_NO_DATA_FOUND) return CInfo;
+		
 		if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
-			printf("ssss");
 			SQLCancel(m_hstmt);
 			SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
-			return true;
+			return CInfo;
 		}
 	}
-	return false;
+	return CInfo;
 }
+
+
+void CDB::Update(const DBInfo a_Info)
+{
+	char command[100];
+
+	m_retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_hdbc, &m_hstmt);
+	wsprintf(command, "EXEC dbo.UpdateUserData '%s', %d, %d", a_Info.ID, a_Info.Pos_X, a_Info.Pos_Y);
+	m_retcode = SQLExecDirect(m_hstmt, (SQLCHAR*)command, SQL_NTS);
+
+	if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
+		SQLCancel(m_hstmt);
+		SQLFreeHandle(SQL_HANDLE_STMT, m_hstmt);
+	}
+
+}
+
 void CDB::Release()
 {
 	if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {

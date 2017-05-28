@@ -63,3 +63,15 @@ void CPlayer::SetPos()
 const int& CPlayer::GetPlayerNum(){ return m_nClientCnt; }
 
 const bool& CPlayer::IsMoved() { return m_IsMoved; }
+
+void CPlayer::Login(char a_ID[], char a_PWD[])
+{
+	m_nPacketType = eCS_LOGIN;
+	SendLoginPacket(a_ID, a_PWD);
+}
+
+void CPlayer::SignUp(char a_ID[], char a_PWD[])
+{
+	m_nPacketType = eCS_SIGNUP;
+	SendSignUpPacket(a_ID, a_PWD);
+}

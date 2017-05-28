@@ -25,19 +25,31 @@ public:
 	void SendPacket();
 	const Point& GetPos();
 	void Close(const bool&);
+
+public:
+	void SendLoginPacket(char a_ID[], char a_PWD[]);
+	void SendSignUpPacket(char a_ID[], char a_PWD[]);
+
+public:
+	void SetLoginDlg(const HWND& a_hDlg) { m_hDlg = a_hDlg; }
+	void SetSignUpDlg(const HWND& a_hDlg) { m_hSignUpDlg = a_hDlg; }
+
 public:
 	stClientInfo m_stClientInfo[MAX_PLAYER];
 	stNPCInfo m_stNPCInfo[MAX_NPC_NUM];
+
+private:
+	HWND m_hWnd, m_hDlg, m_hSignUpDlg;
 private:
 	bool m_First;
 
 protected:
 	int m_nPacketType;
 	int m_nClientCnt;
-	Point m_pos;
-	WORD m_wId;
 	bool m_IsMoved;
-
+protected:
+	stDBInfo m_DBInfo;
+	WORD m_wId;
 public:
 	STMap m_stMap;
 

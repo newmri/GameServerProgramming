@@ -1,20 +1,22 @@
 #pragma once
-#include "Define.h"
+
+#include "stDBInfo.h"
 
 #pragma pack(push, 1)
+
+
 struct stClientInfo
 {
 	bool m_IsConnected;
 	WORD m_wId;
-	Point m_pos;
+	stDBInfo m_Info;
 	Point m_DrawPos;
 	stClientInfo()
 	{
 		m_IsConnected = false;
 		m_wId = 65535;
-		m_pos.m_wX = CHESS_FIRST_X, m_pos.m_wY = CHESS_FIRST_Y;
-		m_pos.m_wZone = 1;
-		m_DrawPos.m_wX = CHESS_FIRST_X, m_DrawPos.m_wY = CHESS_FIRST_Y;
+		m_DrawPos.m_wX = 0, m_DrawPos.m_wY = 0;
+
 	}
 };
 
@@ -28,9 +30,9 @@ struct stNPCInfo
 	stNPCInfo()
 	{
 		m_wId = 65535;
-		m_pos.m_wX = CHESS_FIRST_X, m_pos.m_wY = CHESS_FIRST_Y;
+		m_pos.m_wX = 0, m_pos.m_wY = 0;
 		m_pos.m_wZone = 1;
-		m_DrawPos.m_wX = CHESS_FIRST_X, m_DrawPos.m_wY = CHESS_FIRST_Y;
+		m_DrawPos.m_wX = 0, m_DrawPos.m_wY = 0;
 		m_IsAlive = false;
 	}
 };

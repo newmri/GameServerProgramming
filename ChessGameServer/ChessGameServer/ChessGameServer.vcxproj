@@ -148,6 +148,7 @@
     <ClInclude Include="CDB.h" />
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="CNPC.h" />
+    <ClInclude Include="DBClientInfo.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="CIOCP.h" />
     <ClInclude Include="OverLappedEx.h" />

@@ -47,5 +47,11 @@
     <ClInclude Include="CDB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DBInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DBDeFine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

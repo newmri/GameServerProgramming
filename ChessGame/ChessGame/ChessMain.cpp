@@ -227,6 +227,9 @@ BOOL CALLBACK Dlg_LoginProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lPar
 	char ID[ID_LEN];
 	char PWD[PWD_LEN];
 	switch (iMessage){
+	case WM_INITDIALOG:
+		pPlayer->SetDlg(hWnd);
+		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam)){
 		case ID_LOGIN:

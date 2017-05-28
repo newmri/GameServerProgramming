@@ -15,7 +15,8 @@ CTransmission::CTransmission()
 	m_IsMoved = false;
 	m_First = true;
 	m_nPacketType = -1;
-	
+	m_IsLogined = false;
+
 	m_send_wsabuf.buf = m_send_buffer;
 	m_send_wsabuf.len = MAX_BUF_SIZE;
 	m_recv_wsabuf.buf = m_recv_buffer;
@@ -34,6 +35,8 @@ void CTransmission::SetServerIP(const HWND& a_hIpEdit)
 
 const bool& CTransmission::Init(const HWND& a_hWnd)
 {
+
+	m_hWnd = a_hWnd;
 	// Winsock initialize
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
@@ -112,6 +115,19 @@ const bool& CTransmission::ProcessPacket(const HWND& a_hWnd, const UINT& a_iMess
 void CTransmission::ProcessPacket(char* a_ptr)
 {
 	switch (a_ptr[1]) {
+	case LOGIN::eSC_LOGIN_FAIL_INCORRECT:
+		MessageBox(NULL, "ID or PWD dosen't correct.", "Login Fail", NULL);
+		break;
+	case LOGIN::eSC_LOGIN_FAIL_LOGINED:
+		MessageBox(NULL, "UR ID is already logined.", "Login Fail", NULL);
+		break;
+	case LOGIN::eSC_LOGIN_SUCCESS: {
+		ST_SC_LOGIN_RESULT* stPacket = reinterpret_cast<ST_SC_LOGIN_RESULT*>(a_ptr);
+		strcpy(m_ID, stPacket->m_ID);
+		EndDialog(m_hDlg, 0);
+		SetTimer(m_hWnd, 1, 1000 / 60, NULL);
+	}
+		break;
 	case eSC_PUT_CLIENT: {
 		ST_SC_PUT_OBJECT* stPacket = reinterpret_cast<ST_SC_PUT_OBJECT*>(a_ptr);
 		for (int i = 0; i < MAX_PLAYER; ++i) {
@@ -250,13 +266,15 @@ void CTransmission::SendMovePacket()
 void CTransmission::SendLoginPacket(char a_ID[], char a_PWD[])
 {
 
+	
 	ST_CS_LOGIN stPacket;
 	stPacket.m_bytSize = sizeof(stPacket);
 	stPacket.m_bytType = eCS_LOGIN;
 	stPacket.m_bytIDLen = strlen(a_ID);
 	stPacket.m_bytPWDLen = strlen(a_PWD);
-	memcpy(stPacket.m_ID, a_ID, sizeof(a_ID));
-	memcpy(stPacket.m_PWD, a_PWD, sizeof(a_PWD));
+	memcpy(stPacket.m_ID, a_ID, strlen(a_ID));
+	memcpy(stPacket.m_PWD, a_PWD, strlen(a_PWD));
+	
 	memcpy(m_send_wsabuf.buf, &stPacket, sizeof(stPacket));
 	m_send_wsabuf.len = sizeof(stPacket);
 

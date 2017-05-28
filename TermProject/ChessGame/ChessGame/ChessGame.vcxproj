@@ -149,11 +149,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChessMain.h" />
+    <ClInclude Include="DBDefin.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stDBInfo.h" />
     <ClInclude Include="STMap.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CTransmission.h" />
     <ClInclude Include="stClientInfo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ChessGame.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

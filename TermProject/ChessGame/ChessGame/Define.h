@@ -5,7 +5,9 @@
 #include <atlstr.h>
 #include <vector>
 #include <iostream>
-
+#include "resource.h"
+#include "stDBInfo.h"
+#include <string>
 using namespace std;
 
 #define FIRST_X 357
@@ -29,28 +31,58 @@ using namespace std;
 
 #define MAX_NPC_NUM 30000
 
+
 // POS_LEN
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2);
 
 // From Client To Server
 enum EMOVE { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
+enum { eCS_LOGIN = 50, eCS_SIGNUP };
 
 // From Server To Client
-enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC,
-	eSC_MAP_NOTIFY
-};
+enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC,eSC_MAP_NOTIFY};
+enum LOGIN { eSC_LOGIN_FAIL_INCORRECT = 50, eSC_LOGIN_FAIL_LOGINED, eSC_LOGIN_SUCCESS };
+enum SIGNUP { eSC_SIGNUP_FAIL = 60, eSC_SIGNUP_SUCCESS };
+
 enum { eID_IP_EDIT = 101 };
 enum { eIDC_CONNECT = 1001 };
 
-struct Point
-{
-	WORD m_wX, m_wY;
-	WORD m_wZone;
-};
+
 
 #pragma pack (push, 1)
 
+
 struct ST_CS_MOVE
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	char m_ID[ID_LEN];
+};
+
+struct ST_CS_LOGIN
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	BYTE m_bytIDLen;
+	BYTE m_bytPWDLen;
+	char m_ID[ID_LEN];
+	char m_PWD[PWD_LEN];
+};
+
+struct ST_SC_LOGIN_FAIL
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+};
+
+struct ST_SC_LOGIN_SUCCESS
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	stDBInfo m_DBInfo;
+};
+
+struct ST_SC_SIGNUP_RESULT
 {
 	BYTE m_bytSize;
 	BYTE m_bytType;

@@ -11,6 +11,10 @@ public:
 	void SetPos();
 	const int& GetPlayerNum();
 	const bool& IsMoved();
+
+public:
+	void Login(char a_ID[], char a_PWD[]);
+	void SignUp(char a_ID[], char a_PWD[]);
 // To contrcut only one CPlayer
 public:
 	static CPlayer* Instance();

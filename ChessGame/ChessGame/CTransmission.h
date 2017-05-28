@@ -27,10 +27,15 @@ public:
 	const POINT& GetPos();
 	void Close(const bool&);
 
-
+public:
+	void SetDlg(const HWND& a_hDlg) { m_hDlg = a_hDlg; }
 public:
 	stClientInfo m_stClientInfo[MAX_PLAYER];
 	stNPCInfo m_stNPCInfo[MAX_NPC_NUM];
+
+private:
+	HWND m_hWnd;
+	HWND m_hDlg;
 private:
 	bool m_First;
 
@@ -39,7 +44,9 @@ protected:
 	int m_nClientCnt;
 	POINT m_pos;
 	WORD m_wId;
+	char m_ID[ID_LEN];
 	bool m_IsMoved;
+	bool m_IsLogined;
 private:
 	TCHAR m_tchServerIp[MAX_IP_LEN];
 	SOCKET m_sock;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OverLappedEx.h"
+#include "DBInfo.h"
 
 struct stClientInfo {
 	SOCKADDR_IN m_saClientAddr; // Store client's information of address
@@ -11,9 +12,10 @@ struct stClientInfo {
 	unsigned char m_szPacketBuf[MAX_PACKET_SIZE];
 	WORD wPrevPacketData, wCurrPacketSize;
 
+	DBInfo m_Info;
+
 	bool m_bIsConnected;
-	Point m_pos;
-	short m_wXZone, m_wYZone;
+	bool m_bIsLogined;
 
 	unordered_set<WORD> m_view_list;
 	unordered_set<WORD> m_NPC_view_list;
@@ -29,13 +31,9 @@ struct stClientInfo {
 
 		m_SocketClient = INVALID_SOCKET;
 		m_bIsConnected = false;
-		m_pos.m_wX = CHESS_FIRST_X, m_pos.m_wY = CHESS_FIRST_Y;
-		m_pos.m_wZone = 1;
-
+		m_bIsLogined = false;
 		wPrevPacketData = 0;
 		wCurrPacketSize = 0;
-		m_wXZone = 1;
-		m_wYZone = -1;
 
 	}
 };

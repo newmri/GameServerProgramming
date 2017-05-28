@@ -39,6 +39,7 @@ using namespace chrono;
 
 #define NPC_MOVE_SEC 1000
 
+#define ID_LEN 10
 // Check the boundary
 enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X};
 
@@ -49,7 +50,7 @@ enum { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
 enum { eCS_LOGIN = 50 };
 // From Server To Client
 enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC};
-
+enum LOGIN{ eSC_LOGIN_FAIL_INCORRECT = 50, eSC_LOGIN_FAIL_LOGINED, eSC_LOGIN_SUCCESS};
 
 
 struct STTimerInfo
@@ -59,14 +60,14 @@ struct STTimerInfo
 	LONGLONG lTime;
 };
 
+
 #pragma pack (push, 1)
 
-struct ST_CS_LOGIN
+struct ST_SC_LOGIN_RESULT
 {
 	BYTE m_bytSize;
 	BYTE m_bytType;
-	char* m_ID;
-	char* m_PWD;
+	char m_ID[ID_LEN];
 };
 
 struct ST_SC_PUT_OBJECT

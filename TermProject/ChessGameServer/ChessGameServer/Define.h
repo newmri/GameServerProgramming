@@ -9,6 +9,8 @@
 #include <chrono>
 #include <set>
 
+#include "CDB.h"
+
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "ws2_32.lib")
 
@@ -44,9 +46,7 @@ using namespace chrono;
 
 #define NPC_MOVE_SEC 1000
 
-#define NAME_LEN 10  
-#define PWD_LEN 10  
-
+#define DEFAULT 65535
 // Check the boundary
 enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y - 1, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X - 1};
 
@@ -54,10 +54,11 @@ enum enumOperation { eOP_RECV, eOP_SEND, eMOVE };
 
 // From Client To Server
 enum { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
+enum { eCS_LOGIN = 50, eCS_SIGNUP};
 // From Server To Client
-enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC,
-	eSC_MAP_NOTIFY
-};
+enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC, eSC_MAP_NOTIFY};
+enum LOGIN { eSC_LOGIN_FAIL_INCORRECT = 50, eSC_LOGIN_FAIL_LOGINED, eSC_LOGIN_SUCCESS };
+enum SIGNUP { eSC_SIGNUP_FAIL = 60, eSC_SIGNUP_SUCCESS };
 
 
 
@@ -68,13 +69,27 @@ struct STTimerInfo
 	LONGLONG lTime;
 };
 
-struct Point
-{
-	WORD m_wX, m_wY;
-	WORD m_wZone;
-};
 
 #pragma pack (push, 1)
+
+struct ST_SC_LOGIN_FAIL
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+};
+
+struct ST_SC_LOGIN_SUCCESS
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	DBInfo m_DBInfo;
+};
+
+struct ST_SC_SIGNUP_RESULT
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+};
 
 struct ST_SC_PUT_OBJECT
 {

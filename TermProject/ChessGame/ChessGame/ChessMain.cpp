@@ -1,4 +1,5 @@
 #include "ChessMain.h"
+
 // Draw
 RECT g_Clntrt;
 
@@ -11,6 +12,8 @@ HWND g_hIpEdit;
 // Global Static Handler
 HWND g_hStatic;
 
+BOOL CALLBACK Dlg_LoginProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK Dlg_SignUpProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -43,6 +46,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 	return Message.wParam;
 }
 
+CPlayer* pPlayer = CPlayer::Instance();
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
@@ -51,7 +56,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	static POINT mapos, chesspos;
 	static CImage cChessmap, cChessImg;
-	CPlayer* pPlayer = CPlayer::Instance();
 	static bool bInit = false;
 	CString cStr;
 	static Point pos;
@@ -87,7 +91,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				ShowWindow(g_hConnectBtn, SW_HIDE);
 				ShowWindow(g_hStatic, SW_HIDE);
 				InvalidateRect(hWnd, &g_Clntrt, TRUE);
-				SetTimer(hWnd, 1, 1000/60, NULL);
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LOGIN), hWnd, Dlg_LoginProc);
 			}
 			else MessageBox(NULL, _T("U should enter right IP Ex) 127.0.0.1"), _T("Connect's been failed"), 0);
 			break;
@@ -136,7 +140,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		// If player is in one of the game-rooms.
 		if (pPlayer->GetPlayerNum() != 0) {
 			if (!cChessmap.IsNull()) cChessmap.Destroy(); 
-
 			pos = pPlayer->GetPos();
 
 			if (pos.m_wX >= MAX_MAP_TILE) if (pos.m_wX % MAX_MAP_TILE == 0) { bSwapMap = !bSwapMap; }
@@ -149,7 +152,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				//If player is not logouted
 				if (pPlayer->m_stClientInfo[i].m_IsConnected) {
 
-					memcpy(&pPlayer->m_stClientInfo[i].m_DrawPos, &pPlayer->m_stClientInfo[i].m_pos, sizeof(Point));
+					memcpy(&pPlayer->m_stClientInfo[i].m_DrawPos, &pPlayer->m_stClientInfo[i].m_Info.m_pos, sizeof(Point));
 
 					if (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX >= MAX_MAP_TILE) 
 						pPlayer->m_stClientInfo[i].m_DrawPos.m_wX = pPlayer->m_stClientInfo[i].m_DrawPos.m_wX % MAX_MAP_TILE;
@@ -162,7 +165,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						pPlayer->m_PawnImg.GetWidth(), pPlayer->m_PawnImg.GetHeight(),
 						0, 0, pPlayer->m_PawnImg.GetWidth(), pPlayer->m_PawnImg.GetHeight(), RGB(0, 0, 0));
 
-					cStr.Format("(%d, %d)", pPlayer->m_stClientInfo[i].m_pos.m_wY, pPlayer->m_stClientInfo[i].m_pos.m_wX);
+					cStr.Format("(%d, %d)", pPlayer->m_stClientInfo[i].m_Info.m_pos.m_wY, pPlayer->m_stClientInfo[i].m_Info.m_pos.m_wX);
 					TextOut(hMemDC, (pPlayer->m_stClientInfo[i].m_DrawPos.m_wX * MOVE_PIXEL), (pPlayer->m_stClientInfo[i].m_DrawPos.m_wY * MOVE_PIXEL) + 25, cStr, cStr.GetLength());
 				}
 			}
@@ -218,3 +221,79 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 
+BOOL CALLBACK Dlg_LoginProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	char ID[ID_LEN];
+	char PWD[PWD_LEN];
+
+	switch (iMessage) {
+	case WM_INITDIALOG:
+		pPlayer->SetLoginDlg(hWnd);
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam)) {
+		case ID_LOGIN:
+			GetDlgItemText(hWnd, IDC_LOGIN_ID, ID, ID_LEN);
+			GetDlgItemText(hWnd, IDC_LOGIN_PWD, PWD, PWD_LEN);
+			pPlayer->Login(ID, PWD);
+			break;
+		case ID_SIGN_UP:
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_SIGNUP), hWnd, Dlg_SignUpProc);
+			break;
+		case IDC_EXIT:
+			pPlayer->Close(true);
+			PostQuitMessage(0);
+			break;
+		}
+		break;
+
+	}
+
+	return 0;
+}
+
+
+BOOL CALLBACK Dlg_SignUpProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	char ID[ID_LEN];
+	char PWD[PWD_LEN];
+	HWND IDEdit, PWDEdit;
+	switch (iMessage) {
+	case WM_INITDIALOG:
+		pPlayer->SetSignUpDlg(hWnd);
+		IDEdit = GetDlgItem(hWnd, IDC_SIGN_UP_ID);
+		PWDEdit = GetDlgItem(hWnd, IDC_SIGN_UP_PWD);
+		SendMessage(IDEdit, EM_LIMITTEXT, (WPARAM)ID_LEN -1, 0);
+		SendMessage(PWDEdit, EM_LIMITTEXT, (WPARAM)ID_LEN - 1, 0);
+		break;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam)) {
+		case IDC_SIGN_UP_ID:
+			switch (HIWORD(wParam)) {
+			case EN_MAXTEXT:
+				MessageBox(hWnd, "Plz Input 1 ~ 9 string", "Error", MB_OK | MB_ICONERROR); break;
+			}
+			break;
+		case IDC_SIGN_UP_PWD:
+			switch (HIWORD(wParam)) {
+			case EN_MAXTEXT:
+				MessageBox(hWnd, "Plz Input 1 ~ 9 string", "Error", MB_OK | MB_ICONERROR); break;
+			}
+			break;
+		case ID_SIGN_UP_OK:
+			GetDlgItemText(hWnd, IDC_SIGN_UP_ID, ID, ID_LEN);
+			GetDlgItemText(hWnd, IDC_SIGN_UP_PWD, PWD, PWD_LEN);
+			if (ID[0] == '\0' || PWD[0] == '\0') { MessageBox(hWnd, "Plz Input 1 ~ 9 string", "Error", MB_OK | MB_ICONERROR); break; }
+			pPlayer->SignUp(ID, PWD);
+			break;
+		case ID_SIGN_UP_EXIT:
+			EndDialog(hWnd, 0);
+			break;
+		}
+		break;
+	}
+
+
+	return 0;
+}

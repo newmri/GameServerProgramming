@@ -43,9 +43,14 @@ public:
 
 	void HandleNPCView(const WORD&, const WORD& a_NPC);
 
-	void ProcessPacket(const WORD&, unsigned char[]);
+	void ProcessPacket(const WORD&, const unsigned char[]);
 
 	void SendPacket(const WORD&, void*);
+
+	// Login
+	void SendLoginFail(const WORD&, const LOGIN);
+	void SendLoginSuccess(const WORD&);
+	void LoginSuccessProcess(const WORD&);
 
 	void SendPutClient(const WORD&, const WORD&);
 	void SendMoveClient(const WORD&, const WORD&);

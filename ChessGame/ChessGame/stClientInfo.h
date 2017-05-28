@@ -6,6 +6,7 @@ struct stClientInfo
 {
 	bool m_IsConnected;
 	WORD m_wId;
+	char m_ID[ID_LEN];
 	POINT m_pos;
 	POINT m_DrawPos;
 	CImage m_ciChess;

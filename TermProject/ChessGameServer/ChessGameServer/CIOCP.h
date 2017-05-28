@@ -2,12 +2,6 @@
 
 #include "ClientInfo.h"
 #include "CNPC.h"
-#include "CDB.h"
-
-bool cmp (const Point& a, const Point& b)
-{
-	return a.m_wZone < b.m_wZone;
-}
 
 class CIOCP
 {
@@ -21,6 +15,8 @@ public:
 	// -- Functions for Server -- //
 	const bool& BindandListen(const int&);
 	void StartServer();
+
+	void ConnectDB() { m_cDB.Connect(); }
 
 	// Set new client info
 	void SetNewClientInfo(const WORD&);
@@ -51,6 +47,16 @@ public:
 	void ProcessPacket(const WORD&, const unsigned char[]);
 
 	void SendPacket(const WORD&, void*);
+
+	// Sign Up
+	void SignUpProcess(const WORD&, const unsigned char[]);
+	void SendSignUpResult(const WORD&, const SIGNUP);
+
+	// Login
+	void LoginProcess(const WORD&, const unsigned char[]);
+	void SendLoginFail(const WORD&, const LOGIN);
+	void SendLoginSuccess(const WORD&);
+	void LoginSuccessProcess(const WORD&);
 
 	void SendNotiFyMap(const WORD&);
 
@@ -121,4 +127,6 @@ private:
 private:
 	vector <Point> m_MapInfo;
 
+private:
+	CDB m_cDB;
 };

@@ -37,6 +37,8 @@ enum EMOVE { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
 enum { eCS_LOGIN = 50};
 // From Server To Client
 enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE_NPC, eSC_REMOVE_NPC};
+enum LOGIN{ eSC_LOGIN_FAIL_INCORRECT = 50, eSC_LOGIN_FAIL_LOGINED, eSC_LOGIN_SUCCESS };
+
 enum { eID_IP_EDIT = 101 };
 enum { eIDC_CONNECT = 1001 };
 
@@ -47,6 +49,7 @@ struct ST_CS_MOVE
 {
 	BYTE m_bytSize;
 	BYTE m_bytType;
+	char m_ID[ID_LEN];
 };
 
 struct ST_CS_LOGIN
@@ -57,6 +60,13 @@ struct ST_CS_LOGIN
 	BYTE m_bytPWDLen;
 	char m_ID[ID_LEN];
 	char m_PWD[PWD_LEN];
+};
+
+struct ST_SC_LOGIN_RESULT
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	char m_ID[ID_LEN];
 };
 
 struct ST_SC_PUT_OBJECT
