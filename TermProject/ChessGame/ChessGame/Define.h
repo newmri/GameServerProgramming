@@ -22,7 +22,7 @@ using namespace std;
 
 #define MOVE_PIXEL 35
 
-#define MAX_PLAYER 10
+#define MAX_PLAYER 1000
 
 #define MAX_MAP_TILE 20
 
@@ -31,6 +31,7 @@ using namespace std;
 
 #define MAX_NPC_NUM 30000
 
+#define MAX_STR_SIZE 100
 
 // POS_LEN
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2);
@@ -47,7 +48,8 @@ enum SIGNUP { eSC_SIGNUP_FAIL = 60, eSC_SIGNUP_SUCCESS };
 enum { eID_IP_EDIT = 101 };
 enum { eIDC_CONNECT = 1001 };
 
-
+// CHAT
+enum CHAT { eCS_CHAT = 90, eSC_CHAT};
 
 #pragma pack (push, 1)
 
@@ -57,6 +59,14 @@ struct ST_CS_MOVE
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	char m_ID[ID_LEN];
+};
+
+struct ST_CS_CHAT
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	BYTE m_bytMessageLen;
+	char m_Message[MAX_STR_SIZE];
 };
 
 struct ST_CS_LOGIN
@@ -119,4 +129,10 @@ struct ST_SC_NOTIFY_MAP
 	Point m_pos;
 };
 
+struct ST_SC_CHAT
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	char m_Message[MAX_STR_SIZE];
+};
 #pragma pack (pop)

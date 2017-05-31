@@ -75,3 +75,11 @@ void CPlayer::SignUp(char a_ID[], char a_PWD[])
 	m_nPacketType = eCS_SIGNUP;
 	SendSignUpPacket(a_ID, a_PWD);
 }
+
+
+void CPlayer::SendChatting(char a_Message[])
+{
+	m_nPacketType = eCS_CHAT;
+	SendChatPacket(a_Message);
+
+}

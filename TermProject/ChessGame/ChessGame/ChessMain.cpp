@@ -14,6 +14,9 @@ HWND g_hStatic;
 
 BOOL CALLBACK Dlg_LoginProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg_SignUpProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK Dlg_PlayerInfoProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK Dlg_ChattingProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK EditSubProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -62,6 +65,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	static bool bSwapMap = false;
 	HFONT hFont, hOldFont;
 
+	HWND hDlg;
+	static HWND hChatting;
 	switch (uMsg) {
 	case WM_SOCKET: {
 		pPlayer->ProcessPacket(hWnd, uMsg, wParam, lParam);
@@ -76,6 +81,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		g_hIpEdit = CreateWindow(TEXT("Edit"), NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, FIRST_X - 50, FIRST_Y - 50, 120, 30, hWnd, (HMENU)eID_IP_EDIT, g_hInst, NULL);
 		g_hConnectBtn = CreateWindow((LPCSTR)"Button", (LPCSTR)"Connect", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, FIRST_X - 50, FIRST_Y, 120, 30, hWnd, (HMENU)eIDC_CONNECT, g_hInst, NULL);
 		GetClientRect(hWndMain, &g_Clntrt);
+		hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_PLAYER_INFO), hWnd, Dlg_PlayerInfoProc);
+		hChatting = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_CHATTING), hWnd, Dlg_ChattingProc);
+		pPlayer->SetPlayerInfoDlg(hDlg);
+		pPlayer->SetChattingDlg(hChatting);
 		break;
 	}
 	case WM_TIMER:
@@ -119,6 +128,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case VK_RIGHT:
 			pPlayer->SetMove(eCS_RIGHT);
 			pPlayer->SetPos();
+			break;
+		case VK_RETURN:
+			ShowWindow(hChatting, SW_SHOW);
 			break;
 		default:
 			break;
@@ -296,4 +308,64 @@ BOOL CALLBACK Dlg_SignUpProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lPa
 
 
 	return 0;
+}
+
+
+BOOL CALLBACK Dlg_PlayerInfoProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (iMessage) {
+	case WM_INITDIALOG:
+		SetWindowPos(hWnd, NULL, MAX_WIN_SIZE_X, 0, NULL, NULL, SWP_NOSIZE);
+		break;
+	}
+	return 0;
+}
+
+WNDPROC EditProc;
+
+HWND hChatting;
+BOOL CALLBACK Dlg_ChattingProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+	static HWND hEdit;
+	HWND hList;
+	switch (iMessage) {
+	case WM_INITDIALOG:
+		SetWindowPos(hWnd, NULL, MAX_WIN_SIZE_X, 450, NULL, NULL, SWP_NOSIZE);
+		hEdit = GetDlgItem(hWnd, IDC_EDIT_Chatting);
+		hList = GetDlgItem(hWnd, IDC_LIST_CHATTING);
+		hChatting = hWnd;
+		SetFocus(hEdit);
+		pPlayer->SethList(hList);
+		EditProc = (WNDPROC)SetWindowLong(hEdit, GWL_WNDPROC, (LONG)EditSubProc);
+		break;
+		
+	}
+	return 0;
+
+}
+
+LRESULT CALLBACK EditSubProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+
+{
+	char str[MAX_STR_SIZE];
+	switch (iMessage){
+	case WM_KEYDOWN:
+		switch (wParam){
+		case VK_RETURN:
+			GetDlgItemText(hChatting, IDC_EDIT_Chatting, (LPSTR)str, MAX_STR_SIZE);
+			SetWindowText(hWnd, TEXT(""));
+			pPlayer->SendChatting(str);
+			break;
+		case VK_ESCAPE:
+			ShowWindow(hChatting, SW_HIDE);
+			break;
+		}
+		return 0;
+
+	}
+
+
+
+	return CallWindowProc(EditProc, hWnd, iMessage, wParam, lParam);
+
 }

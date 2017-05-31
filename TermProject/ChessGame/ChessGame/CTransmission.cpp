@@ -110,7 +110,6 @@ const bool& CTransmission::ProcessPacket(const HWND& a_hWnd, const UINT& a_iMess
 
 void CTransmission::ProcessPacket(char* a_ptr)
 {
-
 	switch (a_ptr[1]) {
 	case SIGNUP::eSC_SIGNUP_FAIL:
 		MessageBox(NULL, "Sign up has been failed. Plz input another ID.", "Sign up Fail", MB_OK | MB_ICONERROR); break;
@@ -122,10 +121,20 @@ void CTransmission::ProcessPacket(char* a_ptr)
 		MessageBox(NULL, "UR ID is already logined.", "Login Fail", MB_OK | MB_ICONERROR); break;
 	case LOGIN::eSC_LOGIN_SUCCESS: {
 		ST_SC_LOGIN_SUCCESS* stPacket = reinterpret_cast<ST_SC_LOGIN_SUCCESS*>(a_ptr);
-		memcpy(&m_DBInfo, &stPacket,sizeof(stPacket));
+		memcpy(&m_DBInfo, &stPacket->m_DBInfo,sizeof(stPacket->m_DBInfo));
 		EndDialog(m_hDlg, 0);
+		ShowWindow(m_PlayerInfoDlg, SW_SHOW);
+		SetFocus(m_hWnd);
+		this->ShowPlayerInfo();
 		SetTimer(m_hWnd, 1, 1000 / 60, NULL);
-	} break;
+		break;
+	} 
+	case CHAT::eSC_CHAT: {
+		printf("Here Here");
+		ST_SC_CHAT* stPacket = reinterpret_cast<ST_SC_CHAT*>(a_ptr);
+		SendMessage(m_hList, LB_ADDSTRING, 0, (LPARAM)stPacket->m_Message);
+		break;
+	}
 	case eSC_PUT_CLIENT: {
 		ST_SC_PUT_OBJECT* stPacket = reinterpret_cast<ST_SC_PUT_OBJECT*>(a_ptr);
 		for (int i = 0; i < MAX_PLAYER; ++i) {
@@ -312,5 +321,35 @@ void CTransmission::SendSignUpPacket(char a_ID[], char a_PWD[])
 
 	DWORD iobyte;
 	WSASend(m_sock, &m_send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+}
+
+void CTransmission::SendChatPacket(char a_Message[])	
+{
+	ST_CS_CHAT stPacket;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eCS_CHAT;
+
+	memcpy(stPacket.m_Message, a_Message, strlen(a_Message));
+	stPacket.m_bytMessageLen = strlen(a_Message);
+	memcpy(m_send_wsabuf.buf, &stPacket, sizeof(stPacket));
+
+	m_send_wsabuf.len = sizeof(stPacket);
+
+	DWORD iobyte;
+	WSASend(m_sock, &m_send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+}
+void CTransmission::ShowPlayerInfo()
+{
+	char str[4];
+
+	SetDlgItemText(m_PlayerInfoDlg, IDC_ID, m_DBInfo.ID); ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_Level, str,10);
+	SetDlgItemText(m_PlayerInfoDlg, IDC_Level,str); ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_MAX_HP, str, 10);
+	SetDlgItemText(m_PlayerInfoDlg, IDC_MAX_HP, str); ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_HP, str, 10);
+	SetDlgItemText(m_PlayerInfoDlg, IDC_HP, str);  ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_MAX_EXP, str, 10);
+	SetDlgItemText(m_PlayerInfoDlg, IDC_MAX_EXP, str);  ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_EXP, str, 10);
+	SetDlgItemText(m_PlayerInfoDlg, IDC_EXP, str);  ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_Damage, str, 10);
+	SetDlgItemText(m_PlayerInfoDlg, IDC_DMG, str);
 
 }

@@ -15,6 +15,9 @@ public:
 public:
 	void Login(char a_ID[], char a_PWD[]);
 	void SignUp(char a_ID[], char a_PWD[]);
+
+public:
+	void SendChatting(char a_Message[]);
 // To contrcut only one CPlayer
 public:
 	static CPlayer* Instance();
