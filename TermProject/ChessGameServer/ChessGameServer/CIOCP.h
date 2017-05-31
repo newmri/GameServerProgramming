@@ -58,6 +58,8 @@ public:
 	void SendLoginSuccess(const WORD&);
 	void LoginSuccessProcess(const WORD&);
 
+	void ChatProcess(const WORD&, const unsigned char[]);
+
 	void SendNotiFyMap(const WORD&);
 
 	void SendPutClient(const WORD&, const WORD&);

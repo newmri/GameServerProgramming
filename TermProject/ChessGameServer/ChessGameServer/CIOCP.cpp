@@ -695,11 +695,31 @@ void CIOCP::SignUpProcess(const WORD& a_wId, const unsigned char a_Packet[])
 
 
 }
+
+void CIOCP::ChatProcess(const WORD& a_wId, const unsigned char a_Packet[])
+{
+	ST_SC_CHAT stPacket;
+	stPacket.m_bytSize = sizeof(stPacket);
+	stPacket.m_bytType = eSC_CHAT;
+	strcpy(stPacket.m_Message, m_stpClientInfo[a_wId].m_Info.ID);
+	strcat(stPacket.m_Message, ": ");
+	strncat(stPacket.m_Message, (const char*)&a_Packet[3], a_Packet[2]);
+	strcat(stPacket.m_Message, "\0");
+
+	for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
+		if (m_stpClientInfo[i].m_Info.m_pos.m_wZone == m_stpClientInfo[a_wId].m_Info.m_pos.m_wZone && m_stpClientInfo[i].m_bIsLogined)
+			SendPacket(i, &stPacket);
+		
+	}
+
+}
+
 void CIOCP::ProcessPacket(const WORD& a_wId, const unsigned char a_Packet[])
 {
 	switch (a_Packet[1]) {
 	case eCS_LOGIN: LoginProcess(a_wId, a_Packet); return;
 	case eCS_SIGNUP: SignUpProcess(a_wId, a_Packet); return;
+	case eCS_CHAT: ChatProcess(a_wId, a_Packet); return;
 	case eCS_UP: 
 		if (m_stpClientInfo[a_wId].m_Info.m_pos.m_wY > eTOP_END)
 			if (m_stpClientInfo[a_wId].m_Info.m_pos.m_wX != m_MapInfo[m_stpClientInfo[a_wId].m_Info.m_pos.m_wZone - 1].m_wX

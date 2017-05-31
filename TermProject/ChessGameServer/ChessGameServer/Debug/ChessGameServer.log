@@ -1,31 +1,31 @@
-﻿  CDB.cpp
-  Generating Code...
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\cdb.cpp(75): warning C4172: returning address of local variable or temporary: CInfo
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\cdb.cpp(80): warning C4172: returning address of local variable or temporary: CInfo
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\cdb.cpp(84): warning C4172: returning address of local variable or temporary: CInfo
-  Compiling...
-  main.cpp
-  CIOCP.cpp
+﻿  CIOCP.cpp
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(126): warning C4996: 'WSASocketA': Use WSASocketW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(3413): note: see declaration of 'WSASocketA'
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(363): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(807): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(814): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(862): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
-  Generating Code...
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(704): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(129): note: see declaration of 'strcpy'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(705): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(90): note: see declaration of 'strcat'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(706): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(263): note: see declaration of 'strncat'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(707): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(90): note: see declaration of 'strcat'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(827): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(834): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(882): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(200): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(205): warning C4172: returning address of local variable or temporary
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(233): warning C4172: returning address of local variable or temporary
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(237): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(217): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(221): warning C4172: returning address of local variable or temporary
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(318): warning C4172: returning address of local variable or temporary
-s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(326): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(233): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(237): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(248): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(253): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(288): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(294): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(297): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(318): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(326): warning C4172: returning address of local variable or temporary
   ChessGameServer.vcxproj -> S:\KPU\4-1\GameServer\Assignment\TermProject\ChessGameServer\Debug\ChessGameServer.exe
   ChessGameServer.vcxproj -> S:\KPU\4-1\GameServer\Assignment\TermProject\ChessGameServer\Debug\ChessGameServer.pdb (Partial PDB)

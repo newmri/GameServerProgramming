@@ -22,7 +22,7 @@ using namespace chrono;
 #define MAX_PACKET_SIZE 255
 #define MAX_BUF_SIZE 1024
 #define MAX_MSG_SIZE 30
-#define MAX_CLIENT_NUM 110000 // Server can accommodate MAX_CLIENT_NUM - 1
+#define MAX_CLIENT_NUM 1000 // Server can accommodate MAX_CLIENT_NUM - 1
 #define MAX_WORKER_THREAD 6
 
 // POS_LEN
@@ -47,6 +47,8 @@ using namespace chrono;
 #define NPC_MOVE_SEC 1000
 
 #define DEFAULT 65535
+
+#define MAX_STR_SIZE 100
 // Check the boundary
 enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y - 1, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X - 1};
 
@@ -60,6 +62,10 @@ enum { eSC_PUT_CLIENT, eSC_MOVE_CLIENT, eSC_REMOVE_CLIENT, eSC_PUT_NPC, eSC_MOVE
 enum LOGIN { eSC_LOGIN_FAIL_INCORRECT = 50, eSC_LOGIN_FAIL_LOGINED, eSC_LOGIN_SUCCESS };
 enum SIGNUP { eSC_SIGNUP_FAIL = 60, eSC_SIGNUP_SUCCESS };
 
+
+
+// CHAT
+enum CHAT { eCS_CHAT = 90, eSC_CHAT };
 
 
 struct STTimerInfo
@@ -121,5 +127,12 @@ struct ST_SC_NOTIFY_MAP
 	BYTE m_bytSize;
 	BYTE m_bytType;
 	Point m_pos;
+};
+
+struct ST_SC_CHAT
+{
+	BYTE m_bytSize;
+	BYTE m_bytType;
+	char m_Message[MAX_STR_SIZE];
 };
 #pragma pack (pop)
