@@ -130,7 +130,6 @@ void CTransmission::ProcessPacket(char* a_ptr)
 		break;
 	} 
 	case CHAT::eSC_CHAT: {
-		printf("Here Here");
 		ST_SC_CHAT* stPacket = reinterpret_cast<ST_SC_CHAT*>(a_ptr);
 		SendMessage(m_hList, LB_ADDSTRING, 0, (LPARAM)stPacket->m_Message);
 		break;
@@ -169,6 +168,7 @@ void CTransmission::ProcessPacket(char* a_ptr)
 				if (m_stClientInfo[i].m_wId == m_wId) {
 					m_DBInfo.m_pos = stPacket->m_pos;
 					m_stClientInfo[i].m_Info.m_pos = stPacket->m_pos;
+					this->UpdateZoneInfo();
 					break;
 				}
 				else {
@@ -340,6 +340,13 @@ void CTransmission::SendChatPacket(char a_Message[])
 	WSASend(m_sock, &m_send_wsabuf, 1, &iobyte, 0, NULL, NULL);
 
 }
+
+void CTransmission::UpdateZoneInfo()
+{
+	char str[4];
+	ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_pos.m_wZone, str, 10); SetDlgItemText(m_PlayerInfoDlg, IDC_ZONE, str);
+}
+
 void CTransmission::ShowPlayerInfo()
 {
 	char str[4];
@@ -350,6 +357,6 @@ void CTransmission::ShowPlayerInfo()
 	SetDlgItemText(m_PlayerInfoDlg, IDC_HP, str);  ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_MAX_EXP, str, 10);
 	SetDlgItemText(m_PlayerInfoDlg, IDC_MAX_EXP, str);  ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_EXP, str, 10);
 	SetDlgItemText(m_PlayerInfoDlg, IDC_EXP, str);  ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_Damage, str, 10);
-	SetDlgItemText(m_PlayerInfoDlg, IDC_DMG, str);
-
+	SetDlgItemText(m_PlayerInfoDlg, IDC_DMG, str);  ZeroMemory(str, sizeof(str)); itoa(m_DBInfo.m_pos.m_wZone, str, 10);
+	SetDlgItemText(m_PlayerInfoDlg, IDC_ZONE, str);
 }

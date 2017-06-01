@@ -41,6 +41,8 @@ public:
 	void SethList(const HWND& a_List) { m_hList = a_List; }
 
 public:
+	void UpdateZoneInfo();
+public:
 	void ShowPlayerInfo();
 	void ShowChatting();
 public:

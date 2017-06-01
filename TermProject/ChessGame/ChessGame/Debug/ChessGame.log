@@ -12,37 +12,33 @@ s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.c
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(334): warning C4267: '=': conversion from 'size_t' to 'BYTE', possible loss of data
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(347): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(348): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(354): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(349): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(355): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(350): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(356): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(351): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(357): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(352): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(358): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(359): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(360): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(1323): note: see declaration of 'itoa'
   Generating Code...
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(40): warning C4172: returning address of local variable or temporary
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(51): warning C4172: returning address of local variable or temporary
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(54): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(109): warning C4715: 'CTransmission::ProcessPacket': not all control paths return a value
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(96): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(40): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(99): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(51): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(107): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(54): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(228): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(233): warning C4172: returning address of local variable or temporary
 s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\ctransmission.cpp(235): warning C4172: returning address of local variable or temporary
-  Compiling...
-  STMap.cpp
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\stmap.cpp(15): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\stmap.cpp(16): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\stmap.cpp(28): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\stmap.cpp(44): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\stmap.cpp(45): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-s:\kpu\4-1\gameserver\assignment\termproject\chessgame\chessgame\stmap.cpp(57): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+  Skipping... (no relevant changes detected)
   ChessMain.cpp
   CPlayer.cpp
-  Generating Code...
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\TermProject\ChessGame\Debug\ChessGame.exe
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\TermProject\ChessGame\Debug\ChessGame.pdb (Partial PDB)

@@ -17,7 +17,6 @@
 #define ID_SIGN_UP_OK                   1010
 #define IDC_ID                          1012
 #define IDC_Level                       1013
-#define IDC_LIST1                       1013
 #define IDC_LIST_CHATTING               1013
 #define IDC_MAX_HP                      1014
 #define IDC_EDIT_Chatting               1014
@@ -25,6 +24,8 @@
 #define IDC_MAX_EXP                     1016
 #define IDC_EXP                         1017
 #define IDC_DMG                         1018
+#define IDC_DMG2                        1019
+#define IDC_ZONE                        1019
 
 // Next default values for new objects
 // 
