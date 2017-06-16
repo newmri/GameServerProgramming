@@ -42,7 +42,7 @@ using namespace chrono;
 #define MAX_MAP_Y_ZONE (MAX_MAP_Y / MAX_MAP_TILE)
 
 // NPC
-#define MAX_NPC_NUM 30000
+#define MAX_NPC_NUM 5
 
 #define NPC_MOVE_SEC 1000
 
@@ -52,7 +52,7 @@ using namespace chrono;
 // Check the boundary
 enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y - 1, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X - 1};
 
-enum enumOperation { eOP_RECV, eOP_SEND, eMOVE };
+enum enumOperation { eOP_RECV, eOP_SEND, eMOVE, OP_DO_AI};
 
 // From Client To Server
 enum { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };
@@ -67,13 +67,6 @@ enum SIGNUP { eSC_SIGNUP_FAIL = 60, eSC_SIGNUP_SUCCESS };
 // CHAT
 enum CHAT { eCS_CHAT = 90, eSC_CHAT };
 
-
-struct STTimerInfo
-{
-	WORD wId;
-	enumOperation eOperation;
-	LONGLONG lTime;
-};
 
 
 #pragma pack (push, 1)

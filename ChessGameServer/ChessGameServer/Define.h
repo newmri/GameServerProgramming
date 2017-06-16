@@ -35,7 +35,7 @@ using namespace chrono;
 #define MAX_MAP_X 400
 #define MAX_MAP_Y 400
 
-#define MAX_NPC_NUM 1000
+#define MAX_NPC_NUM 20000
 
 #define NPC_MOVE_SEC 1000
 
@@ -43,7 +43,7 @@ using namespace chrono;
 // Check the boundary
 enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y, eLEFT_END = 0, eRIGHT_END = MAX_MAP_X};
 
-enum enumOperation { eOP_RECV, eOP_SEND, eMOVE };
+enum enumOperation { eOP_RECV, eOP_SEND, eOP_DO_AI };
 
 // From Client To Server
 enum { eCS_UP, eCS_DOWN, eCS_LEFT, eCS_RIGHT };

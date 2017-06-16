@@ -61,12 +61,9 @@ CIOCP::CIOCP()
 	m_pos.y = CHESS_FIRST_Y;
 	m_wId = 0;
 
-	STTimerInfo stTimerInfo;
-	stTimerInfo.eOperation = enumOperation::eMOVE;
-	stTimerInfo.lTime = AddTime(NPC_MOVE_SEC);
+
 	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
-		stTimerInfo.wId = i;
-		m_TimerQueue.push(stTimerInfo);
+
 		m_cNPC[i].Init();
 	}
 
@@ -563,9 +560,12 @@ void CIOCP::HandleView(const WORD& a_wId)
 	m_stpClientInfo[a_wId].m_lock.unlock();
 
 	// HandleNPCView
-	/*for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
-		if (IsCloseWithNPC(i, a_wId)) HandleNPCView(a_wId, i);
-	}*/
+	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
+		if (IsCloseWithNPC(i, a_wId)) {
+			WakeUpNPC(i);
+			HandleNPCView(a_wId, i);
+		}
+	}
 }
 
 void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
@@ -759,15 +759,21 @@ void CIOCP::WorkerThread()
 
 		}
 
-		else if (stpOverlappedEx->m_eOperation == eMOVE) {
-			m_cNPC[Id].lock.lock();
-
-			for (int i = 0; i < MAX_CLIENT_NUM; ++i) 
-				if (m_stpClientInfo[i].m_bIsLogined) HandleNPCView(i, Id);
-		
+		else if (stpOverlappedEx->m_eOperation == eOP_DO_AI) {
 			m_cNPC[Id].Move();
-			m_cNPC[Id].lock.unlock();
-	
+			for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
+				if (m_stpClientInfo[i].m_bIsLogined) {
+					HandleNPCView(i, Id);
+					if (IsCloseWithNPC(Id, i)) {
+						Timer_Event t = { Id, high_resolution_clock::now() + 10s,E_MOVE };
+						m_tqLock.lock(); m_timer_queue.push(t); m_tqLock.unlock();
+						continue;
+					}
+					
+				}
+			}
+			m_cNPC[Id].SetPassive();
+			delete stpOverlappedEx;
 
 		}
 			
@@ -814,31 +820,38 @@ LONGLONG CIOCP::AddTime(WORD a_wTime)
 
 void CIOCP::TimerThread()
 {
-	STTimerInfo stTimerInfo;
-	stOverlappedEx  stOver;
-	do {
-		Sleep(1);
-		do {
-			if (m_TimerQueue.size() > 0) {
-				stTimerInfo = m_TimerQueue.front();
-				if (stTimerInfo.lTime > Get_Current_Time()) break;
-				m_TimerQueue.pop();
-
-				stOver.m_eOperation = stTimerInfo.eOperation;
-				PostQueuedCompletionStatus(m_hIOCP, 1, stTimerInfo.wId, reinterpret_cast<LPWSAOVERLAPPED>(&stOver));
-
-				stTimerInfo.lTime = AddTime(NPC_MOVE_SEC);
-				m_TimerQueue.push(stTimerInfo);
-
+	for (;;) {
+		Sleep(10);
+		for (;;) {
+			m_tqLock.lock();
+			if (0 == m_timer_queue.size()) {
+				m_tqLock.unlock(); break;
 			}
-		} while (true);
-	} while (true);
-
+			Timer_Event t = m_timer_queue.top();
+			if (t.exec_time > high_resolution_clock::now()) {
+				m_tqLock.unlock(); break;
+			}
+			m_timer_queue.pop();
+			m_tqLock.unlock();
+			stOverlappedEx* over = new stOverlappedEx;
+			if (E_MOVE == t.event) over->m_eOperation = eOP_DO_AI;
+			PostQueuedCompletionStatus(m_hIOCP, 1, t.object_id, &over->m_wsaOverlapped);
+		}
+	}
 }
 
 
 void CIOCP::ConnectDB()
 {
 	m_CDB.Connect();
+
+}
+
+void CIOCP::WakeUpNPC(int id)
+{
+	if (m_cNPC[id].GetIsActivated()) return;
+	m_cNPC[id].SetActive();
+	Timer_Event event{id, high_resolution_clock::now() + 10s, E_MOVE};
+	m_tqLock.lock(); m_timer_queue.push(event); m_tqLock.unlock();
 
 }

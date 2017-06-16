@@ -23,7 +23,7 @@
 #define MAX_MAP_X 400
 #define MAX_MAP_Y 400
 
-#define MAX_NPC_NUM 1000
+#define MAX_NPC_NUM 20000
 
 // POS_LEN
 #define POS_LEN sizeof(POINT) + (sizeof(int) *2);

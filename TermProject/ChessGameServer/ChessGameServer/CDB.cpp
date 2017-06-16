@@ -36,6 +36,7 @@ void CDB::Connect()
 				if (m_retcode == SQL_SUCCESS || m_retcode == SQL_SUCCESS_WITH_INFO) {
 					cout << "DB has been connected!" << endl;
 				}
+				else cout << "DB Connection has been failed!" << endl;
 			}
 		}
 	}

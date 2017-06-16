@@ -81,6 +81,8 @@ public:
 public:
 	void ConnectDB();
 
+public:
+	void WakeUpNPC(int id);
 private:
 	CIOCP();
 
@@ -117,8 +119,12 @@ private:
 
 private:
 	CNPC m_cNPC[MAX_NPC_NUM];
+	priority_queue<Timer_Event, vector<Timer_Event>, comparison > m_timer_queue;
 	queue<STTimerInfo> m_TimerQueue;
 
 private:
 	CDB m_CDB;
+
+private:
+	mutex m_tqLock;
 };

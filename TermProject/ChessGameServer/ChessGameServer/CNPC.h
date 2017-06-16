@@ -1,7 +1,9 @@
 #pragma once
 
-#include <Windows.h>
-#include <mutex>
+#include "CLuaScript.h"
+
+enum TYPE { PEACE = 0, WAR };
+enum MOVE { FIX = 0, NOTFIX };
 
 struct Point2
 {
@@ -11,18 +13,25 @@ struct Point2
 class CNPC
 {
 public:
-	void Init();
+	void Init(const WORD);
 
+public:
+	void WakeUp();
 public:
 	void Move();
 
 public:
-	const Point2& GetPos();
-
+	void SetPasive() { IsActivated = false; }
 public:
-	std::mutex lock;
+	const Point2& GetPos();
 
 private:
 	Point2 m_pos;
-
+	WORD m_Level;
+	bool m_Type;
+	bool m_Move;
+	WORD m_Exe;
+	bool IsActivated;
+	WORD m_Id;
+	LuaScript m_Lua;
 };

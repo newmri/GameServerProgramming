@@ -11,8 +11,9 @@ enum { eTOP_END = 0, eBOTTOM_END = MAX_MAP_Y, eLEFT_END = 0, eRIGHT_END = MAX_MA
 
 void CNPC::Init()
 {
-	m_pos.x = 30;
-	m_pos.y = 30;
+	m_pos.x = rand() % MAX_MAP_X;
+	m_pos.y = rand() % MAX_MAP_Y;
+	m_IsActivated = false;
 }
 
 void CNPC::Move()

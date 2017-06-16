@@ -1,14 +1,40 @@
-﻿  CIOCP.cpp
-CIOCP.cpp(184): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+﻿  CDB.cpp
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\CDB.h(10): warning C4005: 'UNICODE': macro redefinition
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\CDB.h(10): note: command-line arguments:  see previous definition of 'UNICODE'
+CDB.cpp(30): error C2664: 'SQLRETURN SQLConnectW(SQLHDBC,SQLWCHAR *,SQLSMALLINT,SQLWCHAR *,SQLSMALLINT,SQLWCHAR *,SQLSMALLINT)': cannot convert argument 2 from 'SQLCHAR *' to 'SQLWCHAR *'
+  CDB.cpp(30): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+CDB.cpp(51): error C2664: 'int wsprintfW(LPWSTR,LPCWSTR,...)': cannot convert argument 1 from 'char [100]' to 'LPWSTR'
+  CDB.cpp(51): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+CDB.cpp(52): error C2664: 'SQLRETURN SQLExecDirectW(SQLHSTMT,SQLWCHAR *,SQLINTEGER)': cannot convert argument 2 from 'SQLCHAR *' to 'SQLWCHAR *'
+  CDB.cpp(52): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+CDB.cpp(77): error C2664: 'int wsprintfW(LPWSTR,LPCWSTR,...)': cannot convert argument 1 from 'char [100]' to 'LPWSTR'
+  CDB.cpp(77): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+CDB.cpp(78): error C2664: 'SQLRETURN SQLExecDirectW(SQLHSTMT,SQLWCHAR *,SQLINTEGER)': cannot convert argument 2 from 'SQLCHAR *' to 'SQLWCHAR *'
+  CDB.cpp(78): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+  CIOCP.cpp
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\CDB.h(10): warning C4005: 'UNICODE': macro redefinition
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\CDB.h(10): note: command-line arguments:  see previous definition of 'UNICODE'
+CIOCP.cpp(114): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt\string.h(129): note: see declaration of 'strcpy'
+CIOCP.cpp(337): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
-CIOCP.cpp(440): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
-CIOCP.cpp(512): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
-CIOCP.cpp(519): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(1846): note: see declaration of 'inet_ntoa'
+CIOCP.cpp(359): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt\string.h(129): note: see declaration of 'strcpy'
+CIOCP.cpp(413): warning C4244: '=': conversion from 'LONG' to 'WORD', possible loss of data
+CIOCP.cpp(414): warning C4244: '=': conversion from 'LONG' to 'WORD', possible loss of data
+CIOCP.cpp(427): warning C4244: '=': conversion from 'LONG' to 'WORD', possible loss of data
+CIOCP.cpp(428): warning C4244: '=': conversion from 'LONG' to 'WORD', possible loss of data
+CIOCP.cpp(450): warning C4244: '=': conversion from 'const LONG' to 'WORD', possible loss of data
+CIOCP.cpp(451): warning C4244: '=': conversion from 'const LONG' to 'WORD', possible loss of data
+CIOCP.cpp(462): warning C4244: '=': conversion from 'const LONG' to 'WORD', possible loss of data
+CIOCP.cpp(463): warning C4244: '=': conversion from 'const LONG' to 'WORD', possible loss of data
+CIOCP.cpp(637): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt\string.h(129): note: see declaration of 'strcpy'
+CIOCP.cpp(700): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(707): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(755): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(767): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+  CNPC.cpp
   main.cpp
-  Generating code
-  All 31 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  ChessGameServer.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGameServer\Release\ChessGameServer.exe
+s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\CDB.h(10): warning C4005: 'UNICODE': macro redefinition
+  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\CDB.h(10): note: command-line arguments:  see previous definition of 'UNICODE'

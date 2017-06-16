@@ -141,18 +141,32 @@
   <ItemGroup>
     <ClCompile Include="CDB.cpp" />
     <ClCompile Include="CIOCP.cpp" />
+    <ClCompile Include="CLuaScript.cpp" />
     <ClCompile Include="CNPC.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDB.h" />
     <ClInclude Include="ClientInfo.h" />
+    <ClInclude Include="CLuaScript.h" />
     <ClInclude Include="CNPC.h" />
     <ClInclude Include="DBDeFine.h" />
     <ClInclude Include="DBInfo.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="CIOCP.h" />
+    <ClInclude Include="lauxlib.h" />
+    <ClInclude Include="lua.h" />
+    <ClInclude Include="luaconf.h" />
+    <ClInclude Include="lualib.h" />
     <ClInclude Include="OverLappedEx.h" />
+    <ClInclude Include="Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Night.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,41 +1,54 @@
-﻿  main.cpp
-  CIOCP.cpp
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(72): warning C4996: 'WSASocketA': Use WSASocketW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+﻿  CIOCP.cpp
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(123): warning C4996: 'WSASocketA': Use WSASocketW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(3413): note: see declaration of 'WSASocketA'
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(146): warning C4311: 'reinterpret_cast': pointer truncation from 'stClientInfo *' to 'DWORD'
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(146): warning C4302: 'reinterpret_cast': truncation from 'stClientInfo *' to 'DWORD'
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'SOCKET'
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): note: consider using '%lld' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): note: consider using '%Id' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): note: consider using '%I64d' in the format string
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(184): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(183): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(183): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(183): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(183): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(355): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(355): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(355): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(355): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(355): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'SOCKET'
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): note: consider using '%lld' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): note: consider using '%Id' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): note: consider using '%I64d' in the format string
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(440): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(461): error C2664: 'BOOL GetQueuedCompletionStatus(HANDLE,LPDWORD,PULONG_PTR,LPOVERLAPPED *,DWORD)': cannot convert argument 3 from 'LPDWORD' to 'PULONG_PTR'
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(461): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'SOCKET'
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): note: consider using '%lld' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): note: consider using '%Id' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(471): note: consider using '%I64d' in the format string
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'SOCKET'
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): note: consider using '%lld' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): note: consider using '%Id' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): note: consider using '%I64d' in the format string
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(512): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'SOCKET'
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): note: consider using '%lld' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): note: consider using '%Id' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): note: consider using '%I64d' in the format string
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(519): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1846): note: see declaration of 'inet_ntoa'
-s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'SOCKET'
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): note: consider using '%lld' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): note: consider using '%Id' in the format string
-  s:\kpu\4-1\gameserver\assignment\chessgameserver\chessgameserver\ciocp.cpp(528): note: consider using '%I64d' in the format string
-  Generating Code...
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(698): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(129): note: see declaration of 'strcpy'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(699): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(90): note: see declaration of 'strcat'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(700): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(263): note: see declaration of 'strncat'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(701): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(90): note: see declaration of 'strcat'
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(821): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(828): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(876): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(889): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const unsigned short', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(890): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(892): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(895): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const unsigned short', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(897): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(901): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(902): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const unsigned short', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(904): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(913): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(914): warning C4838: conversion from 'unsigned __int64' to 'int' requires a narrowing conversion
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(914): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'int', possible loss of data
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(927): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'SOCKET'
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(927): note: consider using '%lld' in the format string
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(927): note: consider using '%Id' in the format string
+  s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(927): note: consider using '%I64d' in the format string
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(197): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(202): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(214): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(218): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(285): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(291): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(294): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(315): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(230): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(234): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(320): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(245): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\termproject\chessgameserver\chessgameserver\ciocp.cpp(250): warning C4172: returning address of local variable or temporary
+  ChessGameServer.vcxproj -> S:\KPU\4-1\GameServer\Assignment\TermProject\ChessGameServer\x64\Debug\ChessGameServer.exe
+  ChessGameServer.vcxproj -> S:\KPU\4-1\GameServer\Assignment\TermProject\ChessGameServer\x64\Debug\ChessGameServer.pdb (Partial PDB)

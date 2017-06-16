@@ -1,8 +1,10 @@
 #include "CIOCP.h"
+#include "Timer.h"
 #include <process.h>
 
 CIOCP* CIOCP::m_pInstance = NULL;
 
+#define IOCP CIOCP::GetInstance()
 
 bool cmp(const Point& a, const Point& b)
 {
@@ -67,15 +69,10 @@ CIOCP::CIOCP()
 	m_pos.y = CHESS_FIRST_Y;
 	m_wId = 0;
 
-	STTimerInfo stTimerInfo;
-	stTimerInfo.eOperation = enumOperation::eMOVE;
-	stTimerInfo.lTime = AddTime(NPC_MOVE_SEC);
 
-	//for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
-	//	stTimerInfo.wId = i;
-	//	m_TimerQueue.push(stTimerInfo);
-	//	m_cNPC[i].Init();
-	//}
+	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
+		m_cNPC[i].Init(i);
+	}
 
 	srand((unsigned int)time(NULL));
 
@@ -315,18 +312,13 @@ void CIOCP::SetNewClientInfo(const WORD& a_wNewId)
 
 const bool& CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
 {
-	return sqrt(((m_stpClientInfo[a_wFrom].m_Info.m_pos.m_wX - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wX) *
-		(m_stpClientInfo[a_wFrom].m_Info.m_pos.m_wX - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wX)) +
-		((m_stpClientInfo[a_wFrom].m_Info.m_pos.m_wY - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wY) *
-		(m_stpClientInfo[a_wFrom].m_Info.m_pos.m_wY - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wY))) < MAX_VIEW;
+	return m_stpClientInfo[a_wFrom].m_Info.m_pos.m_wZone == m_stpClientInfo[a_wTo].m_Info.m_pos.m_wZone;
 }
 
 const bool& CIOCP::IsCloseWithNPC(const WORD& a_wFrom, const WORD& a_wTo)
 {
-	return sqrt(((m_cNPC[a_wFrom].GetPos().m_wX - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wX) *
-		(m_cNPC[a_wFrom].GetPos().m_wX - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wX)) +
-		((m_cNPC[a_wFrom].GetPos().m_wY - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wY) *
-		(m_cNPC[a_wFrom].GetPos().m_wY - m_stpClientInfo[a_wTo].m_Info.m_pos.m_wY))) < MAX_VIEW;
+	return   m_cNPC[a_wFrom].GetPos().m_wZone == m_stpClientInfo[a_wTo].m_Info.m_pos.m_wZone;
+
 }
 void CIOCP::AccepterThread()
 {
@@ -420,7 +412,7 @@ void CIOCP::LoginSuccessProcess(const WORD& wNewId)
 	// NPC view
 	for (int i = 0; i < MAX_NPC_NUM; ++i) {
 		if (IsCloseWithNPC(i, wNewId)) {
-			SendPutNPC(wNewId, i);
+			m_cNPC[i].WakeUp();
 			local_NPC_view_list.insert(i);
 		}
 	}
@@ -592,7 +584,7 @@ void CIOCP::HandleView(const WORD& a_wId)
 				m_stpClientInfo[target].m_view_list.erase(a_wId);
 				m_stpClientInfo[target].m_lock.unlock();
 				SendRemoveClient(target, a_wId);
-			}
+			} else m_stpClientInfo[target].m_lock.unlock();
 		}
 	}
 
@@ -601,10 +593,12 @@ void CIOCP::HandleView(const WORD& a_wId)
 	for (auto d : removed_id_list) m_stpClientInfo[a_wId].m_view_list.erase(d);
 	m_stpClientInfo[a_wId].m_lock.unlock();
 
+	
 	// HandleNPCView
-	/*for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
-		if (IsCloseWithNPC(i, a_wId)) HandleNPCView(a_wId, i);
-	}*/
+	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
+	if (IsCloseWithNPC(i, a_wId)) HandleNPCView(a_wId, i);
+	}
+	
 }
 
 void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
@@ -625,7 +619,7 @@ void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
 	for (auto target : new_view_list) {
 		// If Client doesn't have target NPC
 		if (vlc.count(target) == 0) {
-			SendPutNPC(a_wId, a_NPC);
+			m_cNPC[a_NPC].WakeUp();
 			vlc.insert(target);
 		}
 
@@ -812,7 +806,7 @@ void CIOCP::WorkerThread()
 		//printf("Worker thread is running! \n");
 		bSuccess = GetQueuedCompletionStatus(m_hIOCP,
 			&dwIoSize, // Sent byte
-			(LPDWORD)&Id, // CompletionKey
+			(PULONG_PTR)&Id, // CompletionKey
 			reinterpret_cast<LPWSAOVERLAPPED*>(&stpOverlappedEx), // Overlapped IO Object
 			INFINITE); // Waiting Time
 
@@ -887,18 +881,47 @@ void CIOCP::WorkerThread()
 
 		}
 
-		else if (stpOverlappedEx->m_eOperation == eMOVE) {
-			//m_cNPC[Id].lock.lock();
+		else if (stpOverlappedEx->m_eOperation == OP_DO_AI) {
+			m_cNPC[Id].Move();
+			for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
+				if (true == m_stpClientInfo[i].m_bIsLogined) {
+					m_stpClientInfo[i].m_NPC_Lock.lock();
+					if (0 != m_stpClientInfo[i].m_NPC_view_list.count(Id)) {
+						if (true == IsCloseWithNPC(Id, i)) {
+							m_stpClientInfo[i].m_NPC_Lock.unlock();
+							SendPutNPC(i, Id);
+						}
+						else {
+							m_stpClientInfo[i].m_NPC_view_list.erase(Id);
+							m_stpClientInfo[i].m_NPC_Lock.unlock();
+							SendRemoveNPC(i, Id);
+						}
+					}
+					else {
+						if (true == IsCloseWithNPC(Id, i)) {
+							m_stpClientInfo[i].m_NPC_view_list.insert(Id);
+							m_stpClientInfo[i].m_NPC_Lock.unlock();
+							SendPutNPC(i, Id);
+						}
+						else m_stpClientInfo[i].m_NPC_Lock.unlock();
 
-			//for (int i = 0; i < MAX_CLIENT_NUM; ++i) 
-			//	if (m_stpClientInfo[i].m_bIsConnected) HandleNPCView(i, Id);
-		
-			//m_cNPC[Id].Move();
-			//m_cNPC[Id].lock.unlock();
-	
-
+					}
+				}
+			}
+			bool temp{ false };
+			for (int i = 0; i < MAX_CLIENT_NUM; ++i) {
+				if (true == m_stpClientInfo[i].m_bIsLogined && IsCloseWithNPC(Id, i)) {
+					Timer_Event t = { Id, high_resolution_clock::now() + 1s,E_MOVE };
+					TIMER->tq_lock.lock(); TIMER->timer_queue.push(t); TIMER->tq_lock.unlock();
+					if (!temp) temp = true;
+					break;
+				}
+			}
+			if(!temp) m_cNPC[Id].SetPasive();
+			delete stpOverlappedEx;
 		}
-			
+
+
 		// Exception
 		else {
 			printf("socket(%d) Exception", m_stpClientInfo[Id].m_SocketClient);
@@ -927,39 +950,27 @@ void CIOCP::DestroyThread()
 
 }
 
-LONGLONG CIOCP::Get_Current_Time()
-{
-	milliseconds ms = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
-	return ms.count();
-}
 
-
-LONGLONG CIOCP::AddTime(WORD a_wTime)
-{
-	milliseconds ms = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
-	return ms.count() + a_wTime;
-}
 
 void CIOCP::TimerThread()
 {
-	STTimerInfo stTimerInfo;
-	stOverlappedEx  stOver;
-	do {
-		Sleep(1);
-		do {
-			if (m_TimerQueue.size() > 0) {
-				stTimerInfo = m_TimerQueue.front();
-				if (stTimerInfo.lTime > Get_Current_Time()) break;
-				m_TimerQueue.pop();
-
-				stOver.m_eOperation = stTimerInfo.eOperation;
-				PostQueuedCompletionStatus(m_hIOCP, 1, stTimerInfo.wId, reinterpret_cast<LPWSAOVERLAPPED>(&stOver));
-
-				stTimerInfo.lTime = AddTime(NPC_MOVE_SEC);
-				m_TimerQueue.push(stTimerInfo);
-
+	for (;;) {
+		Sleep(10);
+		for (;;) {
+			TIMER->tq_lock.lock();
+			if (0 == TIMER->timer_queue.size()) {
+				TIMER->tq_lock.unlock(); break;
 			}
-		} while (true);
-	} while (true);
+			Timer_Event t = TIMER->timer_queue.top();
+			if (t.exec_time > high_resolution_clock::now()) {
+				TIMER->tq_lock.unlock(); break;
+			}
+			TIMER->timer_queue.pop();
+			TIMER->tq_lock.unlock();
+			stOverlappedEx* over = new stOverlappedEx;
+			if (E_MOVE == t.event) over->m_eOperation = OP_DO_AI;
+			PostQueuedCompletionStatus(m_hIOCP, 1, t.object_id, &over->m_wsaOverlapped);
+		}
+	}
 
 }

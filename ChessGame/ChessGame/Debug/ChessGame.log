@@ -1,6 +1,35 @@
-﻿  ChessMain.cpp
+﻿  STMap.cpp
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(14): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(15): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(27): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(43): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(44): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\stmap.cpp(56): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
   Generating Code...
-  Skipping... (no relevant changes detected)
-  STMap.cpp
+  Compiling...
+  ChessMain.cpp
+  CTransmission.cpp
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(51): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(1828): note: see declaration of 'inet_addr'
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(110): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(2677): note: see declaration of 'WSAAsyncSelect'
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(127): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\string.h(129): note: see declaration of 'strcpy'
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(228): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\10\include\10.0.14393.0\um\winsock2.h(2677): note: see declaration of 'WSAAsyncSelect'
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(274): warning C4267: '=': conversion from 'size_t' to 'BYTE', possible loss of data
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(275): warning C4267: '=': conversion from 'size_t' to 'BYTE', possible loss of data
+  CPlayer.cpp
+  Generating Code...
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(114): warning C4715: 'CTransmission::ProcessPacket': not all control paths return a value
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(45): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(56): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(59): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(101): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(104): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(112): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(225): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(230): warning C4172: returning address of local variable or temporary
+s:\kpu\4-1\gameserver\assignment\chessgame\chessgame\ctransmission.cpp(232): warning C4172: returning address of local variable or temporary
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGame\Debug\ChessGame.exe
   ChessGame.vcxproj -> S:\KPU\4-1\GameServer\Assignment\ChessGame\Debug\ChessGame.pdb (Partial PDB)

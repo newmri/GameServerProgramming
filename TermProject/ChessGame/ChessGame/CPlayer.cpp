@@ -81,5 +81,4 @@ void CPlayer::SendChatting(char a_Message[])
 {
 	m_nPacketType = eCS_CHAT;
 	SendChatPacket(a_Message);
-
 }

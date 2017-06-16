@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "ClientInfo.h"
 #include "CNPC.h"
 
@@ -79,9 +80,6 @@ public:
 	// Destroy constructed thread
 	void DestroyThread();
 
-public:
-	LONGLONG AddTime(WORD a_wTime);
-	LONGLONG Get_Current_Time();
 
 // To contrcut only one IOCP
 public:
@@ -124,7 +122,6 @@ private:
 
 private:
 	CNPC m_cNPC[MAX_NPC_NUM];
-	queue<STTimerInfo> m_TimerQueue;
 
 private:
 	vector <Point> m_MapInfo;

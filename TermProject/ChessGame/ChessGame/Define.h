@@ -29,7 +29,7 @@ using namespace std;
 #define MAX_MAP_X 400
 #define MAX_MAP_Y 400
 
-#define MAX_NPC_NUM 30000
+#define MAX_NPC_NUM 5
 
 #define MAX_STR_SIZE 100
 
