@@ -91,7 +91,35 @@ public:
 	T lua_get(const std::string& variableName) {
 		return 0;
 	}
+	void lua_set(const std::string& variableName, const WORD num) {
+		lua_getglobal(L, variableName.c_str());
+		lua_pushnumber(L, num);
+		lua_pcall(L, 1, 1, 0);
+		lua_pop(L, 1);
+	}
 
+	void lua_set(const std::string& variableName) {
+		lua_getglobal(L, variableName.c_str());
+		lua_pcall(L, 0, 0, 0);
+		lua_pop(L, 1);
+	}
+
+	void lua_set(const std::string& variableName, const WORD a_x, const WORD a_y, const WORD a_zone) {
+		lua_getglobal(L, variableName.c_str());
+		lua_pushnumber(L, a_x);
+		lua_pushnumber(L, a_y);
+		lua_pushnumber(L, a_zone);
+		lua_pcall(L, 3, 0, 0);
+		lua_pop(L, 1);
+	}
+
+	WORD lua_getpos(const std::string& functionName) {
+		lua_getglobal(L, functionName.c_str());
+		lua_pcall(L, 0, 1, 0);
+		WORD pos = (WORD)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		return pos;
+	}
 	template<typename T>
 	T lua_getdefault() {
 		return 0;

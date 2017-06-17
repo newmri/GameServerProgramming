@@ -70,12 +70,38 @@ CIOCP::CIOCP()
 	m_wId = 0;
 
 
-	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
-		m_cNPC[i].Init(i);
+	WORD compare{ 10 };
+	Point2 pos2{ 0,0,1 };
+	WORD Multi{1};
+	for (WORD i = 0; i < MAX_NORMAL_FIXED_NIGHT; ++i) {
+		if (i == compare) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
+		}
+
+		m_cNPC[i].Init(i, pos2);
+
+		if (compare % 160 == 0) {
+			if (pos2.m_wX != 0) {
+				pos2.m_wX = 0;
+				pos2.m_wY += 1;
+				pos2.m_wZone = 16;
+			}
+		}
 	}
+	pos2.m_wX = 0; pos2.m_wZone = 16;
+	for (WORD i = MAX_NORMAL_FIXED_NIGHT; i < MAX_NPC_NUM; ++i) {
+		if (i == compare + 10) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
+		}
 
+		m_cNPC[i].Init(i, pos2);
+
+	}
 	srand((unsigned int)time(NULL));
-
 
 	Point pos;
 	WORD wZone{};
@@ -317,7 +343,7 @@ const bool& CIOCP::IsClose(const WORD& a_wFrom, const WORD& a_wTo)
 
 const bool& CIOCP::IsCloseWithNPC(const WORD& a_wFrom, const WORD& a_wTo)
 {
-	return   m_cNPC[a_wFrom].GetPos().m_wZone == m_stpClientInfo[a_wTo].m_Info.m_pos.m_wZone;
+	return  m_cNPC[a_wFrom].GetPos().m_wZone == m_stpClientInfo[a_wTo].m_Info.m_pos.m_wZone;
 
 }
 void CIOCP::AccepterThread()
@@ -595,6 +621,7 @@ void CIOCP::HandleView(const WORD& a_wId)
 
 	
 	// HandleNPCView
+	
 	for (WORD i = 0; i < MAX_NPC_NUM; ++i) {
 	if (IsCloseWithNPC(i, a_wId)) HandleNPCView(a_wId, i);
 	}
@@ -610,7 +637,9 @@ void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
 	// Object to be removed
 	unordered_set<WORD> removed_id_list;
 
+	if (m_stpClientInfo[a_wId].m_NPC_view_list.count(a_NPC) == 0)
 	if (IsCloseWithNPC(a_NPC, a_wId)) new_view_list.insert(a_NPC);
+
 
 	m_stpClientInfo[a_wId].m_NPC_Lock.lock();
 	vlc = m_stpClientInfo[a_wId].m_NPC_view_list;
@@ -630,10 +659,9 @@ void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
 
 			// Now object is far away...
 	for (auto target : vlc) {
-		if (new_view_list.count(target) == 0) { // If target is far away
+		if (vlc.count(target) == 0) { // If target is far away
 			SendRemoveNPC(a_wId, target);
 			removed_id_list.insert(target);
-
 		}
 	}
 	m_stpClientInfo[a_wId].m_NPC_Lock.lock();

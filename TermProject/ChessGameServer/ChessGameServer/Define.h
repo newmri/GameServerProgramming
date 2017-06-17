@@ -42,7 +42,7 @@ using namespace chrono;
 #define MAX_MAP_Y_ZONE (MAX_MAP_Y / MAX_MAP_TILE)
 
 // NPC
-#define MAX_NPC_NUM 5
+#define MAX_NPC_NUM 450
 
 #define NPC_MOVE_SEC 1000
 
