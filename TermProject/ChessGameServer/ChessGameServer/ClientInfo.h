@@ -21,7 +21,7 @@ struct stClientInfo {
 	unordered_set<WORD> m_NPC_view_list;
 	mutex m_lock;
 	mutex m_NPC_Lock;
-
+	mutex m_clock;
 	// Initialize member's variables
 	stClientInfo()
 	{

@@ -1,7 +1,6 @@
 #include "CIOCP.h"
 #include "Timer.h"
 #include <process.h>
-
 CIOCP* CIOCP::m_pInstance = NULL;
 
 #define IOCP CIOCP::GetInstance()
@@ -69,10 +68,31 @@ CIOCP::CIOCP()
 	m_pos.y = CHESS_FIRST_Y;
 	m_wId = 0;
 
+	srand((unsigned int)time(NULL));
+	Point pos;
+	WORD wZone{};
+	for (int y = 0; y < MAX_MAP_Y / MAX_MAP_TILE; ++y) {
+		for (int x = 0; x < MAX_MAP_X / MAX_MAP_TILE; ++x) {
+			pos.m_wX = rand() % (MAX_MAP_TILE - 1) + (x * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+			pos.m_wY = rand() % (MAX_MAP_TILE - 1) + (y * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+
+			while (!((pos.m_wX < ((x + 1) * MAX_MAP_TILE)) && (pos.m_wX >(x * MAX_MAP_TILE)))) {
+				pos.m_wX = rand() % (MAX_MAP_TILE - 1) + (x * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+				pos.m_wY = rand() % (MAX_MAP_TILE - 1) + (y * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
+			}
+
+			pos.m_wZone = ++wZone;
+			m_MapInfo.push_back(pos);
+
+		}
+
+	}
+	sort(m_MapInfo.begin(), m_MapInfo.end(), cmp);
 
 	WORD compare{ 10 };
 	Point2 pos2{ 0,0,1 };
 	WORD Multi{1};
+	// NORMAL_FIXED_NIGHT
 	for (WORD i = 0; i < MAX_NORMAL_FIXED_NIGHT; ++i) {
 		if (i == compare) {
 			compare += 10;
@@ -80,7 +100,7 @@ CIOCP::CIOCP()
 			++pos2.m_wZone;
 		}
 
-		m_cNPC[i].Init(i, pos2);
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone -1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
 
 		if (compare % 160 == 0) {
 			if (pos2.m_wX != 0) {
@@ -91,37 +111,83 @@ CIOCP::CIOCP()
 		}
 	}
 	pos2.m_wX = 0; pos2.m_wZone = 16;
-	for (WORD i = MAX_NORMAL_FIXED_NIGHT; i < MAX_NPC_NUM; ++i) {
+	// NORMAL_MOVING_NIGHT
+	for (WORD i = MAX_NORMAL_FIXED_NIGHT; i < MAX_NORMAL_NIGHT; ++i) {
 		if (i == compare + 10) {
 			compare += 10;
 			++pos2.m_wX;
 			++pos2.m_wZone;
 		}
 
-		m_cNPC[i].Init(i, pos2);
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone - 1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
 
 	}
-	srand((unsigned int)time(NULL));
-
-	Point pos;
-	WORD wZone{};
-	for (int y = 0; y < MAX_MAP_Y / MAX_MAP_TILE; ++y) {
-		for (int x = 0; x <  MAX_MAP_X / MAX_MAP_TILE; ++x) {
-			pos.m_wX = rand() % (MAX_MAP_TILE - 1) + (x * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
-			pos.m_wY = rand() % (MAX_MAP_TILE - 1) + (y * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
-
-			while (!((pos.m_wX < ((x + 1) * MAX_MAP_TILE)) && (pos.m_wX >(x * MAX_MAP_TILE)))) {
-				pos.m_wX = rand() % (MAX_MAP_TILE - 1) + (x * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
-				pos.m_wY = rand() % (MAX_MAP_TILE - 1) + (y * MAX_MAP_TILE); // 0 ~ 19, 20 ~ 39 and So on
-			}
-		
-			pos.m_wZone = ++wZone;
-			m_MapInfo.push_back(pos);
-			
+	pos2.m_wX = -1; 
+	// STARVED_FIXED_NIGHT
+	for (WORD i = MAX_NORMAL_NIGHT; i < MAX_NORMAL_NIGHT + MAX_STARVED_FIXED_NIGHT; ++i) {
+		if (i == compare + 10) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
 		}
-		
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone - 1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
+
 	}
-	sort(m_MapInfo.begin(), m_MapInfo.end(), cmp);
+	pos2.m_wX = 0;  pos2.m_wZone -= 15;
+	// STARVED_MOVING_NIGHT
+	for (WORD i = MAX_NORMAL_NIGHT + MAX_STARVED_FIXED_NIGHT; i < MAX_NIGHT; ++i) {
+		if (i == compare + 10) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
+		}
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone - 1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
+	}
+	pos2.m_wX = 0;
+	for (WORD i = MAX_NIGHT; i < MAX_NIGHT + MAX_NORMAL_FIXED_BISHOP; ++i) {
+		if (i == compare + 10) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
+		}
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone - 1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
+		if (compare == MAX_NIGHT + 150) {
+			if (pos2.m_wX != 0) {
+				pos2.m_wX = 0;
+				pos2.m_wY += 1;
+				pos2.m_wZone = 61;
+			}
+		}
+	}
+	pos2.m_wX = 0;  pos2.m_wZone -= 15;
+	for (WORD i = MAX_NIGHT + MAX_NORMAL_FIXED_BISHOP; i < MAX_NORMAL_BISHOP; ++i) {
+		if (i == compare + 10) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
+		}
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone - 1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
+
+	}
+	pos2.m_wX = -1;
+	for (WORD i = MAX_NORMAL_BISHOP; i < MAX_NORMAL_BISHOP + MAX_STARVED_FIXED_BISHOP; ++i) {
+		if (i == compare + 10) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
+		}
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone - 1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
+
+	}
+	pos2.m_wX = 0;  pos2.m_wZone -= 15;
+	for (WORD i = MAX_NORMAL_BISHOP + MAX_STARVED_FIXED_BISHOP; i < MAX_BISHOP; ++i) {
+		if (i == compare + 10) {
+			compare += 10;
+			++pos2.m_wX;
+			++pos2.m_wZone;
+		}
+		m_cNPC[i].Init(i, pos2, m_MapInfo[pos2.m_wZone - 1].m_wX, m_MapInfo[pos2.m_wZone - 1].m_wY);
+	}
 }
 
 CIOCP::~CIOCP(void)
@@ -156,9 +222,14 @@ bool CIOCP::InitSocket()
 	return true;
 }
 
-
 void CIOCP::CloseSocket(const WORD& a_wId, const bool& a_bIsForce)
 {
+	m_stpClientInfo[a_wId].m_clock.lock();
+
+	if (!m_stpClientInfo[a_wId].m_bIsConnected || !m_stpClientInfo[a_wId].m_bIsLogined) {
+		m_stpClientInfo[a_wId].m_clock.unlock();
+		return;
+	}
 	m_stpClientInfo[a_wId].m_bIsConnected = false;
 	m_stpClientInfo[a_wId].m_bIsLogined = false;
 
@@ -180,6 +251,8 @@ void CIOCP::CloseSocket(const WORD& a_wId, const bool& a_bIsForce)
 	closesocket(m_stpClientInfo[a_wId].m_SocketClient);
 
 	m_stpClientInfo[a_wId].m_SocketClient = INVALID_SOCKET;
+
+	m_stpClientInfo[a_wId].m_clock.unlock();
 
 	unordered_set<WORD> lvl;
 	m_stpClientInfo[a_wId].m_lock.lock();
@@ -206,7 +279,7 @@ void CIOCP::CloseSocket(const WORD& a_wId, const bool& a_bIsForce)
 
 
 
-	printf("SOCKET(%d) is disconnected \n", m_stpClientInfo[a_wId].m_SocketClient);
+	//printf("SOCKET(%d) is disconnected \n", m_stpClientInfo[a_wId].m_SocketClient);
 
 }
 
@@ -378,7 +451,7 @@ void CIOCP::AccepterThread()
 		bool bRet = BindAndRecvIOCompletionPort(wNewId);
 		if (bRet == false) return;
 		else {
-			printf("A cllient has been connected: IP(%s) SOCKET(%d) \n", inet_ntoa(stClientAddr.sin_addr), m_stpClientInfo[wNewId].m_SocketClient);
+			//printf("A cllient has been connected: IP(%s) SOCKET(%d) \n", inet_ntoa(stClientAddr.sin_addr), m_stpClientInfo[wNewId].m_SocketClient);
 			m_nClientCnt++;
 		}
 
@@ -656,14 +729,15 @@ void CIOCP::HandleNPCView(const WORD& a_wId, const WORD& a_NPC)
 			SendMoveNPC(a_wId, a_NPC);
 		}
 	}
-
-			// Now object is far away...
+	
+	// Now object is far away...
 	for (auto target : vlc) {
 		if (vlc.count(target) == 0) { // If target is far away
 			SendRemoveNPC(a_wId, target);
 			removed_id_list.insert(target);
 		}
 	}
+	
 	m_stpClientInfo[a_wId].m_NPC_Lock.lock();
 	for (auto p : vlc) m_stpClientInfo[a_wId].m_NPC_view_list.insert(p);
 	for (auto d : removed_id_list) m_stpClientInfo[a_wId].m_NPC_view_list.erase(d);
@@ -798,7 +872,6 @@ void CIOCP::ProcessPacket(const WORD& a_wId, const unsigned char a_Packet[])
 	
 }
 
-
 void CIOCP::SendPacket(const WORD& a_wId, void* a_vPacket)
 {
 	int nPsize = reinterpret_cast<unsigned char *>(a_vPacket)[0];
@@ -815,8 +888,9 @@ void CIOCP::SendPacket(const WORD& a_wId, void* a_vPacket)
 
 	if (0 != nRet) {
 		int err_no = WSAGetLastError();
-		if (WSA_IO_PENDING != err_no)
-			DisPlayError("Error in SendPacket: \n", err_no);
+		if (WSA_IO_PENDING != err_no) {
+			CloseSocket(a_wId, true);
+		}
 	}
 
 
@@ -986,7 +1060,7 @@ void CIOCP::TimerThread()
 		Sleep(10);
 		for (;;) {
 			TIMER->tq_lock.lock();
-			if (0 == TIMER->timer_queue.size()) {
+			if (0 == TIMER->timer_queue.size()) {	
 				TIMER->tq_lock.unlock(); break;
 			}
 			Timer_Event t = TIMER->timer_queue.top();

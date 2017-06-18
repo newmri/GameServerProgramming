@@ -22,7 +22,7 @@ using namespace chrono;
 #define MAX_PACKET_SIZE 255
 #define MAX_BUF_SIZE 1024
 #define MAX_MSG_SIZE 30
-#define MAX_CLIENT_NUM 1000 // Server can accommodate MAX_CLIENT_NUM - 1
+#define MAX_CLIENT_NUM 2000 // Server can accommodate MAX_CLIENT_NUM - 1
 #define MAX_WORKER_THREAD 6
 
 // POS_LEN
@@ -41,8 +41,6 @@ using namespace chrono;
 #define MAX_MAP_X_ZONE (MAX_MAP_X / MAX_MAP_TILE)
 #define MAX_MAP_Y_ZONE (MAX_MAP_Y / MAX_MAP_TILE)
 
-// NPC
-#define MAX_NPC_NUM 450
 
 #define NPC_MOVE_SEC 1000
 

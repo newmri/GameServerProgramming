@@ -111,6 +111,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_UP:
@@ -191,10 +192,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 					if (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY >= MAX_MAP_TILE)
 						pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY = pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY % MAX_MAP_TILE;
-
-					pPlayer->m_NightImg.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
+					
+					if(pPlayer->m_stNPCInfo[i].m_wId < START_STARVED_FIXED_NIGHT)
+						pPlayer->m_NightImg.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
 						pPlayer->m_NightImg.GetWidth(), pPlayer->m_NightImg.GetHeight(),
 						0, 0, pPlayer->m_NightImg.GetWidth(), pPlayer->m_NightImg.GetHeight(), RGB(0, 0, 0));
+
+					if(pPlayer->m_stNPCInfo[i].m_wId >= START_STARVED_FIXED_NIGHT
+						&& pPlayer->m_stNPCInfo[i].m_wId < MAX_NIGHT)
+							pPlayer->m_StarvedNightImg.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
+							pPlayer->m_StarvedNightImg.GetWidth(), pPlayer->m_StarvedNightImg.GetHeight(),
+							0, 0, pPlayer->m_StarvedNightImg.GetWidth(), pPlayer->m_StarvedNightImg.GetHeight(), RGB(0, 0, 0));
+
+					if (pPlayer->m_stNPCInfo[i].m_wId >= MAX_NIGHT
+						&& pPlayer->m_stNPCInfo[i].m_wId < MAX_NIGHT + MAX_NORMAL_BISHOP)
+						pPlayer->m_BishopImg.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
+							pPlayer->m_BishopImg.GetWidth(), pPlayer->m_BishopImg.GetHeight(),
+							0, 0, pPlayer->m_BishopImg.GetWidth(), pPlayer->m_BishopImg.GetHeight(), RGB(0, 0, 0));
+				
+					if (pPlayer->m_stNPCInfo[i].m_wId >= MAX_NORMAL_BISHOP
+						&& pPlayer->m_stNPCInfo[i].m_wId < MAX_BISHOP)
+						pPlayer->m_StarvedBishopImg.TransparentBlt(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL) + 5, pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL,
+							pPlayer->m_StarvedBishopImg.GetWidth(), pPlayer->m_StarvedBishopImg.GetHeight(),
+							0, 0, pPlayer->m_StarvedBishopImg.GetWidth(), pPlayer->m_StarvedBishopImg.GetHeight(), RGB(0, 0, 0));
 
 					cStr.Format("(%d, %d)", pPlayer->m_stNPCInfo[i].m_pos.m_wY, pPlayer->m_stNPCInfo[i].m_pos.m_wX);
 					TextOut(hMemDC, (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wX * MOVE_PIXEL), (pPlayer->m_stNPCInfo[i].m_DrawPos.m_wY * MOVE_PIXEL) + 25, cStr, cStr.GetLength());

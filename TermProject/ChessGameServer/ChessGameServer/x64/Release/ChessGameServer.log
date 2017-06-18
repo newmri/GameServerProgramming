@@ -1,0 +1,38 @@
+﻿  CIOCP.cpp
+CIOCP.cpp(215): warning C4996: 'WSASocketA': Use WSASocketW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\um\WinSock2.h(3413): note: see declaration of 'WSASocketA'
+CIOCP.cpp(800): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt\string.h(129): note: see declaration of 'strcpy'
+CIOCP.cpp(801): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt\string.h(90): note: see declaration of 'strcat'
+CIOCP.cpp(803): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt\string.h(90): note: see declaration of 'strcat'
+CIOCP.cpp(802): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.14393.0\ucrt\string.h(263): note: see declaration of 'strncat'
+CIOCP.cpp(923): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(930): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(978): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(991): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const unsigned short', possible loss of data
+CIOCP.cpp(992): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(994): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(997): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const unsigned short', possible loss of data
+CIOCP.cpp(999): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(1003): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(1004): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const unsigned short', possible loss of data
+CIOCP.cpp(1006): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(1015): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const WORD', possible loss of data
+CIOCP.cpp(1016): warning C4838: conversion from 'unsigned __int64' to 'int' requires a narrowing conversion
+CIOCP.cpp(1016): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'int', possible loss of data
+CIOCP.cpp(1029): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'SOCKET'
+  CIOCP.cpp(1029): note: consider using '%lld' in the format string
+  CIOCP.cpp(1029): note: consider using '%Id' in the format string
+  CIOCP.cpp(1029): note: consider using '%I64d' in the format string
+  CNPC.cpp
+  main.cpp
+MSVCRT.lib(initializers.obj) : warning LNK4098: defaultlib 'libcmt.lib' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  12 of 733 functions ( 1.6%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    13 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  ChessGameServer.vcxproj -> S:\KPU\4-1\GameServer\Assignment\TermProject\ChessGameServer\x64\Release\ChessGameServer.exe

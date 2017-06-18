@@ -80,5 +80,8 @@ private:
 
 public:
 	CImage m_NightImg;
+	CImage m_StarvedNightImg;
+	CImage m_BishopImg;
+	CImage m_StarvedBishopImg;
 	CImage m_PawnImg;
 };

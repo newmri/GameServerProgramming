@@ -27,7 +27,6 @@ struct stDBInfo
 	UINT m_EXP = 0;
 	WORD m_Damage = 0;
 	Point m_pos;
-
 };
 
 #pragma pack (pop)

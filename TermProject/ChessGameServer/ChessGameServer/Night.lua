@@ -11,7 +11,8 @@ function Init(x)
 	return myid;
 end
 
-
+local xmin, xmax;
+local ymin, ymax;
 function set_pos(x, y, zone)
 	xmin = (x * MAX_MAP_TILE);
 	xmax = (MAX_MAP_TILE - 1) + xmin; 
@@ -33,8 +34,23 @@ end
 function get_zone()
 	return pos.zone;
 end
+function get_xmin()
+	return xmin;
+end
+function get_xmax()
+	return xmax;
+end
+function get_ymin()
+	return ymin;
+end
+function get_ymax()
+	return ymax;
+end
 
 LEVEL = 5;
+DMG = 5;
+DMAX_HP = 100;
+DHP = 100;
 TYPE = 0;
 MOVE = 0;
 
@@ -47,9 +63,9 @@ end
 
 NormalFixedNight = {
 Level = LEVEL;
-Dmg = 5;
-MAX_HP = 100;
-HP = 100;
+Dmg = DMG;
+MAX_HP = DMAX_HP;
+HP = DHP;
 Type = TYPE;
 Move = MOVE;
 Exe = EXE;
@@ -64,9 +80,44 @@ end
 
 NormalMovingNight = {
 Level = LEVEL;
-Dmg = 5;
-MAX_HP = 100;
-HP = 100;
+Dmg = DMG;
+MAX_HP = DMAX_HP;
+HP = DHP;
+Type = TYPE;
+Move = MOVE;
+Exe = EXE;
+}
+
+TYPE = 1;
+MOVE = 0;
+if((TYPE + MOVE) < 2) then
+	EXE = (LEVEL * 5) + ( (LEVEL * 5) * ( TYPE  + MOVE ));
+else
+	EXE = ( (LEVEL * 5) * 2 ) + ( (LEVEL * 5) * ( TYPE  + MOVE ));
+end
+
+StarvedFixedNight = {
+Level = LEVEL;
+Dmg = DMG;
+MAX_HP = DMAX_HP;
+HP = DHP;
+Type = TYPE;
+Move = MOVE;
+Exe = EXE;
+}
+
+MOVE = 1;
+if((TYPE + MOVE) < 2) then
+	EXE = (LEVEL * 5) + ( (LEVEL * 5) * ( TYPE  + MOVE ));
+else
+	EXE = ( (LEVEL * 5) * 2 ) + ( (LEVEL * 5) * ( TYPE  + MOVE ));
+end
+
+StarvedMovingNight = {
+Level = LEVEL;
+Dmg = DMG;
+MAX_HP = DMAX_HP;
+HP = DHP;
 Type = TYPE;
 Move = MOVE;
 Exe = EXE;
